@@ -8,6 +8,8 @@ Classes
 Names - maps variable names and string names to unique integers.
 """
 
+from typing import List
+
 
 class Names:
 
@@ -42,7 +44,7 @@ class Names:
         """Initialise names list."""
         self.error_code_count = 0  # how many error codes have been declared
 
-    def unique_error_codes(self, num_error_codes):
+    def unique_error_codes(self, num_error_codes: int) -> range:
         """Return a list of unique integer error codes."""
         if not isinstance(num_error_codes, int):
             raise TypeError("Expected num_error_codes to be an integer.")
@@ -50,19 +52,19 @@ class Names:
         return range(self.error_code_count - num_error_codes,
                      self.error_code_count)
 
-    def query(self, name_string):
+    def query(self, name_string: str) -> int:
         """Return the corresponding name ID for name_string.
 
         If the name string is not present in the names list, return None.
         """
 
-    def lookup(self, name_string_list):
+    def lookup(self, name_string_list: List[str]) -> List[int]:
         """Return a list of name IDs for each name string in name_string_list.
 
         If the name string is not present in the names list, add it.
         """
 
-    def get_name_string(self, name_id):
+    def get_name_string(self, name_id: int) -> str:
         """Return the corresponding name string for name_id.
 
         If the name_id is not an index in the names list, return None.

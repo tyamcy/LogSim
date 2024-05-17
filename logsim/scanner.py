@@ -9,6 +9,8 @@ Scanner - reads definition file and translates characters into symbols.
 Symbol - encapsulates a symbol and stores its properties.
 """
 
+from names import Names
+
 
 class Symbol:
 
@@ -49,8 +51,8 @@ class Scanner:
                       and returns the symbol.
     """
 
-    def __init__(self, path, names):
+    def __init__(self, path: str, names: Names):
         """Open specified file and initialise reserved words and IDs."""
 
-    def get_symbol(self):
+    def get_symbol(self) -> Symbol:
         """Translate the next sequence of characters into a symbol."""

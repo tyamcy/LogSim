@@ -24,3 +24,4 @@ digitExcludingZero = “1” | “2” | “3” | “4” | “5” | “6” |
 digit = “0” | digitExcludingZero ;
 naturalNumber = digitExcludingZero, { digit } ;
 
+

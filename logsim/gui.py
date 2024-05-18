@@ -276,7 +276,7 @@ class Gui(wx.Frame):
         if Id == wx.ID_EXIT:
             self.Close(True)
         if Id == wx.ID_ABOUT:
-            wx.MessageBox("Logic Simulator\nCreated by Mojisola Agboola\n2017",
+            wx.MessageBox("Logic Simulator\nCreated by Mojisola Agboola\n2017\nModified by Thomas Yam, Maxwell Li, Chloe Yiu\n2024",
                           "About Logsim", wx.ICON_INFORMATION | wx.OK)
 
     def on_spin(self, event):

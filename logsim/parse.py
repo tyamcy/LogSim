@@ -9,6 +9,12 @@ Classes
 Parser - parses the definition file and builds the logic network.
 """
 
+from names import Names
+from devices import Devices
+from network import Network
+from monitors import Monitors
+from scanner import Scanner
+
 
 class Parser:
 
@@ -33,10 +39,10 @@ class Parser:
     parse_network(self): Parses the circuit definition file.
     """
 
-    def __init__(self, names, devices, network, monitors, scanner):
+    def __init__(self, names: Names, devices: Devices, network: Network, monitors: Monitors, scanner: Scanner):
         """Initialise constants."""
 
-    def parse_network(self):
+    def parse_network(self) -> bool:
         """Parse the circuit definition file."""
         # For now just return True, so that userint and gui can run in the
         # skeleton code. When complete, should return False when there are

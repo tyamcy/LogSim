@@ -1,27 +1,31 @@
-specfile = deviceList, (clockList | switchList | (clockList, switchList)), monitorList, connectionList ;
+specfile = [deviceList], [clockList], [switchList], monitorList, [connectionList] ;
 
-deviceList = “DEVICE”, device, {device} ;
-clockList = “CLOCK”, clock, {clock} ;
-switchList = “SWITCH”, switch, {switch} ;
-monitorList = “MONITOR”, monitor, {monitor} ;
-connectionList = “CONNECTION”, connection, {connection} ;
+deviceList = "DEVICE", "{", device, {device}, "}" ;
+clockList = "CLOCK", "{", clock, {clock}, "}" ;
+switchList = "SWITCH", "{", switch, {switch}, "}" ;
+monitorList = "MONITOR", "{", monitor, {monitor}, "}" ;
+connectionList = "CONNECTION", "{", connection, {connection}, "}" ;
 
-device = identifier, “:”, deviceType, “,”, [naturalNumber], “;” ;
-clock = identifier, “:”, naturalNumber, “;” ;
-switch = identifier, “:”, initialState, “;” ;
-monitor = identifier, “:”, identifier, “.”, ( pinIn | pinOut ), “;” ;
-connection = identifier, “.”, pinOut , “=>”, identifier, “.”, pinIn, “;” ;
+device = identifier, ":" ((variableInputDevice, ",", variableInputNumber) |
+fixedInputDevice), ";" ;
+clock = identifier, ":", clockCycle, ";" ;
+switch = identifier, ":", initialState, ";" ;
+monitor = identifier, ":", identifier, [ ".", ( pinIn | pinOut ) ], ";" ;
+connection = identifier, [".", pinOut] , ">", identifier, ".", pinIn, ";" ;
 
-deviceType = “AND” | “NAND” | “OR” | “NOR” | “XOR” | “DTYPE” ;
-initialState = “0”, “1” ; 
-pinIn = (“IN”, naturalNumber ) | “DATA” | “CLK” | “SET” | “CLEAR” ;
-pinOut = (“OUT”, naturalNumber ) | “Q” | “QBAR”;
+variableInputDevice = "AND" | "NAND" | "OR" | "NOR" ;
+fixedInputDevice = "XOR" | "DTYPE" ;
+initialState = "0", "1" ;
+pinIn = ( "I", variableInputNumber ) | "DATA" | "CLK" | "SET" | "CLEAR" ;
+pinOut = "Q" | "QBAR";
 
-identifier = letter , { letter | digit | “_” } ;
-letter = “a” | “b” | ... | “z” | “A” | ... | “Z”;
+identifier = letter , { letter | digit | "_" } ;
+letter = "a" | "b" | ... | "z" | "A" | ... | "Z";
 
-digitExcludingZero = “1” | “2” | “3” | “4” | “5” | “6” | “7” | “8” | “9” ;
-digit = “0” | digitExcludingZero ;
-naturalNumber = digitExcludingZero, { digit } ;
+digitExcludingZero = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+digit = "0" | digitExcludingZero ;
+clockCycle = digitExcludingZero, { digit } ;
+variableInputNumber = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" |
+"10" | "11" | "12" | "13" | "14" | "15" | "16" ;
 
 

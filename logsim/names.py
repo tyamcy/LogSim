@@ -60,6 +60,8 @@ class Names:
 
         If the name string is not present in the names list, return None.
         """
+        if not isinstance(name_string, str):
+            raise TypeError("Expected name_string to be a string.")
         return self.name_to_id.get(name_string)
 
     def lookup(self, name_string_list: List[str]) -> List[int]:
@@ -67,8 +69,12 @@ class Names:
 
         If the name string is not present in the names list, add it.
         """
+        if not isinstance(name_string_list, list):
+            raise TypeError("Expected name_string_list to be a list.")
         id_list = []  # initialises an empty name IDs list for the lookup results
         for name in name_string_list:
+            if not isinstance(name, str):
+                raise TypeError("Expected all values in name_string_list to be strings.")
             if name in self.name_to_id:
                 # adding the name ID corresponding to the name string to the lookup results list
                 id_list.append(self.name_to_id[name])
@@ -84,4 +90,6 @@ class Names:
 
         If the name_id is not an index in the names list, return None.
         """
+        if not isinstance(name_id, int):
+            raise TypeError("Expected name_id to be an integer.")
         return self.id_to_name.get(name_id)

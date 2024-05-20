@@ -1,4 +1,4 @@
-specfile = deviceList, [clockList], [switchList], monitorList, [connectionList] ;
+specfile = [deviceList], [clockList], [switchList], monitorList, [connectionList] ;
 
 deviceList = "DEVICE", "{", device, {device}, "}" ;
 clockList = "CLOCK", "{", clock, {clock}, "}" ;

@@ -55,6 +55,11 @@ class Scanner:
     def __init__(self, path: str, names: Names):
         """Open specified file and initialise reserved words and IDs."""
 
+        if not isinstance(path, str):
+            raise TypeError("Expected path to be a string.")
+        if not isinstance(names, Names):
+            raise TypeError("Expected names to be a Names object.")
+
         self.path = path
         self.names = names
         self.symbol_type_list = [self.COMMA, self.SEMICOLON, self.COLON, self.FULL_STOP, self.ARROW,

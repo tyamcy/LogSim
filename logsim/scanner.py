@@ -12,6 +12,7 @@ from typing import TextIO
 from names import Names
 from functools import cached_property
 
+
 class Symbol:
 
     """Encapsulate a symbol and store its properties.
@@ -62,13 +63,20 @@ class Scanner:
         self.keywords_list = ["DEVICE", "CLOCK", "SWITCH", "MONITOR", "CONNECTION"]
         [self.DEVICE_ID, self.CONNECT_ID, self.SWITCH_ID, self.MONITOR_ID, self.CONNECT_ID] \
             = self.names.lookup(self.keywords_list)
-        self.current_character = ""
+        self.current_character = " "
 
     def get_symbol(self) -> Symbol:
         """Translate the next sequence of characters into a symbol and return the symbol."""
 
         symbol = Symbol()
         self.skip_spaces()  # current character now not whitespace
+
+        while self.current_character == "#" or self.current_character == "/":  # comment
+            if self.current_character == "#":  # single-line comment
+                self.skip_single_line_comment()
+            else:  # multi-line comment
+                self.skip_multi_line_comment()
+            self.skip_spaces()
 
         if self.current_character.isalpha():  # name
             name_string = self.get_name()
@@ -110,19 +118,24 @@ class Scanner:
             symbol.type = self.CLOSE_CURLY_BRACKET
             self.advance()
 
+        elif not self.current_character:  # end of file
+            print("End of file")
+
         else:  # not a valid character
-            # throw error
+            print(f"Error! Invalid character '{self.current_character}'")
             self.advance()
 
-            return symbol
+        return symbol
 
     @cached_property
-    def file(self) -> TextIO:
+    def file(self) -> TextIO or None:
         """Open and return the file specified by path."""
+
         try:
             return open(self.path, "r")
         except FileNotFoundError:
             print(f"Error! File '{self.path}' could not be found")
+            return None
 
     def get_next_character(self) -> str:
         """Read and return the next character in file."""
@@ -130,7 +143,7 @@ class Scanner:
         return self.file.read(1)
 
     def skip_spaces(self) -> None:
-        """Seek and update current_character to the next non-whitespace character in file."""
+        """Seek and update current_character to the next non-whitespace in file."""
 
         char = self.current_character
 
@@ -140,10 +153,24 @@ class Scanner:
         self.current_character = char
 
     def skip_single_line_comment(self) -> None:
-        pass
+        """Skip single line comment"""
+
+        char = self.get_next_character()
+
+        while char != "\n" or "":
+            char = self.get_next_character()
+
+        self.current_character = self.get_next_character()
 
     def skip_multi_line_comment(self) -> None:
-        pass
+        """Skip multi line comment"""
+
+        char = self.get_next_character()
+
+        while char != "/" or "":
+            char = self.get_next_character()
+
+        self.current_character = self.get_next_character()
 
     def get_name(self) -> str:
         """Seek and return the next name string in file."""
@@ -162,7 +189,7 @@ class Scanner:
     def get_number(self) -> str:
         """Seek and return the next number string in file."""
 
-        number = self.get_next_character()
+        number = self.current_character
         next_char = self.get_next_character()
 
         while next_char.isdigit():

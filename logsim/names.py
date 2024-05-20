@@ -43,6 +43,9 @@ class Names:
     def __init__(self):
         """Initialise names list."""
         self.error_code_count = 0  # how many error codes have been declared
+        self.id_count = 0  # how many name IDs have been assigned
+        self.id_to_name = {}  # {name ID: name string}
+        self.name_to_id = {}  # {name string: name ID}
 
     def unique_error_codes(self, num_error_codes: int) -> range:
         """Return a list of unique integer error codes."""
@@ -57,15 +60,28 @@ class Names:
 
         If the name string is not present in the names list, return None.
         """
+        return self.name_to_id.get(name_string)
 
     def lookup(self, name_string_list: List[str]) -> List[int]:
         """Return a list of name IDs for each name string in name_string_list.
 
         If the name string is not present in the names list, add it.
         """
+        id_list = []  # initialises an empty name IDs list for the lookup results
+        for name in name_string_list:
+            if name in self.name_to_id:
+                # adding the name ID corresponding to the name string to the lookup results list
+                id_list.append(self.name_to_id[name])
+            else:
+                # adding the new name string to both hashmaps, with current id_count as the name ID
+                self.name_to_id[name] = self.id_count
+                self.id_to_name[self.id_count] = name
+                self.id_count += 1
+        return id_list
 
     def get_name_string(self, name_id: int) -> str:
         """Return the corresponding name string for name_id.
 
         If the name_id is not an index in the names list, return None.
         """
+        return self.id_to_name.get(name_id)

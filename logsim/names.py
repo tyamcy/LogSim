@@ -51,6 +51,8 @@ class Names:
         """Return a list of unique integer error codes."""
         if not isinstance(num_error_codes, int):
             raise TypeError("Expected num_error_codes to be an integer.")
+        if num_error_codes <= 0:
+            raise ValueError("Expected num_error_codes to be a positive integer")
         self.error_code_count += num_error_codes
         return range(self.error_code_count - num_error_codes,
                      self.error_code_count)
@@ -75,14 +77,13 @@ class Names:
         for name in name_string_list:
             if not isinstance(name, str):
                 raise TypeError("Expected all values in name_string_list to be strings.")
-            if name in self.name_to_id:
-                # adding the name ID corresponding to the name string to the lookup results list
-                id_list.append(self.name_to_id[name])
-            else:
+            if name not in self.name_to_id:
                 # adding the new name string to both hashmaps, with current id_count as the name ID
                 self.name_to_id[name] = self.id_count
                 self.id_to_name[self.id_count] = name
                 self.id_count += 1
+            # adding the name ID corresponding to the name string to the lookup results list
+            id_list.append(self.name_to_id[name])
         return id_list
 
     def get_name_string(self, name_id: int) -> str:

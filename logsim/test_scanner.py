@@ -3,7 +3,7 @@ import pytest
 from scanner import Scanner
 from names import Names
 
-path = "test_scanner_text"
+path = "logsim/test_scanner_text"
 
 
 #  test the scanner module with the human verified results from test_scanner_text

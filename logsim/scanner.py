@@ -64,7 +64,7 @@ class Scanner:
         self.names = names
         self.symbol_type_list = [self.COMMA, self.SEMICOLON, self.COLON, self.FULL_STOP, self.ARROW,
                                  self.OPEN_CURLY_BRACKET, self.CLOSE_CURLY_BRACKET, self.KEYWORD, self.NUMBER,
-                                 self.NAME] = range(10)
+                                 self.NAME, self.EOF] = range(11)
         self.keywords_list = ["DEVICE", "CLOCK", "SWITCH", "MONITOR", "CONNECTION"]
         [self.DEVICE_ID, self.CONNECT_ID, self.SWITCH_ID, self.MONITOR_ID, self.CONNECT_ID] \
             = self.names.lookup(self.keywords_list)
@@ -124,6 +124,7 @@ class Scanner:
             self.advance()
 
         elif not self.current_character:  # end of file
+            symbol.type = self.EOF
             print("End of file")
 
         else:  # not a valid character

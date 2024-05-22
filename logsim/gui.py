@@ -11,6 +11,7 @@ Gui - configures the main window and all the widgets.
 import wx
 import wx.glcanvas as wxcanvas
 from OpenGL import GL, GLUT
+import os
 
 from names import Names
 from devices import Devices
@@ -232,14 +233,32 @@ class Gui(wx.Frame):
         super().__init__(parent=None, title=title, size=(800, 600))
 
         # Color styles 
-        self.text_primary = (0, 0, 0)
-        self.primary_color = (180, 180, 180) #(168, 85, 158)
-        self.background_primary_color = (10, 10, 10)
-        self.background_secondary_color = (200,200,200) #(33, 33, 33)
-        self.backgorund_tertiary_color = (50, 50, 50)
-        self.theme = "light"
+        self.primary_color = "#4DA2B4"
+        self.primary_color_shade = "#397E8D"
 
-        self.SetBackgroundColour("#BBBBBB")
+        # Terminal colors
+        self.terminal_background_color = "#222222"
+        self.terminal_text_color = "#FFFFFF"
+        self.success = "#16C60C"
+        self.warning = "#F9F1A5"
+        self.error = "#E74856"
+        
+        # Light mode
+        self.text_primary = "#000000"
+        self.background_color = "#DDDDDD"
+        self.background_color_secondary = "#FAFAFA"
+        self.canvas_background_color = "#FAFAFA"
+
+        # Dark mode
+        self.text_primary_dark = "#FFFFFF"
+        self.background_color_dark = "#333333"
+        self.background_color_secondary_dark = "#444444"
+        self.canvas_background_color_dark = "#444444" 
+
+        # Initial styling (default as light mode)
+        self.theme = "light"
+        self.SetBackgroundColour(self.background_color)
+        self.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Roboto'))
 
 
         # Menu bar
@@ -300,18 +319,33 @@ class Gui(wx.Frame):
         self.right_sizer = wx.BoxSizer(wx.VERTICAL) # Right sizer for the controls
         
         # Terminal
-        self.terminal = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 )
-        self.terminal.SetBackgroundColour("#000000")
-        self.terminal.SetForegroundColour("#FFFFFF")
+        self.border_panel = wx.Panel(self)
+        self.border_panel.SetBackgroundColour(self.terminal_background_color)
+        self.terminal_panel = wx.Panel(self.border_panel)
+        self.terminal_panel.SetBackgroundColour(self.terminal_background_color)
+
+        self.terminal = wx.TextCtrl(self.terminal_panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.BORDER_NONE )
+        self.terminal.SetBackgroundColour(self.terminal_background_color)
+        self.terminal.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Consolas'))
+        self.terminal.SetForegroundColour(self.terminal_text_color)
         self.terminal.AppendText("Welcome to Logic Simulator")
 
+        self.terminal_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.terminal_sizer.Add(self.terminal, 1, wx.EXPAND | wx.ALL, 0)
+        self.terminal_panel.SetSizer(self.terminal_sizer)
+
+        self.border_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.border_sizer.Add(self.terminal_panel, 1, wx.EXPAND | wx.ALL, 10)
+        self.border_panel.SetSizer(self.border_sizer)
+
         self.left_sizer.Add(self.canvas, 7, wx.EXPAND | wx.ALL, 5)
-        self.left_sizer.Add(self.terminal, 3, wx.EXPAND | wx.ALL, 5)
+        self.left_sizer.Add(self.border_panel, 3, wx.EXPAND | wx.ALL, 5)
         self.main_sizer.Add(self.left_sizer, 5, wx.EXPAND | wx.ALL, 10)
         self.main_sizer.Add(self.right_sizer, 1, wx.ALL, 5)
 
         # Upload file section
         self.upload_file_button = wx.Button(self, wx.ID_ANY, "Upload file")
+        self.upload_file_button.SetBackgroundColour(self.primary_color)
 
         self.upload_file_button.Bind(wx.EVT_BUTTON, self.on_upload_file)
 
@@ -320,7 +354,7 @@ class Gui(wx.Frame):
         # No of cycles section
         self.cycles_sizer = wx.BoxSizer(wx.VERTICAL)
         self.cycles_text = wx.StaticText(self, wx.ID_ANY, "No. of Cycles")
-        self.cycles_spin = wx.SpinCtrl(self, wx.ID_ANY, "10")
+        self.cycles_spin = wx.SpinCtrl(self, wx.ID_ANY | wx.BORDER_NONE, "10")
         self.cycles_spin.SetRange(1, 250)
 
         self.cycles_spin.Bind(wx.EVT_SPINCTRL, self.on_cycles_spin)
@@ -339,11 +373,11 @@ class Gui(wx.Frame):
 
         for i in range(1, 16):
             check = wx.CheckBox(self.monitors_scrolled, label=f"D{i}")  
-            monitors_scrolled_sizer.Add(check, 0, wx.ALL, 5) 
+            monitors_scrolled_sizer.Add(check, 2, wx.ALL, 5) 
 
         self.monitors_scrolled.SetSizer(monitors_scrolled_sizer)  
         self.monitors_scrolled.SetMinSize((250, 150))
-        self.monitors_scrolled.SetBackgroundColour(wx.WHITE)
+        self.monitors_scrolled.SetBackgroundColour(self.background_color_secondary)
         self.monitors_sizer.Add(self.monitors_text, 0, wx.ALL, 5)  
         self.monitors_sizer.Add(self.monitors_scrolled, 1, wx.EXPAND | wx.ALL, 5)  
 
@@ -363,7 +397,8 @@ class Gui(wx.Frame):
 
         self.switches_scrolled.SetSizer(switches_scrolled_sizer)  
         self.switches_scrolled.SetMinSize((250, 150))
-        self.switches_scrolled.SetBackgroundColour(wx.WHITE)
+        self.switches_scrolled.SetBackgroundColour(self.background_color_secondary)
+
         self.switches_sizer.Add(self.switches_text, 0, wx.ALL, 5)  
         self.switches_sizer.Add(self.switches_scrolled, 1, wx.EXPAND | wx.ALL, 5)  
 
@@ -371,28 +406,20 @@ class Gui(wx.Frame):
 
 
         # Run and continue button
-        self.run_continue_button = wx.Button(self, wx.ID_ANY, "Run")
+        self.run_button = wx.Button(self, wx.ID_ANY, "Run")
+        self.run_button.SetBackgroundColour(self.primary_color)
+        self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
+        self.right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
 
-        self.run_continue_button.Bind(wx.EVT_BUTTON, self.on_run_continue_button)
-        
-        self.right_sizer.Add(self.run_continue_button, 0, wx.ALL | wx.EXPAND, 8)
-
-
-
-
-        # Configure the widgets
-
-        #self.text_box = wx.TextCtrl(self, wx.ID_ANY, "",
-        #                            style=wx.TE_PROCESS_ENTER)
-        
-        # Bind events to widgets
-        #self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
+        self.continue_button = wx.Button(self, wx.ID_ANY, "Continue")
+        self.continue_button.SetBackgroundColour(self.primary_color)
+        self.continue_button.Bind(wx.EVT_BUTTON, self.on_continue_button)
+        self.right_sizer.Add(self.continue_button, 0, wx.ALL | wx.EXPAND, 8)
 
         
         # Set main sizer and size of GUI
         self.SetSizeHints(1080, 720)
         self.SetSizer(self.main_sizer)
-
 
 
 
@@ -423,16 +450,18 @@ class Gui(wx.Frame):
         text = "".join(["New spin control value: ", str(spin_value)])
         self.canvas.render(text)
 
-    def on_run_continue_button(self, event):
-        """Handle the event when the user clicks the run button."""
-        state = self.run_continue_button.GetLabel()
-        
-        if state == "Run":
-            self.canvas.render("Run button pressed.")
-            self.run_continue_button.SetLabelText("Continue")
-        else:
-            self.canvas.render("Continue button pressed.")
-            self.run_continue_button.SetLabelText("Run")    
+    def on_run_button(self, event):
+        """Handle the event when the user clicks the run button."""        
+        self.canvas.render("Run button pressed.")
+        self.terminal.SetDefaultStyle(wx.TextAttr(wx.WHITE))
+        self.terminal.AppendText("\nRunning simulation...")
+        self.run_button.Disable()
+
+    def on_continue_button(self, event):
+        """Handle the event when the user continue button."""
+        self.canvas.render("Continue button pressed.")
+        self.terminal.SetDefaultStyle(wx.TextAttr(wx.WHITE))
+        self.terminal.AppendText("\nRunning simulation...")
 
     def on_text_box(self, event):
         """Handle the event when the user enters text."""
@@ -442,34 +471,39 @@ class Gui(wx.Frame):
 
     def on_upload_file(self, event):
         """Handle the event when the user presses the upload file button."""
-        text = "Uploading file."
+        text = "Uploading file..."
         self.canvas.render(text)
-
-    def get_shade(self, color, percent):
-        """Return a darker shade of the given color by the given percent."""
-        factor = (100 - percent) / 100.0
-        return wx.Colour(
-            max(0, int(color[0] * factor)),
-            max(0, int(color[1] * factor)),
-            max(0, int(color[2] * factor))
-        )
+        self.terminal.SetDefaultStyle(wx.TextAttr("#E12CAD"))
+        self.terminal.AppendText(f"\n{text}")
     
     def toggle_theme(self):
-        if self.theme == "light":
-            self.text_primary = (255, 255, 255)
-            self.primary_color = (168, 85, 158)
-            self.background_primary_color = (10, 10, 10)
-            self.background_secondary_color = (33, 33, 33)
-            self.backgorund_tertiary_color = (50, 50, 50)
-            self.Refresh()
-            self.theme = "dark"
-            print(self.theme)
+        """Handle the event when the user presses the toggle switch menu item to switch between colour themes."""
+        if self.theme == "light":  
+            self.SetBackgroundColour(self.background_color_dark)
+            self.cycles_text.SetForegroundColour(self.text_primary_dark)
+            self.cycles_spin.SetBackgroundColour(self.background_color_secondary_dark)
+            self.cycles_spin.SetForegroundColour(self.text_primary_dark)
+            self.monitors_text.SetForegroundColour(self.text_primary_dark)
+            self.monitors_scrolled.SetForegroundColour(self.background_color_secondary_dark)
+            self.monitors_scrolled.SetBackgroundColour(self.background_color_secondary_dark)
+            self.switches_text.SetForegroundColour(self.text_primary_dark)
+            self.switches_scrolled.SetBackgroundColour(self.background_color_secondary_dark)
+            self.switches_scrolled.SetForegroundColour(self.background_color_secondary_dark)
+
+            self.theme = "dark" # Update theme
+
         elif self.theme == "dark":
-            self.text_primary = (0, 0, 0)
-            self.primary_color = (180, 180, 180)
-            self.background_primary_color = (10, 10, 10)
-            self.background_secondary_color = (200,200,200)
-            self.backgorund_tertiary_color = (50, 50, 50)
-            self.Refresh()
-            self.theme = "light"
-            print(self.theme)
+            self.SetBackgroundColour(self.background_color)
+            self.cycles_text.SetForegroundColour(self.text_primary)
+            self.cycles_spin.SetBackgroundColour(self.background_color_secondary)
+            self.cycles_spin.SetForegroundColour(self.text_primary)
+            self.monitors_text.SetForegroundColour(self.text_primary)
+            self.monitors_scrolled.SetForegroundColour(self.background_color_secondary)
+            self.monitors_scrolled.SetBackgroundColour(self.background_color_secondary)
+            self.switches_text.SetForegroundColour(self.text_primary)
+            self.switches_scrolled.SetBackgroundColour(self.background_color_secondary)
+            self.switches_scrolled.SetForegroundColour(self.background_color_secondary)
+
+            self.theme = "light" # Update theme
+
+        self.Refresh()

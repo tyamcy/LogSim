@@ -8,9 +8,7 @@ Classes
 Scanner - reads definition file and translates characters into symbols.
 Symbol - encapsulates a symbol and stores its properties.
 """
-from typing import TextIO
 from names import Names
-from functools import cached_property
 
 
 class Symbol:
@@ -65,6 +63,7 @@ class Scanner:
             raise TypeError("Expected names to be a Names object.")
 
         self.path = path
+        self.file = open(self.path, "r")
         self.names = names
         [self.DEVICE_ID, self.CLOCK_ID, self.SWITCH_ID, self.MONITOR_ID, self.CONNECT_ID] \
             = self.names.lookup(self.keywords_list)
@@ -131,11 +130,6 @@ class Scanner:
             self.advance()
 
         return symbol
-
-    @cached_property
-    def file(self) -> TextIO:
-        """Open and return the file specified by path."""
-        return open(self.path, "r")
 
     def get_next_character(self) -> str:
         """Read and return the next character in file."""

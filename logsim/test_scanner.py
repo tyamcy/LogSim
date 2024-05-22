@@ -100,3 +100,5 @@ def test_scanner_raise_exception():
         Scanner(path=1, names=Names())
     with pytest.raises(TypeError):
         Scanner(path=path, names="name")
+    with pytest.raises(FileNotFoundError):
+        Scanner(path="a_non_existent_file", names=Names())

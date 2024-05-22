@@ -80,6 +80,7 @@ test_list = [
     (Scanner.EOF, None)
 ]
 
+
 @pytest.fixture
 def new_scanner():
     new_scanner = Scanner(path=path, names=Names())

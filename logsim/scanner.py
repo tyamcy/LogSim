@@ -125,7 +125,6 @@ class Scanner:
 
         elif not self.current_character:  # end of file
             symbol.type = self.EOF
-            print("End of file")
 
         else:  # not a valid character
             print(f"Error! Invalid character '{self.current_character}'")
@@ -134,14 +133,9 @@ class Scanner:
         return symbol
 
     @cached_property
-    def file(self) -> TextIO or None:
+    def file(self) -> TextIO:
         """Open and return the file specified by path."""
-
-        try:
-            return open(self.path, "r")
-        except FileNotFoundError:
-            print(f"Error! File '{self.path}' could not be found")
-            return None
+        return open(self.path, "r")
 
     def get_next_character(self) -> str:
         """Read and return the next character in file."""

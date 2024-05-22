@@ -140,6 +140,12 @@ class Scanner:
 
         return symbol
 
+    def get_error_output(self, line: int, character_in_line: int, message: str) -> List[str]:
+        line_location = f"Line {line}:"
+        line_with_error = self.file_lines[line]
+        arrow = " "*character_in_line + "^"
+        return [line_location, line_with_error, arrow, message]
+
     def get_file(self) -> TextIO:
         return open(self.path, "r")
 

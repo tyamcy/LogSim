@@ -1,11 +1,10 @@
+"""Test the scanner module with 'test_scaner_text'."""
 import pytest
 
 from scanner import Scanner
 from names import Names
 
 path = "logsim/test_scanner_text"
-
-#  test the scanner module with the human verified results from test_scanner_text
 
 
 class NameTest:
@@ -83,17 +82,20 @@ test_list = [
 
 @pytest.fixture
 def new_scanner():
+    """Return a new instance of the Scanner class."""
     new_scanner = Scanner(path=path, names=Names())
     return new_scanner
 
 
 def test_get_symbol(new_scanner):
+    """Test if get_symbol returns the expected symbol type and ID."""
     for i in range(len(test_list)):
         symbol = new_scanner.get_symbol()
         assert (symbol.type, symbol.id) == test_list[i]
 
 
 def test_scanner_raise_exception():
+    """Test if Scanner initialization raises expected exceptions."""
     with pytest.raises(TypeError):
         Scanner(path=1, names=Names())
     with pytest.raises(TypeError):

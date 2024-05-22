@@ -231,44 +231,176 @@ class Gui(wx.Frame):
         """Initialise widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
-        # Configure the file menu
-        fileMenu = wx.Menu()
+        # Color styles 
+        self.text_primary = (0, 0, 0)
+        self.primary_color = (180, 180, 180) #(168, 85, 158)
+        self.background_primary_color = (10, 10, 10)
+        self.background_secondary_color = (200,200,200) #(33, 33, 33)
+        self.backgorund_tertiary_color = (50, 50, 50)
+        self.theme = "light"
+
+        self.SetBackgroundColour("#BBBBBB")
+
+
+        # Menu bar
+        # Configure the menu bar
         menuBar = wx.MenuBar()
-        fileMenu.Append(wx.ID_ABOUT, "&About")
-        fileMenu.Append(wx.ID_EXIT, "&Exit")
+
+        # File menu
+        fileMenu = wx.Menu()
+
+        upload_icon = wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_MENU, (16, 16))
+        theme_icon = wx.ArtProvider.GetBitmap(wx.ART_TIP, wx.ART_MENU, (16, 16))
+        about_icon = wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_MENU, (16, 16))
+        exit_icon = wx.ArtProvider.GetBitmap(wx.ART_QUIT, wx.ART_MENU, (16, 16))
+        
+        upload_file_item = wx.MenuItem(fileMenu, wx.ID_FILE, "&Upload file")
+        toggle_theme_item = wx.MenuItem(fileMenu, wx.ID_PAGE_SETUP, "&Toggle theme")
+        about_item = wx.MenuItem(fileMenu, wx.ID_ABOUT, "&About")
+        exit_item = wx.MenuItem(fileMenu, wx.ID_EXIT, "&Exit")
+        
+        upload_file_item.SetBitmap(upload_icon)
+        toggle_theme_item.SetBitmap(theme_icon)
+        about_item.SetBitmap(about_icon)
+        exit_item.SetBitmap(exit_icon)
+        
+        fileMenu.Append(upload_file_item)
+        fileMenu.AppendSeparator()
+        fileMenu.Append(toggle_theme_item)
+        fileMenu.AppendSeparator()
+        fileMenu.Append(about_item)
+        fileMenu.Append(exit_item)
+
+        # Help menu
+        helpMenu = wx.Menu()
+
+        help_icon = wx.ArtProvider.GetBitmap(wx.ART_HELP, wx.ART_MENU, (16, 16))
+
+        help_item = wx.MenuItem(helpMenu, wx.ID_HELP, "&Quick Guide")
+        help_item.SetBitmap(help_icon)
+
+        helpMenu.Append(help_item)
+
+        # Adding everything to menuBar
         menuBar.Append(fileMenu, "&File")
+        menuBar.Append(helpMenu, "&Help")
         self.SetMenuBar(menuBar)
 
-        # Canvas for drawing signals
+        # Bind event to menuBar
+        self.Bind(wx.EVT_MENU, self.on_menu)
+
+
+        # Main UI layout
+        # Canvas for drawing / plotting signals
         self.canvas = MyGLCanvas(self, devices, monitors)
 
+        # Defining sizers for layout
+        self.main_sizer = wx.BoxSizer(wx.HORIZONTAL) # Main sizer with everything
+        self.left_sizer = wx.BoxSizer(wx.VERTICAL) # Left sizer for the canvas and terminal
+        self.right_sizer = wx.BoxSizer(wx.VERTICAL) # Right sizer for the controls
+        
+        # Terminal
+        self.terminal = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 )
+        self.terminal.SetBackgroundColour("#000000")
+        self.terminal.SetForegroundColour("#FFFFFF")
+        self.terminal.AppendText("Welcome to Logic Simulator")
+
+        self.left_sizer.Add(self.canvas, 7, wx.EXPAND | wx.ALL, 5)
+        self.left_sizer.Add(self.terminal, 3, wx.EXPAND | wx.ALL, 5)
+        self.main_sizer.Add(self.left_sizer, 5, wx.EXPAND | wx.ALL, 10)
+        self.main_sizer.Add(self.right_sizer, 1, wx.ALL, 5)
+
+        # Upload file section
+        self.upload_file_button = wx.Button(self, wx.ID_ANY, "Upload file")
+
+        self.upload_file_button.Bind(wx.EVT_BUTTON, self.on_upload_file)
+
+        self.right_sizer.Add(self.upload_file_button, 0, wx.ALL | wx.EXPAND, 10)
+
+        # No of cycles section
+        self.cycles_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.cycles_text = wx.StaticText(self, wx.ID_ANY, "No. of Cycles")
+        self.cycles_spin = wx.SpinCtrl(self, wx.ID_ANY, "10")
+        self.cycles_spin.SetRange(1, 250)
+
+        self.cycles_spin.Bind(wx.EVT_SPINCTRL, self.on_cycles_spin)
+
+        self.cycles_sizer.Add(self.cycles_text, 0, wx.EXPAND | wx.ALL, 5)
+        self.cycles_sizer.Add(self.cycles_spin, 0, wx.EXPAND | wx.ALL, 5)
+        self.right_sizer.Add(self.cycles_sizer, 0, wx.EXPAND | wx.ALL, 5)
+
+
+        # Monitors section
+        self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.monitors_text = wx.StaticText(self, wx.ID_ANY, "Monitors")
+        self.monitors_scrolled = wx.ScrolledWindow(self, style=wx.VSCROLL) 
+        self.monitors_scrolled.SetScrollRate(10, 10)
+        monitors_scrolled_sizer = wx.BoxSizer(wx.VERTICAL) 
+
+        for i in range(1, 16):
+            check = wx.CheckBox(self.monitors_scrolled, label=f"D{i}")  
+            monitors_scrolled_sizer.Add(check, 0, wx.ALL, 5) 
+
+        self.monitors_scrolled.SetSizer(monitors_scrolled_sizer)  
+        self.monitors_scrolled.SetMinSize((250, 150))
+        self.monitors_scrolled.SetBackgroundColour(wx.WHITE)
+        self.monitors_sizer.Add(self.monitors_text, 0, wx.ALL, 5)  
+        self.monitors_sizer.Add(self.monitors_scrolled, 1, wx.EXPAND | wx.ALL, 5)  
+
+        self.right_sizer.Add(self.monitors_sizer, 1, wx.EXPAND | wx.ALL, 5)
+
+
+        # Switches section
+        self.switches_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.switches_text = wx.StaticText(self, wx.ID_ANY, "Switches")
+        self.switches_scrolled = wx.ScrolledWindow(self, style=wx.VSCROLL) 
+        self.switches_scrolled.SetScrollRate(10, 10)
+        switches_scrolled_sizer = wx.BoxSizer(wx.VERTICAL) 
+
+        for i in range(1, 8):
+            check = wx.CheckBox(self.switches_scrolled, label=f"SW{i}")  
+            switches_scrolled_sizer.Add(check, 0, wx.ALL, 5) 
+
+        self.switches_scrolled.SetSizer(switches_scrolled_sizer)  
+        self.switches_scrolled.SetMinSize((250, 150))
+        self.switches_scrolled.SetBackgroundColour(wx.WHITE)
+        self.switches_sizer.Add(self.switches_text, 0, wx.ALL, 5)  
+        self.switches_sizer.Add(self.switches_scrolled, 1, wx.EXPAND | wx.ALL, 5)  
+
+        self.right_sizer.Add(self.switches_sizer, 1, wx.EXPAND | wx.ALL, 5)
+
+
+        # Run and continue button
+        self.run_continue_button = wx.Button(self, wx.ID_ANY, "Run")
+
+        self.run_continue_button.Bind(wx.EVT_BUTTON, self.on_run_continue_button)
+        
+        self.right_sizer.Add(self.run_continue_button, 0, wx.ALL | wx.EXPAND, 8)
+
+
+
+
         # Configure the widgets
-        self.text = wx.StaticText(self, wx.ID_ANY, "Cycles")
-        self.spin = wx.SpinCtrl(self, wx.ID_ANY, "10")
-        self.run_button = wx.Button(self, wx.ID_ANY, "Run")
-        self.text_box = wx.TextCtrl(self, wx.ID_ANY, "",
-                                    style=wx.TE_PROCESS_ENTER)
 
+        #self.text_box = wx.TextCtrl(self, wx.ID_ANY, "",
+        #                            style=wx.TE_PROCESS_ENTER)
+        
         # Bind events to widgets
-        self.Bind(wx.EVT_MENU, self.on_menu)
-        self.spin.Bind(wx.EVT_SPINCTRL, self.on_spin)
-        self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
-        self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
+        #self.text_box.Bind(wx.EVT_TEXT_ENTER, self.on_text_box)
 
-        # Configure sizers for layout
-        main_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        side_sizer = wx.BoxSizer(wx.VERTICAL)
+        
+        # Set main sizer and size of GUI
+        self.SetSizeHints(1080, 720)
+        self.SetSizer(self.main_sizer)
 
-        main_sizer.Add(self.canvas, 5, wx.EXPAND | wx.ALL, 5)
-        main_sizer.Add(side_sizer, 1, wx.ALL, 5)
 
-        side_sizer.Add(self.text, 1, wx.TOP, 10)
-        side_sizer.Add(self.spin, 1, wx.ALL, 5)
-        side_sizer.Add(self.run_button, 1, wx.ALL, 5)
-        side_sizer.Add(self.text_box, 1, wx.ALL, 5)
 
-        self.SetSizeHints(600, 600)
-        self.SetSizer(main_sizer)
+
+
+
+
+
+
 
     def on_menu(self, event):
         """Handle the event when the user selects a menu item."""
@@ -276,22 +408,68 @@ class Gui(wx.Frame):
         if Id == wx.ID_EXIT:
             self.Close(True)
         if Id == wx.ID_ABOUT:
-            wx.MessageBox("Logic Simulator\nCreated by Mojisola Agboola\n2017\nModified by Thomas Yam, Maxwell Li, Chloe Yiu\n2024",
+            wx.MessageBox("Logic Simulator\nCreated by Mojisola Agboola\n2017\n\nModified by Thomas Yam, Maxwell Li, Chloe Yiu\n2024",
                           "About Logsim", wx.ICON_INFORMATION | wx.OK)
+        if Id == wx.ID_FILE:
+            wx.MessageBox("Uploading file")
+        if Id == wx.ID_PAGE_SETUP:
+            self.toggle_theme()
+        if Id == wx.ID_HELP:
+            wx.MessageBox("Help")
 
-    def on_spin(self, event):
+    def on_cycles_spin(self, event):
         """Handle the event when the user changes the spin control value."""
-        spin_value = self.spin.GetValue()
+        spin_value = self.cycles_spin.GetValue()
         text = "".join(["New spin control value: ", str(spin_value)])
         self.canvas.render(text)
 
-    def on_run_button(self, event):
+    def on_run_continue_button(self, event):
         """Handle the event when the user clicks the run button."""
-        text = "Run button pressed."
-        self.canvas.render(text)
+        state = self.run_continue_button.GetLabel()
+        
+        if state == "Run":
+            self.canvas.render("Run button pressed.")
+            self.run_continue_button.SetLabelText("Continue")
+        else:
+            self.canvas.render("Continue button pressed.")
+            self.run_continue_button.SetLabelText("Run")    
 
     def on_text_box(self, event):
         """Handle the event when the user enters text."""
         text_box_value = self.text_box.GetValue()
         text = "".join(["New text box value: ", text_box_value])
         self.canvas.render(text)
+
+    def on_upload_file(self, event):
+        """Handle the event when the user presses the upload file button."""
+        text = "Uploading file."
+        self.canvas.render(text)
+
+    def get_shade(self, color, percent):
+        """Return a darker shade of the given color by the given percent."""
+        factor = (100 - percent) / 100.0
+        return wx.Colour(
+            max(0, int(color[0] * factor)),
+            max(0, int(color[1] * factor)),
+            max(0, int(color[2] * factor))
+        )
+    
+    def toggle_theme(self):
+        if self.theme == "light":
+            self.text_primary = (255, 255, 255)
+            self.primary_color = (168, 85, 158)
+            self.background_primary_color = (10, 10, 10)
+            self.background_secondary_color = (33, 33, 33)
+            self.backgorund_tertiary_color = (50, 50, 50)
+            self.Refresh()
+            self.theme = "dark"
+            print(self.theme)
+        elif self.theme == "dark":
+            self.text_primary = (0, 0, 0)
+            self.primary_color = (180, 180, 180)
+            self.background_primary_color = (10, 10, 10)
+            self.background_secondary_color = (200,200,200)
+            self.backgorund_tertiary_color = (50, 50, 50)
+            self.Refresh()
+            self.theme = "light"
+            print(self.theme)

@@ -70,13 +70,16 @@ def main(arg_list):
         [path] = arguments
         scanner = Scanner(path, names)
         parser = Parser(names, devices, network, monitors, scanner)
-        if parser.parse_network():
-            # Initialise an instance of the gui.Gui() class
-            app = wx.App()
-            gui = Gui("Logic Simulator", path, names, devices, network,
-                      monitors)
-            gui.Show(True)
-            app.MainLoop()
+
+        # It is possible to provide a file that is wrong initially
+        # An error will be given in the GUI terminal
+        parser.parse_network()
+        # Initialise an instance of the gui.Gui() class
+        app = wx.App()
+        gui = Gui("Logic Simulator", path, names, devices, network,
+                    monitors, parser)
+        gui.Show(True)
+        app.MainLoop()
 
 
 if __name__ == "__main__":

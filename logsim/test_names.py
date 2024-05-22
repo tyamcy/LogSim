@@ -25,6 +25,7 @@ def used_names(name_string_list):
 
 
 def test_unique_error_code(new_names):
+    """Test if unique_error_code returns the expected error code."""
     [error_code_1] = new_names.unique_error_codes(1)
     [error_code_2] = new_names.unique_error_codes(1)
     assert error_code_1 != error_code_2

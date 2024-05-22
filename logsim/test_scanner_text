@@ -1,0 +1,26 @@
+CLOCK {
+CLK1:   10;
+}
+
+/ Initial monitoring points            /
+
+
+DEVICE {
+G1: NOR, 3;
+}
+
+CONNECTION {
+
+
+CLK1 > D1.CLK # this is a random comment ;
+A > D1.SET;
+
+B > D2.CLEAR;     /
+more comment
+
+
+/
+[
+D1.Q > D2.DATA;
+
+}

@@ -76,7 +76,7 @@ test_list = [
     (Scanner.NAME, NameTest.DATA),
     (Scanner.SEMICOLON, None),
     (Scanner.CLOSE_CURLY_BRACKET, None),
-    (Scanner.EOF, None)
+    (Scanner.EOF, None),
 ]
 
 

@@ -42,96 +42,107 @@ class Parser:
 
     def __init__(self, names: Names, devices: Devices, network: Network, monitors: Monitors, scanner: Scanner):
         """Initialise constants."""
-        self.names = Names()
-        self.devices = Devices(names=self.names)
-        self.network = Network(names=self.names, devices=self.devices)
-        self.monitors = Monitors(names=self.names, devices=self.devices, network=self.network)
-        self.scanner = Scanner(names=self.names, path=PATH)
+        self.names = names
+        self.devices = devices
+        self.network = network
+        self.monitors = monitors
+        self.scanner = scanner
         self.error_count = 0
-        self.symbol = self.scanner.get_symbol()
+        self.symbol = None
 
     def parse_network(self) -> bool:
         """Parse the circuit definition file."""
         # For now just return True, so that userint and gui can run in the
         # skeleton code. When complete, should return False when there are
         # errors in the circuit definition file.
-
-        if (self.symbol.type == self.scanner.KEYWORD and
-                self.symbol.id == self.scanner.DEVICE_ID):
-            self.advance()
-            self.device_list()
-        if (self.symbol.type == self.scanner.KEYWORD and
-                self.symbol.id == self.scanner.CLOCK_ID):
-            self.advance()
-            self.clock_list()
-        if (self.symbol.type == self.scanner.KEYWORD and
-                self.symbol.id == self.scanner.SWITCH_ID):
-            self.advance()
-            self.switch_list()
-        if (self.symbol.type == self.scanner.KEYWORD and
-                self.symbol.id == self.scanner.MONITOR_ID):
-            self.advance()
-            self.monitor_list()
-            self.advance()
-            if (self.symbol.type == self.scanner.KEYWORD and
-                    self.symbol.id == self.scanner.CONNECT_ID):
-                self.connect_list()
-        else:
-            self.error()
+        self.advance()
+        self.device_list()
+        self.clock_list()
+        self.switch_list()
+        self.monitor_list()
+        self.connect_list()
 
         return True
 
-    def device_list(self):
-        if self.symbol.type == self.scanner.OPEN_CURLY_BRACKET:
+    def list_parse(self, keyword, sub_rule):
+        if (self.symbol.type == self.scanner.KEYWORD and
+                self.symbol.id == keyword):
             self.advance()
-            self.device()
-            while self.symbol != self.scanner.CLOSE_CURLY_BRACKET:
-                self.device()
+            if self.symbol.type == self.scanner.OPEN_CURLY_BRACKET:
+                self.advance()
+                sub_rule()
+                while self.symbol != self.scanner.CLOSE_CURLY_BRACKET:
+                    sub_rule()
+                self.advance()
+            else:
+                self.skip_to_after_close_bracket()
+                self.error()  # expected open bracket
         else:
             self.skip_to_after_close_bracket()
-            self.error()
-        self.advance()
+            self.error()  # expected the correct keyword type and keyword value
+
+    def device_list(self):
+        self.list_parse(keyword=self.scanner.DEVICE_ID, sub_rule=self.device)
 
     def clock_list(self):
-        pass
+        self.list_parse(keyword=self.scanner.CLOCK_ID, sub_rule=self.clock)
 
     def switch_list(self):
-        pass
+        self.list_parse(keyword=self.scanner.SWITCH_ID, sub_rule=self.switch)
 
     def monitor_list(self):
-        pass
+        self.list_parse(keyword=self.scanner.MONITOR_ID, sub_rule=self.monitor)
 
     def connect_list(self):
-        pass
+        self.list_parse(keyword=self.scanner.CONNECT_ID, sub_rule=self.connect)
 
     def device(self):
         if self.symbol.type == self.scanner.NAME:
             self.advance()
             if self.symbol.type == self.scanner.COLON:
                 self.advance()
-
+                if self.fixed_input_device():
+                    pass
             else:
-                self.error()
+                self.error()  # expected colon
         else:
-            self.error()
+            self.error()  # device identifier not NAME type
+
+    def clock(self):
+        pass
+
+    def switch(self):
+        pass
+
+    def monitor(self):
+        pass
+
+    def connect(self):
+        pass
 
     def variable_input_device(self):
         if self.symbol.type == self.scanner.NAME:
             if self.symbol_string() in ["AND", "NAND", "OR", "NOR"]:
                 self.advance()
+                return True
             else:
                 self.error()  # device name not accepted
+                return False
         else:
             self.error()  # not NAME type
+            return False
 
     def fixed_input_device(self):
         if self.symbol.type == self.scanner.NAME:
             if self.symbol_string() in ["XOR", "DTYPE"]:
                 self.advance()
+                return True
             else:
                 self.error()  # device name not accepted
+                return False
         else:
             self.error()  # not NAME type
+            return False
 
     def initial_state(self):
         if self.symbol.type == self.scanner.NUMBER:
@@ -165,30 +176,40 @@ class Parser:
 
     def variable_input_number(self):
         if self.symbol.type == self.scanner.NUMBER:
-            if self.symbol.id in range(1, 17):
+            if int(self.symbol.id) in range(1, 17):
                 self.advance()
+                return True
             else:
                 self.error()  # input number not in range
+                return False
         else:
             self.error()  # not NUMBER type
+            return False
 
     def clock_cycle(self):
         if self.symbol.type == self.scanner.NUMBER:
-            if self.symbol.id in range(1, 17):
+            if self.symbol.id[0] != "0":
                 self.advance()
             else:
-                self.error()  # input number not in range
+                self.error()  # cycle starts with 0 or is 0
         else:
             self.error()  # not NUMBER type
 
     def skip_to_after_semicolon(self):
-        pass
+        while self.symbol.type != self.scanner.SEMICOLON:
+            self.advance()
+        self.advance()
 
     def skip_to_after_close_bracket(self):
-        pass
+        while self.symbol.type != self.scanner.CLOSE_CURLY_BRACKET:
+            self.advance()
+        self.advance()
 
     def advance(self):
         self.symbol = self.scanner.get_symbol()
+        while not self.symbol.type:
+            self.error()  # ERROR symbol encountered
+            self.symbol = self.scanner.get_symbol()
 
     def error(self):
         self.error_count += 1

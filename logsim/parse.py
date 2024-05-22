@@ -47,7 +47,7 @@ class Parser:
         self.network = network
         self.monitors = monitors
         self.scanner = scanner
-        self.error_count = 0
+        self.error_output_list = []
         self.symbol = None
         self.symbol_list = []
         self.block_dict = {}
@@ -241,11 +241,33 @@ class Parser:
                     open_bracket = True
                     # have not finished
 
-    def handle_error(self, error_code: int, symbol: Symbol):
-        self.error_count += 1
-        # need extra error handling, implement later
+    def handle_error(self, error_code: int, symbol: Symbol) -> None:
+        if not symbol.id:  # symbol id is not None, i.e. symbol.type is KEYWORD, NUMBER or NAME
+            name = self.names.get_name_string(symbol.id)
+        elif symbol.type == Scanner.COMMA:
+            name = ","
+        elif symbol.type == Scanner.SEMICOLON:
+            name = ";"
+        elif symbol.type == Scanner.COLON:
+            name = ":"
+        elif symbol.type == Scanner.FULL_STOP:
+            name = "."
+        elif symbol.type == Scanner.ARROW:
+            name = ">"
+        elif symbol.type == Scanner.OPEN_CURLY_BRACKET:
+            name = "{"
+        elif symbol.type == Scanner.CLOSE_CURLY_BRACKET:
+            name = "}"
+        else:  # EOF should not raise errors anyway
+            raise ValueError("Invalid symbol type")
 
-    def get_error_message(self, error_code: int, name: str == "") -> str:
+        error_message = self.get_error_message(error_code=error_code, name=name)
+        error_output = self.scanner.get_error_output(line=symbol.line, character_in_line=symbol.character_in_line,
+                                                     message=error_message)
+
+        self.error_output_list.append(error_output)
+
+    def get_error_message(self, error_code: int, name: str = "") -> str:
         if error_code not in [self.MISSING_MONITOR, self.MISSING_CLOCK_OR_SWITCH] and not name:
             raise TypeError(f"error_code = {error_code} has 1 required positional argument: 'name'")
 

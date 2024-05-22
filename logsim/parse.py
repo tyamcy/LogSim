@@ -13,7 +13,7 @@ from names import Names
 from devices import Devices
 from network import Network
 from monitors import Monitors
-from scanner import Scanner
+from scanner import Scanner, Symbol
 
 PATH = "holder_path"
 
@@ -52,6 +52,20 @@ class Parser:
         self.symbol_list = []
         self.block_dict = {}
 
+        # syntax error
+        [self.EXPECT_IDENTIFIER, self.EXPECT_INPUT_DEVICE, self.EXPECT_VARIABLE_INPUT_NUMBER,
+         self.EXPECT_CLOCK_CYCLE, self.EXPECT_INITIAL_STATE, self.EXPECT_PIN_IN, self.EXPECT_PIN_OUT,
+         self.EXPECT_PIN_IN_OR_OUT, self.EXPECT_KEYWORD, self.EXPECT_OPEN_CURLY_BRACKET,
+         self.EXPECT_CLOSE_CURLY_BRACKET_BEFORE_KEYWORD, self.EXPECT_COLON,
+         self.EXPECT_SEMICOLON, self.EXPECT_FULL_STOP_OR_SEMICOLON,
+         self.EXPECT_FULL_STOP, self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW, self.MISSING_MONITOR] \
+            = names.unique_error_codes(18)
+
+        # semantic error
+        [self.MISSING_CLOCK_OR_SWITCH] = names.unique_error_codes(1)
+
+        self.error_count = 0
+
     def parse_network(self) -> bool:
         """Parse the circuit definition file."""
         # For now just return True, so that userint and gui can run in the
@@ -74,10 +88,10 @@ class Parser:
                 self.advance()
             else:
                 self.skip_to_after_close_bracket()
-                self.error()  # expected open bracket
+                self.handle_error()  # expected open bracket
         else:
             self.skip_to_after_close_bracket()
-            self.error()  # expected the correct keyword type and keyword value
+            self.handle_error()  # expected the correct keyword type and keyword value
 
     def device_list(self):
         self.list_parse(keyword=self.scanner.DEVICE_ID, sub_rule=self.device)
@@ -102,9 +116,9 @@ class Parser:
                 if self.fixed_input_device():
                     pass
             else:
-                self.error()  # expected colon
+                self.handle_error()  # expected colon
         else:
-            self.error()  # device identifier not NAME type
+            self.handle_error()  # device identifier not NAME type
 
     def clock(self):
         pass
@@ -124,10 +138,10 @@ class Parser:
                 self.advance()
                 return True
             else:
-                self.error()  # device name not accepted
+                self.handle_error()  # device name not accepted
                 return False
         else:
-            self.error()  # not NAME type
+            self.handle_error()  # not NAME type
             return False
 
     def fixed_input_device(self):
@@ -136,10 +150,10 @@ class Parser:
                 self.advance()
                 return True
             else:
-                self.error()  # device name not accepted
+                self.handle_error()  # device name not accepted
                 return False
         else:
-            self.error()  # not NAME type
+            self.handle_error()  # not NAME type
             return False
 
     def initial_state(self):
@@ -147,9 +161,9 @@ class Parser:
             if self.symbol.id in [0, 1]:
                 self.advance()
             else:
-                self.error()  # not a state of 0 or 1
+                self.handle_error()  # not a state of 0 or 1
         else:
-            self.error()  # not NUMBER type
+            self.handle_error()  # not NUMBER type
 
     def pin_in(self):
         if self.symbol.type == self.scanner.NAME:
@@ -159,18 +173,18 @@ class Parser:
             elif self.symbol_string() in ["DATA", "CLK", "SET", "CLEAR"]:
                 self.advance()
             else:
-                self.error()  # pin in name not accepted
+                self.handle_error()  # pin in name not accepted
         else:
-            self.error()  # not NAME type
+            self.handle_error()  # not NAME type
 
     def pin_out(self):
         if self.symbol.type == self.scanner.NAME:
             if self.symbol_string() in ["Q", "QBAR"]:
                 self.advance()
             else:
-                self.error()  # pin out name not accepted
+                self.handle_error()  # pin out name not accepted
         else:
-            self.error()  # not NAME type
+            self.handle_error()  # not NAME type
 
     def variable_input_number(self):
         if self.symbol.type == self.scanner.NUMBER:
@@ -178,10 +192,10 @@ class Parser:
                 self.advance()
                 return True
             else:
-                self.error()  # input number not in range
+                self.handle_error()  # input number not in range
                 return False
         else:
-            self.error()  # not NUMBER type
+            self.handle_error()  # not NUMBER type
             return False
 
     def clock_cycle(self):
@@ -189,9 +203,9 @@ class Parser:
             if self.symbol.id[0] != "0":
                 self.advance()
             else:
-                self.error()  # cycle starts with 0 or is 0
+                self.handle_error()  # cycle starts with 0 or is 0
         else:
-            self.error()  # not NUMBER type
+            self.handle_error()  # not NUMBER type
 
     def skip_to_after_semicolon(self):
         while self.symbol.type != self.scanner.SEMICOLON:
@@ -206,12 +220,8 @@ class Parser:
     def advance(self):
         self.symbol = self.scanner.get_symbol()
         while not self.symbol.type:
-            self.error()  # ERROR symbol encountered
+            self.handle_error()  # ERROR symbol encountered
             self.symbol = self.scanner.get_symbol()
-
-    def error(self):
-        self.error_count += 1
-        # need extra error handling, implement later
 
     def symbol_string(self):
         return self.names.get_name_string(self.symbol.id)
@@ -231,4 +241,65 @@ class Parser:
                     open_bracket = True
                     # have not finished
 
+    def handle_error(self, error_code: int, symbol: Symbol):
+        self.error_count += 1
+        # need extra error handling, implement later
+
+    def get_error_message(self, error_code: int, name: str == "") -> str:
+        if error_code not in [self.MISSING_MONITOR, self.MISSING_CLOCK_OR_SWITCH] and not name:
+            raise TypeError(f"error_code = {error_code} has 1 required positional argument: 'name'")
+
+        # syntax error
+        if error_code == self.EXPECT_IDENTIFIER:
+            return f"Found {name}, expected an identifier"
+        elif error_code == self.EXPECT_INPUT_DEVICE:
+            return f"Found {name}, expected 'AND', 'NAND', 'OR', 'NOR', 'XOR' or 'DTYPE'"
+        elif error_code == self.EXPECT_VARIABLE_INPUT_NUMBER:
+            return f"Found {name}, expected integer between 1 and 16"
+        elif error_code == self.EXPECT_CLOCK_CYCLE:
+            return f"Found {name}, expected positive integer with no leading zero"
+        elif error_code == self.EXPECT_INITIAL_STATE:
+            return f"Found {name}, expected 0 or 1"
+        elif error_code == self.EXPECT_PIN_IN:
+            return f"Found {name}, expected 'I1-16', 'DATA', 'CLK', 'SET' or 'CLEAR'"
+        elif error_code == self.EXPECT_PIN_OUT:
+            return f"Found {name}, expected 'Q' or 'QBAR'"
+        elif error_code == self.EXPECT_PIN_IN_OR_OUT:  # for ( pinIn | pinOut ) in monitor
+            return f"Found {name}, expected 'I1-16', 'DATA', 'CLK', 'SET', 'CLEAR', 'Q' or 'QBAR'"
+        elif error_code == self.EXPECT_KEYWORD:
+            return f"Found {name}, expected a keyword ('DEVICE', 'CLOCK', 'SWITCH', 'MONITOR' or 'CONNECTION')"
+        elif error_code == self.EXPECT_OPEN_CURLY_BRACKET:
+            return f"Found {name}, expected '{{'"
+        elif error_code == self.EXPECT_CLOSE_CURLY_BRACKET_BEFORE_KEYWORD:
+            return f"Found {name}, expected '}}' before keyword"
+        elif error_code == self.EXPECT_COLON:
+            return f"Found {name}, expected ':'"
+        elif error_code == self.EXPECT_SEMICOLON:
+            return f"Found {name}, expected ';'"
+        elif error_code == self.EXPECT_FULL_STOP_OR_SEMICOLON:  # for [ ".", ( pinIn | pinOut ) ], ";" in monitor
+            return f"Found {name}, expected '.' (if pin has to be defined) or ';' (if pin does not have to be defined)"
+        elif error_code == self.EXPECT_FULL_STOP:
+            return f"Found {name}, expected '.'"
+        elif error_code == self.EXPECT_ARROW:
+            return f"Found {name}, expected '>'"
+        elif error_code == self.EXPECT_FULL_STOP_OR_ARROW:  # for [".", pinOut] , ">" in connection
+            return f"Found {name}, expected '.' (if pin has to be defined) or ';' (if pin does not have to be defined)"
+        elif error_code == self.MISSING_MONITOR:
+            return f"'MONITOR' list not found"
+
+        # semantic error
+        elif error_code == self.network.PORT_ABSENT:
+            return f"Pin {name} does not exist"
+        elif error_code == self.network.INPUT_CONNECTED:
+            return f"Connection repeatedly assigned to input pin {name}"
+        elif False:  # undefined error code now - implement later
+            return f"Missing input to pin {name}"
+        elif error_code == self.network.DEVICE_ABSENT:
+            return f"Identifier {name} is not defined"
+        elif error_code == self.devices.DEVICE_PRESENT or self.monitors.MONITOR_PRESENT:
+            return f"Identifier {name} should not be redefined"
+        elif error_code == self.MISSING_CLOCK_OR_SWITCH:
+            return f"At least one list between 'CLOCK' and 'SWITCH' is needed. neither is found"
+        else:
+            raise ValueError(f"Invalid semantic error code '{error_code}' or invalid empty name")
 

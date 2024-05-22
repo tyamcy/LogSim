@@ -49,18 +49,16 @@ class Parser:
         self.scanner = scanner
         self.error_count = 0
         self.symbol = None
+        self.symbol_list = []
+        self.block_dict = {}
 
     def parse_network(self) -> bool:
         """Parse the circuit definition file."""
         # For now just return True, so that userint and gui can run in the
         # skeleton code. When complete, should return False when there are
         # errors in the circuit definition file.
-        self.advance()
-        self.device_list()
-        self.clock_list()
-        self.switch_list()
-        self.monitor_list()
-        self.connect_list()
+        self.make_symbol_list()
+        self.make_block_dict()
 
         return True
 
@@ -217,3 +215,20 @@ class Parser:
 
     def symbol_string(self):
         return self.names.get_name_string(self.symbol.id)
+
+    def make_symbol_list(self):
+        self.advance()
+        while self.symbol != self.scanner.EOF:
+            self.symbol_list.append(self.symbol)
+            self.advance()
+    def make_block_dict(self):
+        open_bracket = False
+        keyword_positions = []
+        block_body_positions = []
+        for i in range(len(self.symbol_list)):
+            if self.symbol_list[i] == self.scanner.KEYWORD:
+                if self.symbol_list[i+1] == self.scanner.OPEN_CURLY_BRACKET:
+                    open_bracket = True
+                    # have not finished
+
+

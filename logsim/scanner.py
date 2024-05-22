@@ -66,7 +66,7 @@ class Scanner:
 
         self.path = path
         self.names = names
-        [self.DEVICE_ID, self.CONNECT_ID, self.SWITCH_ID, self.MONITOR_ID, self.CONNECT_ID] \
+        [self.DEVICE_ID, self.CLOCK_ID, self.SWITCH_ID, self.MONITOR_ID, self.CONNECT_ID] \
             = self.names.lookup(self.keywords_list)
         self.current_character = " "
 

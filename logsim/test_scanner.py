@@ -5,28 +5,95 @@ from names import Names
 
 path = "logsim/test_scanner_text"
 
-
 #  test the scanner module with the human verified results from test_scanner_text
-test_type_list = [7, 5, 9, 2, 8, 1, 6, 7, 5, 9, 2, 9, 0, 8, 1, 6, 7, 5, 9, 4, 9, 3, 9, 9, 4, 9, 3, 9, 1, 9, 4, 9, 3, 9, 1, None, 9, 3, 9, 4, 9, 3, 9, 1, 6, 10]
-test_id_list = [1, None, 5, None, '10', None, None, 0, None, 6, None, 7, None, '3', None, None, 4, None, 5, None, 8, None, 9, 10, None, 8, None, 11, None, 12, None, 13, None, 14, None, None, 8, None, 15, None, 13, None, 16, None, None, None]
+
+
+class NameTest:
+    # Keyword
+    DEVICE = 0
+    CLOCK = 1
+    SWITCH = 2
+    MONITOR = 3
+    CONNECTION = 4
+
+    # Name
+    CLK1 = 5
+    G1 = 6
+    NOR = 7
+    D1 = 8
+    CLK = 9
+    A = 10
+    SET = 11
+    B = 12
+    D2 = 13
+    CLEAR = 14
+    Q = 15
+    DATA = 16
+
+
+test_list = [
+    (Scanner.KEYWORD, NameTest.CLOCK),
+    (Scanner.OPEN_CURLY_BRACKET, None),
+    (Scanner.NAME, NameTest.CLK1),
+    (Scanner.COLON, None),
+    (Scanner.NUMBER, '10'),
+    (Scanner.SEMICOLON, None),
+    (Scanner.CLOSE_CURLY_BRACKET, None),
+    (Scanner.KEYWORD, NameTest.DEVICE),
+    (Scanner.OPEN_CURLY_BRACKET, None),
+    (Scanner.NAME, NameTest.G1),
+    (Scanner.COLON, None),
+    (Scanner.NAME, NameTest.NOR),
+    (Scanner.COMMA, None),
+    (Scanner.NUMBER, '3'),
+    (Scanner.SEMICOLON, None),
+    (Scanner.CLOSE_CURLY_BRACKET, None),
+    (Scanner.KEYWORD, NameTest.CONNECTION),
+    (Scanner.OPEN_CURLY_BRACKET, None),
+    (Scanner.NAME, NameTest.CLK1),
+    (Scanner.ARROW, None),
+    (Scanner.NAME, NameTest.D1),
+    (Scanner.FULL_STOP, None),
+    (Scanner.NAME, NameTest.CLK),
+    (Scanner.NAME, NameTest.A),
+    (Scanner.ARROW, None),
+    (Scanner.NAME, NameTest.D1),
+    (Scanner.FULL_STOP, None),
+    (Scanner.NAME, NameTest.SET),
+    (Scanner.SEMICOLON, None),
+    (Scanner.NAME, NameTest.B),
+    (Scanner.ARROW, None),
+    (Scanner.NAME, NameTest.D2),
+    (Scanner.FULL_STOP, None),
+    (Scanner.NAME, NameTest.CLEAR),
+    (Scanner.SEMICOLON, None),
+    (None, None),  # '[' is not a valid symbol
+    (Scanner.NAME, NameTest.D1),
+    (Scanner.FULL_STOP, None),
+    (Scanner.NAME, NameTest.Q),
+    (Scanner.ARROW, None),
+    (Scanner.NAME, NameTest.D2),
+    (Scanner.FULL_STOP, None),
+    (Scanner.NAME, NameTest.DATA),
+    (Scanner.SEMICOLON, None),
+    (Scanner.CLOSE_CURLY_BRACKET, None),
+    (Scanner.EOF, None)
+]
 
 @pytest.fixture
 def new_scanner():
-    names = Names()
-    new_scanner = Scanner(path=path, names=names)
+    new_scanner = Scanner(path=path, names=Names())
     return new_scanner
 
 
 def test_get_symbol(new_scanner):
-    for i in range(len(test_type_list)):
+    for i in range(len(test_list)):
         symbol = new_scanner.get_symbol()
-        assert symbol.type == test_type_list[i]
-        assert symbol.id == test_id_list[i]
+        assert (symbol.type, symbol.id) == test_list[i]
 
 
-def test_scanner_init(new_scanner):
-    names = Names()
+def test_scanner_raise_exception():
     with pytest.raises(TypeError):
-        scanner = Scanner(path=1, names=names)
+        Scanner(path=1, names=Names())
     with pytest.raises(TypeError):
-        scanner = Scanner(path=path, names="name")
+        Scanner(path=path, names="name")

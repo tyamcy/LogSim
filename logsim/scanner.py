@@ -52,6 +52,10 @@ class Scanner:
                       and returns the symbol.
     """
 
+    symbol_type_list = [COMMA, SEMICOLON, COLON, FULL_STOP, ARROW, OPEN_CURLY_BRACKET, CLOSE_CURLY_BRACKET, KEYWORD,
+                        NUMBER, NAME, EOF] = range(11)
+    keywords_list = ["DEVICE", "CLOCK", "SWITCH", "MONITOR", "CONNECTION"]
+
     def __init__(self, path: str, names: Names):
         """Open specified file and initialise reserved words and IDs."""
 
@@ -62,10 +66,6 @@ class Scanner:
 
         self.path = path
         self.names = names
-        self.symbol_type_list = [self.COMMA, self.SEMICOLON, self.COLON, self.FULL_STOP, self.ARROW,
-                                 self.OPEN_CURLY_BRACKET, self.CLOSE_CURLY_BRACKET, self.KEYWORD, self.NUMBER,
-                                 self.NAME, self.EOF] = range(11)
-        self.keywords_list = ["DEVICE", "CLOCK", "SWITCH", "MONITOR", "CONNECTION"]
         [self.DEVICE_ID, self.CONNECT_ID, self.SWITCH_ID, self.MONITOR_ID, self.CONNECT_ID] \
             = self.names.lookup(self.keywords_list)
         self.current_character = " "

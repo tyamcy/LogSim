@@ -14,6 +14,7 @@ from devices import Devices
 from network import Network
 from monitors import Monitors
 from scanner import Scanner
+from parser_handler import ParserErrorHandler
 
 PATH = "holder_path"
 
@@ -47,10 +48,13 @@ class Parser:
         self.network = network
         self.monitors = monitors
         self.scanner = scanner
-        self.error_count = 0
+        self.error_handler = ParserErrorHandler(names=names, devices=devices, network=network, monitors=monitors,
+                                                scanner=scanner)
         self.symbol = None
         self.symbol_list = []
         self.block_dict = {}
+
+        self.error_count = 0
 
     def parse_network(self) -> bool:
         """Parse the circuit definition file."""
@@ -74,10 +78,10 @@ class Parser:
                 self.advance()
             else:
                 self.skip_to_after_close_bracket()
-                self.error()  # expected open bracket
+                self.error_handler.handle_error()  # expected open bracket
         else:
             self.skip_to_after_close_bracket()
-            self.error()  # expected the correct keyword type and keyword value
+            self.error_handler.handle_error()  # expected the correct keyword type and keyword value
 
     def device_list(self):
         self.list_parse(keyword=self.scanner.DEVICE_ID, sub_rule=self.device)
@@ -102,9 +106,9 @@ class Parser:
                 if self.fixed_input_device():
                     pass
             else:
-                self.error()  # expected colon
+                self.error_handler.handle_error()  # expected colon
         else:
-            self.error()  # device identifier not NAME type
+            self.error_handler.handle_error()  # device identifier not NAME type
 
     def clock(self):
         pass
@@ -124,10 +128,10 @@ class Parser:
                 self.advance()
                 return True
             else:
-                self.error()  # device name not accepted
+                self.error_handler.handle_error()  # device name not accepted
                 return False
         else:
-            self.error()  # not NAME type
+            self.error_handler.handle_error()  # not NAME type
             return False
 
     def fixed_input_device(self):
@@ -136,10 +140,10 @@ class Parser:
                 self.advance()
                 return True
             else:
-                self.error()  # device name not accepted
+                self.error_handler.handle_error()  # device name not accepted
                 return False
         else:
-            self.error()  # not NAME type
+            self.error_handler.handle_error()  # not NAME type
             return False
 
     def initial_state(self):
@@ -147,9 +151,9 @@ class Parser:
             if self.symbol.id in [0, 1]:
                 self.advance()
             else:
-                self.error()  # not a state of 0 or 1
+                self.error_handler.handle_error()  # not a state of 0 or 1
         else:
-            self.error()  # not NUMBER type
+            self.error_handler.handle_error()  # not NUMBER type
 
     def pin_in(self):
         if self.symbol.type == self.scanner.NAME:
@@ -159,18 +163,18 @@ class Parser:
             elif self.symbol_string() in ["DATA", "CLK", "SET", "CLEAR"]:
                 self.advance()
             else:
-                self.error()  # pin in name not accepted
+                self.error_handler.handle_error()  # pin in name not accepted
         else:
-            self.error()  # not NAME type
+            self.error_handler.handle_error()  # not NAME type
 
     def pin_out(self):
         if self.symbol.type == self.scanner.NAME:
             if self.symbol_string() in ["Q", "QBAR"]:
                 self.advance()
             else:
-                self.error()  # pin out name not accepted
+                self.error_handler.handle_error()  # pin out name not accepted
         else:
-            self.error()  # not NAME type
+            self.error_handler.handle_error()  # not NAME type
 
     def variable_input_number(self):
         if self.symbol.type == self.scanner.NUMBER:
@@ -178,10 +182,10 @@ class Parser:
                 self.advance()
                 return True
             else:
-                self.error()  # input number not in range
+                self.error_handler.handle_error()  # input number not in range
                 return False
         else:
-            self.error()  # not NUMBER type
+            self.error_handler.handle_error()  # not NUMBER type
             return False
 
     def clock_cycle(self):
@@ -189,9 +193,9 @@ class Parser:
             if self.symbol.id[0] != "0":
                 self.advance()
             else:
-                self.error()  # cycle starts with 0 or is 0
+                self.error_handler.handle_error()  # cycle starts with 0 or is 0
         else:
-            self.error()  # not NUMBER type
+            self.error_handler.handle_error()  # not NUMBER type
 
     def skip_to_after_semicolon(self):
         while self.symbol.type != self.scanner.SEMICOLON:
@@ -206,12 +210,8 @@ class Parser:
     def advance(self):
         self.symbol = self.scanner.get_symbol()
         while not self.symbol.type:
-            self.error()  # ERROR symbol encountered
+            self.error_handler.handle_error()  # ERROR symbol encountered
             self.symbol = self.scanner.get_symbol()
-
-    def error(self):
-        self.error_count += 1
-        # need extra error handling, implement later
 
     def symbol_string(self):
         return self.names.get_name_string(self.symbol.id)
@@ -230,5 +230,3 @@ class Parser:
                 if self.symbol_list[i+1] == self.scanner.OPEN_CURLY_BRACKET:
                     open_bracket = True
                     # have not finished
-
-

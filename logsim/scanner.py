@@ -9,6 +9,7 @@ Scanner - reads definition file and translates characters into symbols.
 Symbol - encapsulates a symbol and stores its properties.
 """
 from names import Names
+from typing import TextIO, List
 
 
 class Symbol:
@@ -28,6 +29,8 @@ class Symbol:
         """Initialise symbol properties."""
         self.type = None
         self.id = None
+        self.line = None
+        self.character_in_line = None
 
 
 class Scanner:
@@ -63,16 +66,22 @@ class Scanner:
             raise TypeError("Expected names to be a Names object.")
 
         self.path = path
-        self.file = open(self.path, "r")
+        self.file = self.get_file()
+        self.file_lines = self.get_file_lines()
         self.names = names
         [self.DEVICE_ID, self.CLOCK_ID, self.SWITCH_ID, self.MONITOR_ID, self.CONNECT_ID] \
             = self.names.lookup(self.keywords_list)
         self.current_character = " "
+        self.current_line = 0
+        self.current_character_in_line = 0
 
     def get_symbol(self) -> Symbol:
         """Translate the next sequence of characters into a symbol and return the symbol."""
 
         symbol = Symbol()
+        symbol.line = self.current_line
+        symbol.character_in_line = self.current_character_in_line
+
         self.skip_spaces()  # current character now not whitespace
 
         while self.current_character == "#" or self.current_character == "/":  # comment
@@ -131,10 +140,25 @@ class Scanner:
 
         return symbol
 
+    def get_file(self) -> TextIO:
+        return open(self.path, "r")
+
+    def get_file_lines(self) -> List[str]:
+        file = self.get_file()
+        file_lines = file.readlines()
+        file.close()
+        return file_lines
+
     def get_next_character(self) -> str:
         """Read and return the next character in file."""
 
-        return self.file.read(1)
+        char = self.file.read(1)
+        if char == "\n":  # next line
+            self.current_line += 1
+            self.current_character_in_line = 0
+        else:
+            self.current_character_in_line += 1
+        return char
 
     def skip_spaces(self) -> None:
         """Seek and update current_character to the next non-whitespace in file."""

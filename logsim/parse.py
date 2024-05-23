@@ -104,33 +104,157 @@ class Parser:
     def connect_list(self):
         self.list_parse(keyword=self.scanner.CONNECT_ID, sub_rule=self.connect)
 
-    def device(self):
-        if self.symbol.type == self.scanner.NAME:
-            self.advance()
-            if self.symbol.type == self.scanner.COLON:
-                self.advance()
-                if self.fixed_input_device():
-                    pass
-            else:
-                self.error_handler.handle_error()  # expected colon
-        else:
-            self.error_handler.handle_error()  # device identifier not NAME type
+    def device(self) -> bool:
+        # expect identifier
+        if not self.identifier():
+            return False
+        self.advance()
+
+        # expect colon
+        if not self.colon():
+            return False
+        self.advance()
+
+        # expect input device
+        if not self.input_device():
+            return False
+        self.advance()
+
+        # expect semicolon
+        return self.semicolon()
 
     def clock(self):
-        pass
+        # expect identifier
+        if not self.identifier():
+            return False
+        self.advance()
+
+        # expect colon
+        if not self.colon():
+            return False
+        self.advance()
+
+        # expect clock cycle
+        if not self.clock_cycle():
+            return False
+        self.advance()
+
+        # expect semicolon
+        return self.semicolon()
 
     def switch(self):
-        pass
+        # expect identifier
+        if not self.identifier():
+            return False
+        self.advance()
+
+        # expect colon
+        if not self.colon():
+            return False
+        self.advance()
+
+        # expect initial state
+        if not self.initial_state():
+            return False
+        self.advance()
+
+        # expect semicolon
+        return self.semicolon()
 
     def monitor(self):
-        pass
+        # expect identifier
+        if not self.identifier():
+            return False
+        self.advance()
+
+        # expect colon
+        if not self.colon():
+            return False
+        self.advance()
+
+        # expect identifier
+        if not self.identifier():
+            return False
+        self.advance()
+
+        # except full stop or semicolon
+        # optionally expect full stop
+        if self.symbol.type == Scanner.FULL_STOP:
+            self.advance()
+            if not self.pin_in_or_out():
+                # expect pin in or out
+                return False
+            self.advance()
+        elif self.symbol.type != Scanner.SEMICOLON:  # not full stop or semicolon
+            self.error_handler.handle_error(self.error_handler.EXPECT_FULL_STOP_OR_SEMICOLON, self.symbol)
+            return False
+        # expect semicolon
+        return self.semicolon()
 
     def connect(self):
-        pass
+        # expect identifier
+        if not self.identifier():
+            return False
+        self.advance()
+
+        # expect full stop or arrow
+        # optionally expect full stop
+        if self.symbol.type == Scanner.FULL_STOP:
+            self.advance()
+            # expect pin out
+            if not self.pin_out():
+                return False
+            self.advance()
+        elif self.symbol.type != Scanner.ARROW:  # not full stop or arrow
+            self.error_handler.handle_error(self.error_handler.EXPECT_FULL_STOP_OR_ARROW, self.symbol)
+            return False
+        # expect arrow
+        if self.symbol.type != Scanner.ARROW:
+            self.error_handler.handle_error(self.error_handler.EXPECT_ARROW, self.symbol)
+            return False
+        self.advance()
+
+        # expect identifier
+        if not self.identifier():
+            return False
+        self.advance()
+
+        # expect full stop
+        if not self.full_stop():
+            return False
+        self.advance()
+
+        # expect pin in
+        if not self.pin_in():
+            return False
+        self.advance()
+
+        # expect semicolon
+        return self.semicolon()
+
+    def colon(self) -> bool:
+        if not self.symbol.type == Scanner.COLON:
+            self.error_handler.handle_error(self.error_handler.EXPECT_COLON, self.symbol)
+            return False
+        else:
+            return True
+
+    def semicolon(self) -> bool:
+        if not self.symbol.type == Scanner.SEMICOLON:
+            self.error_handler.handle_error(self.error_handler.EXPECT_SEMICOLON, self.symbol)
+            return False
+        else:
+            return True
+
+    def full_stop(self) -> bool:
+        if not self.symbol.type == Scanner.FULL_STOP:
+            self.error_handler.handle_error(self.error_handler.EXPECT_FULL_STOP, self.symbol)
+            return False
+        else:
+            return True
 
     def identifier(self) -> bool:
         if self.symbol.type == Scanner.NAME:
-            self.advance()
             return True
         else:
             self.error_handler.handle_error(self.error_handler.EXPECT_IDENTIFIER, self.symbol)
@@ -148,17 +272,15 @@ class Parser:
                 # expect variable input number
                 return self.variable_input_number()
             elif self.symbol_string() in self.FIXED_INPUT_DEVICE:
-                self.advance()
+                return True
             else:
                 # expect input device
                 self.error_handler.handle_error(self.error_handler.EXPECT_INPUT_DEVICE, self.symbol)
                 return False
-        return True
 
     def variable_input_number(self) -> bool:
         if (self.symbol.type == Scanner.NUMBER and self.symbol_string()[0] != "0"
                 and 1 <= int(self.symbol_string()) <= 16):
-            self.advance()
             return True
         else:
             # expect variable input number
@@ -167,7 +289,6 @@ class Parser:
 
     def initial_state(self) -> bool:
         if self.symbol.type == Scanner.NUMBER and self.symbol.id in self.INITIAL_STATE:
-            self.advance()
             return True
         else:
             # expect initial state
@@ -180,7 +301,6 @@ class Parser:
             # expect variable input number
             return self.variable_input_number()
         elif self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_IN:
-            self.advance()
             return True
         else:
             # expect pin in
@@ -189,7 +309,6 @@ class Parser:
 
     def pin_out(self) -> bool:
         if self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_OUT:
-            self.advance()
             return True
         else:
             # expect pin out
@@ -202,10 +321,8 @@ class Parser:
             # expect variable input number
             return self.variable_input_number()
         elif self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_IN:
-            self.advance()
             return True
         elif self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_OUT:
-            self.advance()
             return True
         else:
             # expect pin in or out
@@ -214,7 +331,6 @@ class Parser:
 
     def clock_cycle(self) -> bool:
         if self.symbol.type == Scanner.NUMBER and self.symbol.id[0] != "0":
-            self.advance()
             return True
         else:
             # expect clock cycle

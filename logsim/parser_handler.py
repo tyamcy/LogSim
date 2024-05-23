@@ -25,11 +25,9 @@ class ParserErrorHandler:
         # syntax error
         [self.EXPECT_IDENTIFIER, self.EXPECT_INPUT_DEVICE, self.EXPECT_VARIABLE_INPUT_NUMBER,
          self.EXPECT_CLOCK_CYCLE, self.EXPECT_INITIAL_STATE, self.EXPECT_PIN_IN, self.EXPECT_PIN_OUT,
-         self.EXPECT_PIN_IN_OR_OUT, self.EXPECT_KEYWORD, self.EXPECT_OPEN_CURLY_BRACKET,
-         self.EXPECT_CLOSE_CURLY_BRACKET_BEFORE_KEYWORD, self.EXPECT_COLON,
-         self.EXPECT_SEMICOLON, self.EXPECT_FULL_STOP_OR_SEMICOLON,
-         self.EXPECT_FULL_STOP, self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW, self.MISSING_MONITOR] \
-            = names.unique_error_codes(18)
+         self.EXPECT_PIN_IN_OR_OUT, self.EXPECT_KEYWORD, self.EXPECT_OPEN_CURLY_BRACKET, self.EXPECT_COMMA,
+         self.EXPECT_SEMICOLON, self.EXPECT_COLON, self.EXPECT_FULL_STOP_OR_SEMICOLON, self.EXPECT_FULL_STOP,
+         self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW, self.MISSING_MONITOR] = names.unique_error_codes(18)
 
         # semantic error
         [self.MISSING_CLOCK_OR_SWITCH] = names.unique_error_codes(1)
@@ -95,12 +93,12 @@ class ParserErrorHandler:
             return f"Found {name}, expected a keyword ('DEVICE', 'CLOCK', 'SWITCH', 'MONITOR' or 'CONNECTION')"
         elif error_code == self.EXPECT_OPEN_CURLY_BRACKET:
             return f"Found {name}, expected '{{'"
-        elif error_code == self.EXPECT_CLOSE_CURLY_BRACKET_BEFORE_KEYWORD:
-            return f"Found {name}, expected '}}' before keyword"
-        elif error_code == self.EXPECT_COLON:
-            return f"Found {name}, expected ':'"
+        elif error_code == self.EXPECT_COMMA:
+            return f"Found {name}, expected ','"
         elif error_code == self.EXPECT_SEMICOLON:
             return f"Found {name}, expected ';'"
+        elif error_code == self.EXPECT_COLON:
+            return f"Found {name}, expected ':'"
         elif error_code == self.EXPECT_FULL_STOP_OR_SEMICOLON:  # for [ ".", ( pinIn | pinOut ) ], ";" in monitor
             return f"Found {name}, expected '.' (if pin has to be defined) or ';' (if pin does not have to be defined)"
         elif error_code == self.EXPECT_FULL_STOP:

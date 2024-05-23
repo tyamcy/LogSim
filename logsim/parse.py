@@ -20,6 +20,12 @@ PATH = "holder_path"
 
 
 class Parser:
+    DTYPE_PIN_IN = ["DATA", "CLK", "SET", "CLEAR"]
+    DTYPE_PIN_OUT = ["Q", "QBAR"]
+    VARIABLE_INPUT_DEVICE = ["AND", "NAND", "OR", "NOR"]
+    FIXED_INPUT_DEVICE = ["XOR", "DTYPE"]
+    INITIAL_STATE = ["0", "1"]
+
     """Parse the definition file and build the logic network.
 
     The parser deals with error handling. It analyses the syntactic and
@@ -67,13 +73,13 @@ class Parser:
         return True
 
     def list_parse(self, keyword, sub_rule):
-        if (self.symbol.type == self.scanner.KEYWORD and
+        if (self.symbol.type == Scanner.KEYWORD and
                 self.symbol.id == keyword):
             self.advance()
-            if self.symbol.type == self.scanner.OPEN_CURLY_BRACKET:
+            if self.symbol.type == Scanner.OPEN_CURLY_BRACKET:
                 self.advance()
                 sub_rule()
-                while self.symbol != self.scanner.CLOSE_CURLY_BRACKET:
+                while self.symbol != Scanner.CLOSE_CURLY_BRACKET:
                     sub_rule()
                 self.advance()
             else:
@@ -122,103 +128,118 @@ class Parser:
     def connect(self):
         pass
 
-    def variable_input_device(self):
-        if self.symbol.type == self.scanner.NAME:
-            if self.symbol_string() in ["AND", "NAND", "OR", "NOR"]:
-                self.advance()
-                return True
-            else:
-                self.error_handler.handle_error()  # device name not accepted
-                return False
+    def identifier(self) -> bool:
+        if self.symbol.type == Scanner.NAME:
+            self.advance()
+            return True
         else:
-            self.error_handler.handle_error()  # not NAME type
+            self.error_handler.handle_error(self.error_handler.EXPECT_IDENTIFIER, self.symbol)
             return False
 
-    def fixed_input_device(self):
-        if self.symbol.type == self.scanner.NAME:
-            if self.symbol_string() in ["XOR", "DTYPE"]:
+    def input_device(self) -> bool:
+        if self.symbol.type == Scanner.NAME:
+            if self.symbol_string() in self.VARIABLE_INPUT_DEVICE:
                 self.advance()
-                return True
+                if self.symbol.type != Scanner.COMMA:
+                    # expect comma
+                    self.error_handler.handle_error(self.error_handler.EXPECT_COMMA, self.symbol)
+                    return False
+                self.advance()
+                # expect variable input number
+                return self.variable_input_number()
+            elif self.symbol_string() in self.FIXED_INPUT_DEVICE:
+                self.advance()
             else:
-                self.error_handler.handle_error()  # device name not accepted
+                # expect input device
+                self.error_handler.handle_error(self.error_handler.EXPECT_INPUT_DEVICE, self.symbol)
                 return False
+        return True
+
+    def variable_input_number(self) -> bool:
+        if (self.symbol.type == Scanner.NUMBER and self.symbol_string()[0] != "0"
+                and 1 <= int(self.symbol_string()) <= 16):
+            self.advance()
+            return True
         else:
-            self.error_handler.handle_error()  # not NAME type
+            # expect variable input number
+            self.error_handler.handle_error(self.error_handler.EXPECT_VARIABLE_INPUT_NUMBER, self.symbol)
             return False
 
-    def initial_state(self):
-        if self.symbol.type == self.scanner.NUMBER:
-            if self.symbol.id in [0, 1]:
-                self.advance()
-            else:
-                self.error_handler.handle_error()  # not a state of 0 or 1
+    def initial_state(self) -> bool:
+        if self.symbol.type == Scanner.NUMBER and self.symbol.id in self.INITIAL_STATE:
+            self.advance()
+            return True
         else:
-            self.error_handler.handle_error()  # not NUMBER type
-
-    def pin_in(self):
-        if self.symbol.type == self.scanner.NAME:
-            if self.symbol_string() == "I":
-                self.advance()
-                self.variable_input_number()
-            elif self.symbol_string() in ["DATA", "CLK", "SET", "CLEAR"]:
-                self.advance()
-            else:
-                self.error_handler.handle_error()  # pin in name not accepted
-        else:
-            self.error_handler.handle_error()  # not NAME type
-
-    def pin_out(self):
-        if self.symbol.type == self.scanner.NAME:
-            if self.symbol_string() in ["Q", "QBAR"]:
-                self.advance()
-            else:
-                self.error_handler.handle_error()  # pin out name not accepted
-        else:
-            self.error_handler.handle_error()  # not NAME type
-
-    def variable_input_number(self):
-        if self.symbol.type == self.scanner.NUMBER:
-            if int(self.symbol.id) in range(1, 17):
-                self.advance()
-                return True
-            else:
-                self.error_handler.handle_error()  # input number not in range
-                return False
-        else:
-            self.error_handler.handle_error()  # not NUMBER type
+            # expect initial state
+            self.error_handler.handle_error(self.error_handler.EXPECT_INITIAL_STATE, self.symbol)
             return False
 
-    def clock_cycle(self):
-        if self.symbol.type == self.scanner.NUMBER:
-            if self.symbol.id[0] != "0":
-                self.advance()
-            else:
-                self.error_handler.handle_error()  # cycle starts with 0 or is 0
+    def pin_in(self) -> bool:
+        if self.symbol.type == Scanner.NAME and self.symbol_string() == "I":
+            self.advance()
+            # expect variable input number
+            return self.variable_input_number()
+        elif self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_IN:
+            self.advance()
+            return True
         else:
-            self.error_handler.handle_error()  # not NUMBER type
+            # expect pin in
+            self.error_handler.handle_error(self.error_handler.EXPECT_PIN_IN, self.symbol)
+            return False
 
-    def skip_to_after_semicolon(self):
-        while self.symbol.type != self.scanner.SEMICOLON:
+    def pin_out(self) -> bool:
+        if self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_OUT:
+            self.advance()
+            return True
+        else:
+            # expect pin out
+            self.error_handler.handle_error(self.error_handler.EXPECT_PIN_OUT, self.symbol)
+            return False
+
+    def pin_in_or_out(self) -> bool:
+        if self.symbol.type == Scanner.NAME and self.symbol_string() == "I":
+            self.advance()
+            # expect variable input number
+            return self.variable_input_number()
+        elif self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_IN:
+            self.advance()
+            return True
+        elif self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_OUT:
+            self.advance()
+            return True
+        else:
+            # expect pin in or out
+            self.error_handler.handle_error(self.error_handler.EXPECT_PIN_IN_OR_OUT, self.symbol)
+            return False
+
+    def clock_cycle(self) -> bool:
+        if self.symbol.type == Scanner.NUMBER and self.symbol.id[0] != "0":
+            self.advance()
+            return True
+        else:
+            # expect clock cycle
+            self.error_handler.handle_error(self.error_handler.EXPECT_CLOCK_CYCLE, self.symbol)
+            return False
+
+    def skip_to_after_semicolon(self) -> None:
+        while self.symbol.type != Scanner.SEMICOLON:
             self.advance()
         self.advance()
 
-    def skip_to_after_close_bracket(self):
-        while self.symbol.type != self.scanner.CLOSE_CURLY_BRACKET:
+    def skip_to_after_close_bracket(self) -> None:
+        while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET:
             self.advance()
         self.advance()
 
-    def advance(self):
+    def advance(self) -> None:
         self.symbol = self.scanner.get_symbol()
-        while not self.symbol.type:
-            self.error_handler.handle_error()  # ERROR symbol encountered
-            self.symbol = self.scanner.get_symbol()
 
     def symbol_string(self):
         return self.names.get_name_string(self.symbol.id)
 
     def make_symbol_list(self):
         self.advance()
-        while self.symbol != self.scanner.EOF:
+        while self.symbol != Scanner.EOF:
             self.symbol_list.append(self.symbol)
             self.advance()
     def make_block_dict(self):
@@ -226,7 +247,7 @@ class Parser:
         keyword_positions = []
         block_body_positions = []
         for i in range(len(self.symbol_list)):
-            if self.symbol_list[i] == self.scanner.KEYWORD:
-                if self.symbol_list[i+1] == self.scanner.OPEN_CURLY_BRACKET:
+            if self.symbol_list[i] == Scanner.KEYWORD:
+                if self.symbol_list[i+1] == Scanner.OPEN_CURLY_BRACKET:
                     open_bracket = True
                     # have not finished

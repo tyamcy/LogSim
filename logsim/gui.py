@@ -240,7 +240,8 @@ class Gui(wx.Frame):
         self.network = network
         self.monitors = monitors
 
-        # monitored_signal_list, unmonitored_signal_list = self.monitors.getSignalNames()
+        # self.monitors_active_list = self.monitors.getSignalNames()[0]
+        # self.monitors_inactive_list = self.monitors.getSignalNames()[1]
 
 
         # Color styles 
@@ -359,24 +360,25 @@ class Gui(wx.Frame):
 
 
         # Monitors section
-        monitors_list = ["G1", "G2", "G3"]
+        self.monitors_active_list = ["G1", "G2"]
+        self.monitors_inactive_list = ["G3", "G4", "G5"]
+
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)
         self.monitors_text = wx.StaticText(self, wx.ID_ANY, "Monitors")
         self.monitors_scrolled = wx.ScrolledWindow(self, style=wx.VSCROLL) 
         self.monitors_scrolled.SetScrollRate(10, 10)
-        monitors_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.monitors_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        for m in monitors_list:
-            monitor = wx.StaticText(self.monitors_scrolled, wx.ID_ANY, m)
-            monitors_scrolled_sizer.Add(monitor, 0, wx.ALL| wx.EXPAND, 5) 
+        self.update_monitors_display()
 
-        self.monitors_scrolled.SetSizer(monitors_scrolled_sizer)  
+        self.monitors_scrolled.SetSizer(self.monitors_scrolled_sizer)  
         self.monitors_scrolled.SetMinSize((250, 150))
         self.monitors_scrolled.SetBackgroundColour(self.light_background_secondary)
         self.monitors_sizer.Add(self.monitors_text, 0, wx.ALL, 5)  
         self.monitors_sizer.Add(self.monitors_scrolled, 1, wx.EXPAND | wx.ALL, 5)  
         self.right_sizer.Add(self.monitors_sizer, 1, wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, 0)
 
+        # Add and remove monitor buttons
         self.monitors_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         self.add_monitor_button = wx.Button(self, wx.ID_ANY, "Add")
@@ -399,8 +401,8 @@ class Gui(wx.Frame):
         switches_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
 
         # Dictionary of switches and their corresponding states
-        switches_dict = {"A": 0, "B": 0, "C": 1, "D": 0, "E": 1, "F": 0, "G": 1, "H": 1, "I": 0}
-        for switch, state in switches_dict.items():
+        self.switches_dict = {"A": 0, "B": 0, "C": 1, "D": 0, "E": 1, "F": 0, "G": 1, "H": 1, "I": 0}
+        for switch, state in self.switches_dict.items():
             switch_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
             label = wx.StaticText(self.switches_scrolled, wx.ID_ANY, switch)
@@ -410,7 +412,7 @@ class Gui(wx.Frame):
             toggle = wx.ToggleButton(self.switches_scrolled, wx.ID_ANY, initial_label)
             toggle.SetValue(state == 1)
             toggle.SetBackgroundColour(self.light_button_color)
-            toggle.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle)
+            toggle.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_switch)
             switch_sizer.Add(toggle, 0, wx.ALIGN_CENTER_VERTICAL)
 
             switches_scrolled_sizer.Add(switch_sizer, 0, wx.EXPAND | wx.ALL, 5)
@@ -443,7 +445,6 @@ class Gui(wx.Frame):
         self.SetSizer(self.main_sizer)
 
 
-
     def on_menu(self, event):
         """Handle the event when the user selects a menu item."""
         Id = event.GetId()
@@ -470,11 +471,37 @@ class Gui(wx.Frame):
         text = "".join(["New spin control value: ", str(spin_value)])
         self.canvas.render(text)
 
+    def update_monitors_display(self):
+        """Handle the event of updating the list of monitors upon change."""
+        self.monitors_scrolled_sizer.Clear(True)
+        for monitor in self.monitors_active_list:
+            monitor_label = wx.StaticText(self.monitors_scrolled, wx.ID_ANY, monitor)
+            self.monitors_scrolled_sizer.Add(monitor_label, 0, wx.ALL | wx.EXPAND, 5)
+        self.monitors_scrolled.Layout()
+
     def on_add_monitor_button(self, event):
-        return 
+        """Handle the click event of the add monitor button, opening a dialog box that allows the user to add a monitor point."""
+        dialog = wx.SingleChoiceDialog(self, "Select a Monitor to Add:", "Add Monitor", self.monitors_inactive_list)
+        if dialog.ShowModal() == wx.ID_OK:
+            selection = dialog.GetStringSelection()
+            self.monitors_active_list.append(selection)
+            self.monitors_inactive_list.remove(selection)
+            self.monitors_active_list.sort()
+            self.monitors_inactive_list.sort()
+            self.update_monitors_display()
+        dialog.Destroy()
     
     def on_remove_monitor_button(self, event):
-        return 
+        """Handle the click event of the remove monitor button, opening a dialog box that allows the user to remove a monitor point."""
+        dialog = wx.SingleChoiceDialog(self, "Select a Monitor to Remove:", "Remove Monitor", self.monitors_active_list)
+        if dialog.ShowModal() == wx.ID_OK:
+            selection = dialog.GetStringSelection()
+            self.monitors_active_list.remove(selection)
+            self.monitors_inactive_list.append(selection)
+            self.monitors_active_list.sort()
+            self.monitors_inactive_list.sort()
+            self.update_monitors_display()
+        dialog.Destroy()
 
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""        
@@ -499,7 +526,7 @@ class Gui(wx.Frame):
         text = "".join(["New text box value: ", text_box_value])
         self.canvas.render(text)
     
-    def on_toggle(self, event):
+    def on_toggle_switch(self, event):
         """Handle the event when the user toggles a switch."""
         button = event.GetEventObject()
         is_on = button.GetValue() # toggle button is on when clicked (value 1)
@@ -528,6 +555,10 @@ class Gui(wx.Frame):
             self.switches_scrolled.SetBackgroundColour(self.dark_background_secondary)
             self.switches_scrolled.SetForegroundColour(self.dark_background_secondary)
 
+            for child in self.monitors_scrolled.GetChildren():
+                if isinstance(child, wx.StaticText):
+                    child.SetForegroundColour(self.dark_text_color)
+
             for child in self.switches_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
                     child.SetForegroundColour(self.dark_text_color)
@@ -552,6 +583,10 @@ class Gui(wx.Frame):
             self.switches_text.SetForegroundColour(self.light_text_color)
             self.switches_scrolled.SetBackgroundColour(self.light_background_secondary)
             self.switches_scrolled.SetForegroundColour(self.light_background_secondary)
+
+            for child in self.monitors_scrolled.GetChildren():
+                if isinstance(child, wx.StaticText):
+                    child.SetForegroundColour(self.light_text_color)
 
             for child in self.switches_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):

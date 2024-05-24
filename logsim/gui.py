@@ -457,7 +457,9 @@ class Gui(wx.Frame):
         self.right_sizer.Add(self.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
 
         # Monitors section
-        monitors_list = ["G1", "G2", "G3"]
+        self.monitors_active_list = ["G1", "G2"]
+        self.monitors_inactive_list = ["G3", "G4", "G5"]
+
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)
         self.monitors_text = wx.StaticText(self, wx.ID_ANY, "Monitors")
         self.monitors_scrolled = wx.ScrolledWindow(self, style=wx.VSCROLL) 

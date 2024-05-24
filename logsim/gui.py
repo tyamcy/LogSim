@@ -299,6 +299,15 @@ class Gui(wx.Frame):
         """Initialise widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
+        """Initialise variables."""
+        self.names = names
+        self.devices = devices
+        self.network = network
+        self.monitors = monitors
+
+        # monitored_signal_list, unmonitored_signal_list = self.monitors.getSignalNames()
+
+
         # Initialise variables
         self.names = names
         self.devices = devices
@@ -448,6 +457,7 @@ class Gui(wx.Frame):
         self.right_sizer.Add(self.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
 
         # Monitors section
+        monitors_list = ["G1", "G2", "G3"]
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)
         self.monitors_text = wx.StaticText(self, wx.ID_ANY, "Monitors")
         self.monitors_scrolled = wx.ScrolledWindow(self, style=wx.VSCROLL) 

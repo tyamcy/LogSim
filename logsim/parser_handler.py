@@ -74,7 +74,7 @@ class ParserErrorHandler:
 
         # syntax error
         if error_code == self.EXPECT_IDENTIFIER:
-            return f"Found {name}, expected an identifier"
+            return f"Found {name}, expected a non-keyword identifier"
         elif error_code == self.EXPECT_INPUT_DEVICE:
             return f"Found {name}, expected 'AND', 'NAND', 'OR', 'NOR', 'XOR' or 'DTYPE'"
         elif error_code == self.EXPECT_VARIABLE_INPUT_NUMBER:
@@ -124,5 +124,5 @@ class ParserErrorHandler:
         elif error_code == self.MISSING_CLOCK_OR_SWITCH:
             return f"At least one list between 'CLOCK' and 'SWITCH' is needed. neither is found"
         else:
-            raise ValueError(f"Invalid semantic error code '{error_code}' or invalid empty name")
+            raise ValueError(f"Invalid error code '{error_code}' or invalid empty name")
 

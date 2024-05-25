@@ -33,7 +33,7 @@ class ParserErrorHandler:
          self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW, self.MISSING_MONITOR] = names.unique_error_codes(18)
 
         # semantic error
-        [self.MISSING_CLOCK_OR_SWITCH] = names.unique_error_codes(1)
+        [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.WRONG_BLOCK_ORDER] = names.unique_error_codes(3)
 
     def handle_error(self, error_code: int, symbol: Symbol) -> None:
         print("handling error")
@@ -58,12 +58,10 @@ class ParserErrorHandler:
             name = "}"
         else:  # EOF should not raise errors anyway
             raise ValueError("Invalid symbol type")
-
         error_message = self.get_error_message(error_code=error_code, name=name)
         print(error_message)
         error_output = self.get_error_output(line=symbol.line, character_in_line=symbol.character_in_line,
                                              message=error_message)
-        print("fetched error output")
         self.error_output_list.append(error_output)
 
     def get_error_output(self, line: int, character_in_line: int, message: str) -> TerminalOutput:
@@ -77,9 +75,9 @@ class ParserErrorHandler:
         return terminal_output
 
     def get_error_message(self, error_code: int, name: str = "") -> str:
+        name = "\"" + name + "\""
         if error_code not in [self.MISSING_MONITOR, self.MISSING_CLOCK_OR_SWITCH] and not name:
             raise TypeError(f"error_code = {error_code} has 1 required positional argument: 'name'")
-
         # syntax error
         if error_code == self.EXPECT_IDENTIFIER:
             return f"Found {name}, expected a non-keyword identifier"
@@ -127,10 +125,14 @@ class ParserErrorHandler:
             return f"Missing input to pin {name}"
         elif error_code == self.network.DEVICE_ABSENT:
             return f"Identifier {name} is not defined"
-        elif error_code == self.devices.DEVICE_PRESENT or self.monitors.MONITOR_PRESENT:
+        elif error_code == self.devices.DEVICE_PRESENT or error_code == self.monitors.MONITOR_PRESENT:
             return f"Identifier {name} should not be redefined"
         elif error_code == self.MISSING_CLOCK_OR_SWITCH:
             return f"At least one list between 'CLOCK' and 'SWITCH' is needed. neither is found"
+        elif error_code == self.DUPLICATE_KEYWORD:
+            return f"{name} block should not be redefined"
+        elif error_code == self.WRONG_BLOCK_ORDER:
+            return f"{name} block order is wrong"
         else:
             raise ValueError(f"Invalid error code '{error_code}' or invalid empty name")
 

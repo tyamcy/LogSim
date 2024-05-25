@@ -1,16 +1,15 @@
 / Combinational logic /
+SWITCH {
+A: 1;
+B: 0;
+C: 0;
+}
 DEVICE {
-G1: NAND, 17;
+G1: NAND, 16;
 G2: XOR;
 G3: NAND, 3;
 }
 
-/ Inputs /
-SWITCH {
-A: 0;
-B: 0;
-C: 0;
-}
 
 CLOCK {
 CLK1: 2;

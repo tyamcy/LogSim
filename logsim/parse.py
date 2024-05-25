@@ -16,7 +16,7 @@ from monitors import Monitors
 from scanner import Scanner
 from parser_handler import ParserErrorHandler
 
-PATH = "test_parser_1"
+PATH = "holder_path"
 
 
 class Parser:
@@ -75,11 +75,11 @@ class Parser:
                 # list cannot be empty
                 # wrong sub-rule
                 if not sub_rule():
-                    self.skip_to_semicolon_or_close_bracket()
-                while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and self.symbol.type != Scanner.EOF:
+                    self.skip_after_semicolon_or_to_close_bracket()
+                while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and Scanner.EOF:
                     # wrong sub-rule
                     if not sub_rule():
-                        self.skip_to_semicolon_or_close_bracket()
+                        self.skip_after_semicolon_or_to_close_bracket()
                 self.advance()
             else:
                 # expect open curly bracket
@@ -93,29 +93,23 @@ class Parser:
     def device_list(self):
         print("parsing device list")
         self.parse_list(keyword=self.scanner.DEVICE_ID, sub_rule=self.device)
-        print("device list correct")
 
     def clock_list(self):
         print("parsing clock list")
         self.parse_list(keyword=self.scanner.CLOCK_ID, sub_rule=self.clock)
-        print("clock list correct")
     def switch_list(self):
         print("parsing switch list")
         self.parse_list(keyword=self.scanner.SWITCH_ID, sub_rule=self.switch)
-        print("switch list correct")
 
     def monitor_list(self):
         print("parsing monitor list")
         self.parse_list(keyword=self.scanner.MONITOR_ID, sub_rule=self.monitor)
-        print("monitor list correct")
 
     def connect_list(self):
         print("parsing connect list")
         self.parse_list(keyword=self.scanner.CONNECT_ID, sub_rule=self.connect)
-        print("connect list correct")
 
     def device(self) -> bool:
-        print("parsing device")
         # expect identifier
         if not self.identifier():
             return False
@@ -358,8 +352,10 @@ class Parser:
             self.error_handler.handle_error(self.error_handler.EXPECT_CLOCK_CYCLE, self.symbol)
             return False
 
-    def skip_to_semicolon_or_close_bracket(self) -> None:
-        while self.symbol.type != Scanner.SEMICOLON or Scanner.CLOSE_CURLY_BRACKET or Scanner.EOF:
+    def skip_after_semicolon_or_to_close_bracket(self) -> None:
+        while self.symbol.type != Scanner.SEMICOLON and Scanner.CLOSE_CURLY_BRACKET and Scanner.EOF:
+            self.advance()
+        if self.symbol.type == Scanner.SEMICOLON:
             self.advance()
 
     def skip_to_close_bracket(self) -> None:
@@ -371,3 +367,6 @@ class Parser:
 
     def symbol_string(self) -> str:
         return self.names.get_name_string(self.symbol.id)
+
+    def fetch_error_output(self):
+        return self.error_handler.error_output_list

@@ -6,7 +6,7 @@ from scanner import Scanner
 from parser_handler import ParserErrorHandler
 from parse import Parser
 
-PATH = "test_parser_2"
+PATH = "test_parser_1"
 
 names = Names()
 devices = Devices(names=names)
@@ -21,3 +21,5 @@ parser.switch_list()
 parser.clock_list()
 parser.monitor_list()
 parser.connect_list()
+for error in parser.fetch_error_output():
+    print(error)

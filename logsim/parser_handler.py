@@ -12,6 +12,9 @@ class TerminalOutput:
         self.arrow = None
         self.message = None
 
+    def __str__(self):
+        return f"\n{self.line_location}\n{self.line_with_issue}{self.arrow}\n{self.message}\n"
+
 
 class ParserErrorHandler:
     def __init__(self, names: Names, devices: Devices, network: Network, monitors: Monitors, scanner: Scanner):
@@ -60,13 +63,14 @@ class ParserErrorHandler:
         print(error_message)
         error_output = self.get_error_output(line=symbol.line, character_in_line=symbol.character_in_line,
                                              message=error_message)
+        print("fetched error output")
         self.error_output_list.append(error_output)
 
     def get_error_output(self, line: int, character_in_line: int, message: str) -> TerminalOutput:
         terminal_output = TerminalOutput()
 
-        terminal_output.ine_location = f"Line {line}:"
-        terminal_output.line_with_error = self.scanner.file_lines[line]
+        terminal_output.line_location = f"Line {line}:"
+        terminal_output.line_with_issue = self.scanner.file_lines[line]
         terminal_output.arrow = " "*character_in_line + "^"
         terminal_output.message = message
 

@@ -26,7 +26,7 @@ f: G1;
 / Internal connections of the circuit /
 CONNECTION {
 CLK1 > D1.CLK;
-A > D1.SET;
+1 > D1.SET;
 B > D1.CLEAR;
 C > D1.DATA;
 CLK1 > D2.CLK;

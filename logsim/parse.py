@@ -15,6 +15,7 @@ from network import Network
 from monitors import Monitors
 from scanner import Scanner
 from parser_handler import ParserErrorHandler
+from collections import OrderedDict
 
 PATH = "holder_path"
 
@@ -57,57 +58,93 @@ class Parser:
         self.error_handler = ParserErrorHandler(names=names, devices=devices, network=network, monitors=monitors,
                                                 scanner=scanner)
         self.symbol = None
+        self.block_parse_flags = {"DEVICE": False,
+                                  "SWITCH": False,
+                                  "CLOCK": False,
+                                  "MONITOR": False,
+                                  "CONNECTION": False}
+        self.block_order_flags = OrderedDict([("DEVICE", False),
+                                              ("SWITCH", False),
+                                              ("CLOCK", False),
+                                              ("MONITOR", False),
+                                              ("CONNECTION", False)])
 
     def parse_network(self) -> bool:
         """Parse the circuit definition file."""
         # For now just return True, so that userint and gui can run in the
         # skeleton code. When complete, should return False when there are
         # errors in the circuit definition file.
+        self.advance()
+        while self.symbol.type != Scanner.EOF:
+            if self.symbol.type == Scanner.KEYWORD:
+                keyword = self.names.get_name_string(self.symbol.id)
+                if self.block_parse_flags[keyword]:
+                    self.error_handler.handle_error(self.error_handler.DUPLICATE_KEYWORD, self.symbol)
+                    self.skip_to_keyword()
+                    continue
+                if self.block_order_flags[keyword]:
+                    self.error_handler.handle_error(self.error_handler.WRONG_BLOCK_ORDER, self.symbol)
+                    self.skip_to_keyword()
+                    continue
+                if keyword == "DEVICE":
+                    self.device_list()
+                elif keyword == "SWITCH":
+                    self.switch_list()
+                elif keyword == "CLOCK":
+                    self.clock_list()
+                elif keyword == "MONITOR":
+                    self.monitor_list()
+                elif keyword == "CONNECTION":
+                    self.connect_list()
+            else:
+                self.error_handler.handle_error(self.error_handler.EXPECT_KEYWORD, self.symbol)
+                self.skip_to_keyword()
 
-        return True
+        return False if self.fetch_error_output() else True
 
-    def parse_list(self, keyword: int, sub_rule: bool()):
-        if (self.symbol.type == Scanner.KEYWORD and
-                self.symbol.id == keyword):
+    def parse_list(self, keyword: str, sub_rule: bool()):
+        self.advance()
+        if self.symbol.type == Scanner.OPEN_CURLY_BRACKET:
             self.advance()
-            if self.symbol.type == Scanner.OPEN_CURLY_BRACKET:
-                self.advance()
-                # list cannot be empty
+            # list cannot be empty
+            # wrong sub-rule
+            if not sub_rule():
+                self.skip_after_semicolon_or_to_close_bracket()
+            while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and Scanner.EOF:
                 # wrong sub-rule
                 if not sub_rule():
                     self.skip_after_semicolon_or_to_close_bracket()
-                while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and Scanner.EOF:
-                    # wrong sub-rule
-                    if not sub_rule():
-                        self.skip_after_semicolon_or_to_close_bracket()
-                self.advance()
-            else:
-                # expect open curly bracket
-                self.error_handler.handle_error(self.error_handler.EXPECT_OPEN_CURLY_BRACKET, self.symbol)
-                self.skip_to_close_bracket()
+            self.advance()
+            self.block_parse_flags[keyword] = True
+            for key in self.block_order_flags:
+                if key == keyword:
+                    break
+                else:
+                    self.block_order_flags[key] = True
         else:
-            # expect keyword
-            self.error_handler.handle_error(self.error_handler.EXPECT_KEYWORD, self.symbol)
+            # expect open curly bracket
+            self.error_handler.handle_error(self.error_handler.EXPECT_OPEN_CURLY_BRACKET, self.symbol)
             self.skip_to_close_bracket()
 
     def device_list(self):
         print("parsing device list")
-        self.parse_list(keyword=self.scanner.DEVICE_ID, sub_rule=self.device)
+        self.parse_list(keyword="DEVICE", sub_rule=self.device)
 
     def clock_list(self):
         print("parsing clock list")
-        self.parse_list(keyword=self.scanner.CLOCK_ID, sub_rule=self.clock)
+        self.parse_list(keyword="CLOCK", sub_rule=self.clock)
+
     def switch_list(self):
         print("parsing switch list")
-        self.parse_list(keyword=self.scanner.SWITCH_ID, sub_rule=self.switch)
+        self.parse_list(keyword="SWITCH", sub_rule=self.switch)
 
     def monitor_list(self):
         print("parsing monitor list")
-        self.parse_list(keyword=self.scanner.MONITOR_ID, sub_rule=self.monitor)
+        self.parse_list(keyword="MONITOR", sub_rule=self.monitor)
 
     def connect_list(self):
         print("parsing connect list")
-        self.parse_list(keyword=self.scanner.CONNECT_ID, sub_rule=self.connect)
+        self.parse_list(keyword="CONNECTION", sub_rule=self.connect)
 
     def device(self) -> bool:
         # expect identifier
@@ -353,17 +390,27 @@ class Parser:
             return False
 
     def skip_after_semicolon_or_to_close_bracket(self) -> None:
-        while self.symbol.type != Scanner.SEMICOLON and Scanner.CLOSE_CURLY_BRACKET and Scanner.EOF:
+        while (self.symbol.type != Scanner.SEMICOLON and
+               self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and
+               self.symbol.type != Scanner.EOF):
             self.advance()
         if self.symbol.type == Scanner.SEMICOLON:
             self.advance()
 
     def skip_to_close_bracket(self) -> None:
-        while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET or Scanner.EOF:
+        while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and self.symbol.type != Scanner.EOF:
+            self.advance()
+
+    def skip_to_keyword(self) -> None:
+        self.advance()
+        while self.symbol.type != Scanner.KEYWORD and self.symbol.type != Scanner.EOF:
             self.advance()
 
     def advance(self) -> None:
         self.symbol = self.scanner.get_symbol()
+        if self.symbol.type == Scanner.INVALID:
+            self.symbol = self.scanner.get_symbol()
+            # raise a warning here
 
     def symbol_string(self) -> str:
         return self.names.get_name_string(self.symbol.id)

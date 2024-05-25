@@ -168,9 +168,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.init = True
 
         size = self.GetClientSize()
-        text = "".join(["Canvas redrawn on paint event, size is ",
-                        str(size.width), ", ", str(size.height)])
-        self.render(text)
+        #text = "".join(["Canvas redrawn on paint event, size is ",
+        #                str(size.width), ", ", str(size.height)])
+        self.render("")
 
     def on_size(self, event):
         """Handle the canvas resize event."""
@@ -457,8 +457,8 @@ class Gui(wx.Frame):
         self.right_sizer.Add(self.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
 
         # Monitors section
-        self.monitors_active_list = ["G1", "G2"]
-        self.monitors_inactive_list = ["G3", "G4", "G5"]
+        self.monitors_active_list = ["G1", "G2","G3", "G4", "G5", "D1", "D2"]
+        self.monitors_inactive_list = ["D3"]
 
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)
         self.monitors_text = wx.StaticText(self, wx.ID_ANY, "Monitors")

@@ -16,7 +16,7 @@ from monitors import Monitors
 from scanner import Scanner
 from parser_handler import ParserErrorHandler
 
-PATH = "holder_path"
+PATH = "test_parser_1"
 
 
 class Parser:
@@ -76,11 +76,11 @@ class Parser:
                 # wrong sub-rule
                 if not sub_rule():
                     self.skip_to_semicolon_or_close_bracket()
-                while self.symbol != Scanner.CLOSE_CURLY_BRACKET or Scanner.EOF:
-                    self.advance()
+                while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and self.symbol.type != Scanner.EOF:
                     # wrong sub-rule
                     if not sub_rule():
                         self.skip_to_semicolon_or_close_bracket()
+                self.advance()
             else:
                 # expect open curly bracket
                 self.error_handler.handle_error(self.error_handler.EXPECT_OPEN_CURLY_BRACKET, self.symbol)
@@ -91,21 +91,31 @@ class Parser:
             self.skip_to_close_bracket()
 
     def device_list(self):
+        print("parsing device list")
         self.parse_list(keyword=self.scanner.DEVICE_ID, sub_rule=self.device)
+        print("device list correct")
 
     def clock_list(self):
+        print("parsing clock list")
         self.parse_list(keyword=self.scanner.CLOCK_ID, sub_rule=self.clock)
-
+        print("clock list correct")
     def switch_list(self):
+        print("parsing switch list")
         self.parse_list(keyword=self.scanner.SWITCH_ID, sub_rule=self.switch)
+        print("switch list correct")
 
     def monitor_list(self):
+        print("parsing monitor list")
         self.parse_list(keyword=self.scanner.MONITOR_ID, sub_rule=self.monitor)
+        print("monitor list correct")
 
     def connect_list(self):
+        print("parsing connect list")
         self.parse_list(keyword=self.scanner.CONNECT_ID, sub_rule=self.connect)
+        print("connect list correct")
 
     def device(self) -> bool:
+        print("parsing device")
         # expect identifier
         if not self.identifier():
             return False
@@ -245,6 +255,7 @@ class Parser:
             self.error_handler.handle_error(self.error_handler.EXPECT_SEMICOLON, self.symbol)
             return False
         else:
+            self.advance()
             return True
 
     def full_stop(self) -> bool:
@@ -281,8 +292,8 @@ class Parser:
                 return False
 
     def variable_input_number(self) -> bool:
-        if (self.symbol.type == Scanner.NUMBER and self.symbol_string()[0] != "0"
-                and 1 <= int(self.symbol_string()) <= 16):
+        if (self.symbol.type == Scanner.NUMBER and self.symbol.id[0] != "0"
+                and 1 <= int(self.symbol.id) <= 16):
             return True
         else:
             # expect variable input number
@@ -298,10 +309,18 @@ class Parser:
             return False
 
     def pin_in(self) -> bool:
-        if self.symbol.type == Scanner.NAME and self.symbol_string() == "I":
-            self.advance()
+        if self.symbol.type == Scanner.NAME and self.symbol_string()[0] == "I":
             # expect variable input number
-            return self.variable_input_number()
+            try:
+                variable_number = int(self.symbol_string()[1:])
+                if 1 <= variable_number <= 16:
+                    return True
+                else:
+                    self.error_handler.handle_error(self.error_handler.EXPECT_VARIABLE_INPUT_NUMBER, self.symbol)
+                    return False
+            except ValueError:
+                self.error_handler.handle_error(self.error_handler.EXPECT_PIN_IN, self.symbol)
+                return False
         elif self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_IN:
             return True
         else:

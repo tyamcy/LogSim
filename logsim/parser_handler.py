@@ -33,8 +33,12 @@ class ParserErrorHandler:
         [self.MISSING_CLOCK_OR_SWITCH] = names.unique_error_codes(1)
 
     def handle_error(self, error_code: int, symbol: Symbol) -> None:
-        if not symbol.id:  # symbol id is not None, i.e. symbol.type is KEYWORD, NUMBER or NAME
-            name = self.names.get_name_string(symbol.id)
+        print("handling error")
+        if symbol.id:  # symbol id is not None, i.e. symbol.type is KEYWORD, NUMBER or NAME
+            if symbol.type == Scanner.NUMBER:
+                name = symbol.id
+            else:
+                name = self.names.get_name_string(symbol.id)
         elif symbol.type == Scanner.COMMA:
             name = ","
         elif symbol.type == Scanner.SEMICOLON:
@@ -53,9 +57,9 @@ class ParserErrorHandler:
             raise ValueError("Invalid symbol type")
 
         error_message = self.get_error_message(error_code=error_code, name=name)
+        print(error_message)
         error_output = self.get_error_output(line=symbol.line, character_in_line=symbol.character_in_line,
                                              message=error_message)
-
         self.error_output_list.append(error_output)
 
     def get_error_output(self, line: int, character_in_line: int, message: str) -> TerminalOutput:

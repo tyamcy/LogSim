@@ -54,7 +54,7 @@ class Scanner:
     """
 
     symbol_type_list = [COMMA, SEMICOLON, COLON, FULL_STOP, ARROW, OPEN_CURLY_BRACKET, CLOSE_CURLY_BRACKET, KEYWORD,
-                        NUMBER, NAME, EOF] = range(11)
+                        NUMBER, NAME, EOF, INVALID] = range(12)
     keywords_list = ["DEVICE", "CLOCK", "SWITCH", "MONITOR", "CONNECTION"]
 
     def __init__(self, path: str, names: Names):
@@ -136,6 +136,7 @@ class Scanner:
 
         else:  # not a valid character
             print(f"Error! Invalid character '{self.current_character}'")
+            symbol.type = self.INVALID
             self.advance()
 
         return symbol

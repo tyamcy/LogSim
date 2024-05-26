@@ -16,9 +16,7 @@ from monitors import Monitors
 from scanner import Scanner
 from parser_handler import ParserErrorHandler
 from collections import OrderedDict
-
-PATH = "holder_path"
-
+from copy import copy
 
 class Parser:
     DTYPE_PIN_IN = ["DATA", "CLK", "SET", "CLEAR"]
@@ -68,6 +66,9 @@ class Parser:
                                               ("CLOCK", False),
                                               ("MONITOR", False),
                                               ("CONNECTION", False)])
+        self.current_identifier = None
+        self.current_qualifier = None
+        self.current_device_kind = None
 
     def parse_network(self) -> bool:
         """Parse the circuit definition file."""
@@ -180,7 +181,23 @@ class Parser:
         self.advance()
 
         # expect semicolon
-        return self.semicolon()
+        if not self.semicolon():
+            return False
+        self.advance()
+
+        # make device
+        if not self.error_count():
+            device_type = self.current_device_kind.id
+            device_id = self.current_qualifier.id
+            device_property = self.current_qualifier.id if self.current_identifier else None
+            error_type = self.devices.make_device(device_id, device_type, device_property)
+            if error_type == self.devices.NO_ERROR:
+                return True
+            elif error_type == self.devices.DEVICE_PRESENT:
+                self.error_handler.handle_error(error_type, self.current_identifier)
+                return False
+            elif error_type == self.devices.QUALIFIER_PRESENT:
+                self.error_handler.handle_error(error_type, self.current_qualifier)
 
     def clock(self) -> bool:
         # expect identifier
@@ -316,6 +333,7 @@ class Parser:
     def identifier(self) -> bool:
         # Note: EBNF technically allows keywords to be used as identifier, but here the software will not allow
         if self.symbol.type == Scanner.NAME:
+            self.current_identifier = copy(self.symbol)
             return True
         else:
             self.error_handler.handle_error(self.error_handler.EXPECT_IDENTIFIER, self.symbol)
@@ -324,24 +342,29 @@ class Parser:
     def input_device(self) -> bool:
         if self.symbol.type == Scanner.NAME:
             if self.symbol_string() in self.VARIABLE_INPUT_DEVICE:
+                self.current_device_kind = copy(self.symbol)
                 self.advance()
                 if self.symbol.type != Scanner.COMMA:
                     # expect comma
                     self.error_handler.handle_error(self.error_handler.EXPECT_COMMA, self.symbol)
                     return False
                 self.advance()
+
                 # expect variable input number
                 return self.variable_input_number()
             elif self.symbol_string() in self.FIXED_INPUT_DEVICE:
+                self.current_qualifier = None
+                self.current_device_kind = copy(self.symbol)
                 return True
-            else:
-                # expect input device
-                self.error_handler.handle_error(self.error_handler.EXPECT_INPUT_DEVICE, self.symbol)
-                return False
+
+        # expect input device
+        self.error_handler.handle_error(self.error_handler.EXPECT_INPUT_DEVICE, self.symbol)
+        return False
 
     def variable_input_number(self) -> bool:
         if (self.symbol.type == Scanner.NUMBER and self.symbol.id[0] != "0"
                 and 1 <= int(self.symbol.id) <= 16):
+            self.current_qualifier = copy(self.symbol)
             return True
         else:
             # expect variable input number

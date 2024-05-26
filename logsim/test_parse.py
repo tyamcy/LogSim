@@ -9,7 +9,6 @@ from monitors import Monitors
 from scanner import Scanner
 
 path_correct = "logsim/test_text/test_parse_correct_text"
-path_correct = "logsim/test_text/test_parse_correct_text"
 path_wrong_order = "logsim/test_text/test_parse_wrong_order_text"
 path_wrong_content = "logsim/test_text/test_parse_wrong_content_text"
 path_all_error_1 = "logsim/test_text/test_parse_all_error_1"
@@ -54,20 +53,21 @@ def all_error_1_expected_content(parser: Parser):
         ("Line 32:", parser.error_handler.EXPECT_FULL_STOP_OR_SEMICOLON),
         ("Line 34:", parser.monitors.MONITOR_PRESENT),
         ("Line 35:", parser.error_handler.EXPECT_COLON),
-        ("Line 36:", parser.network.DEVICE_ABSENT),
-        ("Line 41:", None),  # no error code defined now - add later
+        ("Line 36:", parser.network.OUTPUT_PORT_ABSENT),
         ("Line 42:", parser.error_handler.EXPECT_PIN_IN),
         ("Line 43:", parser.error_handler.EXPECT_ARROW),
         ("Line 44:", parser.error_handler.EXPECT_FULL_STOP),
         ("Line 45:", parser.error_handler.EXPECT_FULL_STOP),
         ("Line 46:", parser.error_handler.EXPECT_PIN_IN),
         ("Line 47:", parser.network.INPUT_CONNECTED),
-        ("Line 48:", parser.network.PORT_ABSENT),
+        ("Line 48:", parser.network.INPUT_PORT_ABSENT),
         ("Line 50:", parser.error_handler.EXPECT_FULL_STOP_OR_ARROW),
         ("Line 57:", parser.network.INPUT_CONNECTED),
-        ("Line 64:", parser.network.PORT_ABSENT),
-        ("Line 65:", parser.network.DEVICE_ABSENT)
+        ("Line 64:", parser.network.OUTPUT_PORT_ABSENT),
+        ("Line 65:", parser.network.OUTPUT_DEVICE_ABSENT),
+        ("Line 66:", parser.network.INPUT_DEVICE_ABSENT)
     ]
+
 
 def all_error_2_expected_content(parser: Parser):
     return [
@@ -78,50 +78,60 @@ def all_error_2_expected_content(parser: Parser):
     ]
     # Need to test MISSING_MONITOR and MISSING_CLOCK_OR_SWITCH
 
+
 def semantic_error_device_absent_expected(parser: Parser):
     return [
         ("Line 24", parser.error_handler.network.DEVICE_ABSENT)
     ]
+
 
 def semantic_error_device_present_expected(parser: Parser):
     return [
         ("Line 6", parser.error_handler.devices.DEVICE_PRESENT)
     ]
 
+
 def semantic_error_duplicate_keyword_expected(parser: Parser):
     return [
         ("Line 17", parser.error_handler.DUPLICATE_KEYWORD)
     ]
+
 
 def semantic_error_input_connected_expected(parser: Parser):
     return [
         ("Line 30", parser.error_handler.network.INPUT_CONNECTED)
     ]
 
+
 def semantic_error_missing_clock_or_switch_expected(parser: Parser):
     return [
         (parser.error_handler.MISSING_CLOCK_OR_SWITCH)
     ]
+
 
 def semantic_error_missing_input_to_pin_expected(parser: Parser):
     return [
         (parser.error_handler.MISSING_INPUT_TO_PIN)
     ]
 
+
 def semantic_error_monitor_present_expected(parser: Parser):
     return [
         ("Line 24", parser.error_handler.monitors.MONITOR_PRESENT)
     ]
+
 
 def semantic_error_port_absent_expected(parser: Parser):
     return [
         ("Line 39", parser.error_handler.network.PORT_ABSENT)
     ]
 
+
 def semantic_error_wrong_block_order_expected(parser: Parser):
     return [
         ("Line 3", parser.error_handler.WRONG_BLOCK_ORDER)
     ]
+
 
 @pytest.mark.parametrize("path, expected_result", [
     (path_correct, True),

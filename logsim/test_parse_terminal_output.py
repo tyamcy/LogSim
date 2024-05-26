@@ -3,7 +3,6 @@ from devices import Devices
 from network import Network
 from monitors import Monitors
 from scanner import Scanner
-from parser_handler import ParserErrorHandler
 from parse import Parser
 
 PATH = "logsim/test_text/test_parse_wrong_content_text"

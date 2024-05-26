@@ -43,6 +43,7 @@ def test_make_monitor(new_monitors):
                                                (SW2_ID, None): [],
                                                (OR1_ID, None): []}
 
+
 def test_identify_monitor(new_monitors):
     """Test if make_monitor correctly updates the identifiers dictionary."""
     names = new_monitors.names
@@ -62,13 +63,14 @@ def test_make_monitor_gives_errors(new_monitors):
                                                             "Or1", "I1",
                                                             "SWITCH"])
 
-    assert new_monitors.make_monitor(OR1_ID, I1, "D") == new_monitors.NOT_OUTPUT
+    # input is allowed
+    assert new_monitors.make_monitor(OR1_ID, I1, "D") == new_monitors.NO_ERROR
+
     assert new_monitors.make_monitor(SW1_ID,
                                      None, "E") == new_monitors.MONITOR_PRESENT
     # I1 is not a device_id in the network
     assert new_monitors.make_monitor(I1,
                                      None, "F") == network.DEVICE_ABSENT
-
 
     # Make a new switch device
     devices.make_device(SW3_ID, SWITCH_ID, 0)

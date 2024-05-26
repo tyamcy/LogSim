@@ -41,7 +41,7 @@ class ParserErrorHandler:
          self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW] = names.unique_error_codes(17)
 
         # semantic error
-        [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.WRONG_BLOCK_ORDER, self.MONITOR_NOT_DEFINED
+        [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.MISSING_INPUT_TO_PIN, self.WRONG_BLOCK_ORDER, self.MISSING_MONITOR
          ] = names.unique_error_codes(4)
 
     def handle_error(self, error_code: int, symbol: Symbol) -> None:
@@ -69,14 +69,14 @@ class ParserErrorHandler:
             name = ""
         else:
             raise ValueError("Invalid symbol type")
-        error_message = self.get_error_message(error_code=error_code, name=name)
+        error_message = self.get_line_error_message(error_code=error_code, name=name)
         error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,
                                                      message=error_message)
         self.error_output_list.append(error_output)
 
-    def file_error(self, error_code: int) -> None:
+    def file_error(self, error_code: int, name: str = "") -> None:
         error_output = FileTerminalOutput()
-        error_output.message = self.get_error_message(error_code=error_code)
+        error_output.message = self.get_line_error_message(error_code=error_code, name=name)
         self.error_output_list.append(error_output)
 
     def get_line_terminal_output(self, line: int, character_in_line: int, message: str) -> LineTerminalOutput:
@@ -89,9 +89,9 @@ class ParserErrorHandler:
 
         return terminal_output
 
-    def get_error_message(self, error_code: int, name: str = "") -> str:
-        name = "\"" + name + "\""
-        if error_code != self.MISSING_CLOCK_OR_SWITCH and not name:
+    def get_line_error_message(self, error_code: int, name: str = "") -> str:
+        name = "\'" + name + "\'"
+        if not (error_code == self.MISSING_CLOCK_OR_SWITCH or error_code == self.MISSING_MONITOR) and not name:
             raise TypeError(f"error_code = {error_code} has 1 required positional argument: 'name'")
         # syntax error
         if error_code == self.EXPECT_IDENTIFIER:
@@ -134,7 +134,7 @@ class ParserErrorHandler:
             return f"Pin {name} does not exist"
         elif error_code == self.network.INPUT_CONNECTED:
             return f"Connection repeatedly assigned to input pin {name}"
-        elif False:  # undefined error code now - implement later
+        elif error_code == self.MISSING_INPUT_TO_PIN:
             return f"Missing input to pin {name}"
         elif error_code == self.network.INPUT_DEVICE_ABSENT or error_code == self.network.OUTPUT_DEVICE_ABSENT:
             return f"Identifier {name} is not defined"
@@ -146,7 +146,7 @@ class ParserErrorHandler:
             return f"{name} block should not be redefined"
         elif error_code == self.WRONG_BLOCK_ORDER:
             return f"{name} block order is wrong"
-        elif error_code == self.MONITOR_NOT_DEFINED:
+        elif error_code == self.MISSING_MONITOR:
             return f"At least one monitor should be defined"
         else:
             raise ValueError(f"Invalid error code '{error_code}'")

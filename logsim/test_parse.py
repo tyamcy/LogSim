@@ -9,6 +9,7 @@ from monitors import Monitors
 from scanner import Scanner
 
 path_correct = "logsim/test_text/test_parse_correct_text"
+path_correct = "logsim/test_text/test_parse_correct_text"
 path_wrong_order = "logsim/test_text/test_parse_wrong_order_text"
 path_wrong_content = "logsim/test_text/test_parse_wrong_content_text"
 path_all_error_1 = "logsim/test_text/test_parse_all_error_1"

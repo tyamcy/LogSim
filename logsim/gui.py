@@ -284,9 +284,9 @@ class Gui(wx.Frame):
         self.network = network
         self.monitors = monitors
 
-        # self.monitors_active_list = [] self.monitors.getSignalNames()[0]
-        # self.monitors_inactive_list = [] self.monitors.getSignalNames()[1]
-        # self.
+        self.monitors_active_list = [] 
+        self.monitors_inactive_list = [] 
+        self.num_cycles = 10
 
         # State management
         self.file_present = False
@@ -401,8 +401,8 @@ class Gui(wx.Frame):
         # No of cycles section
         self.cycles_sizer = wx.BoxSizer(wx.VERTICAL)
         self.cycles_text = wx.StaticText(self, wx.ID_ANY, "No. of Cycles")
-        self.cycles_spin = wx.SpinCtrl(self, wx.ID_ANY, "10")
-        self.cycles_spin.SetRange(1, 250)
+        self.cycles_spin = wx.SpinCtrl(self, wx.ID_ANY, str(self.num_cycles))
+        self.cycles_spin.SetRange(1, 100)
 
         self.cycles_spin.Bind(wx.EVT_SPINCTRL, self.on_cycles_spin)
 
@@ -558,6 +558,10 @@ class Gui(wx.Frame):
                         self.monitors = monitors
                         self.scanner = scanner
                         self.parser = parser
+
+                        self.monitors_active_list = [] 
+                        self.monitors_inactive_list = [] 
+                        self.num_cycles = 10
                     else:
                         self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
                         self.terminal.AppendText("Error in the specification file.")
@@ -621,9 +625,9 @@ class Gui(wx.Frame):
     
     def on_add_monitor_button(self, event):
         """Handle the click event of the add monitor button."""
-        dialog = CustomDialogBox(self, "Select a Monitor to Add:", "Add Monitor", self.monitors_inactive_list)
+        dialog = CustomDialogBox(self, "Add Monitor", "Select a Monitor to Add:", self.monitors_inactive_list)
         if dialog.ShowModal() == wx.ID_OK:
-            selection = dialog.getStringSelection()
+            selection = dialog.getSelectedItem()
             if selection:
                 self.monitors_active_list.append(selection)
                 self.monitors_inactive_list.remove(selection)
@@ -633,9 +637,9 @@ class Gui(wx.Frame):
 
     def on_remove_monitor_button(self, event):
         """Handle the click event of the remove monitor button."""
-        dialog = CustomDialogBox(self, "Select a Monitor to Remove:", "Remove Monitor", self.monitors_active_list)
+        dialog = CustomDialogBox(self, "Remove Monitor", "Select a Monitor to Remove:", self.monitors_active_list)
         if dialog.ShowModal() == wx.ID_OK:
-            selection = dialog.getStringSelection()
+            selection = dialog.getSelectedItem()
             if selection:
                 self.monitors_active_list.remove(selection)
                 self.monitors_inactive_list.append(selection)

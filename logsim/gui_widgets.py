@@ -12,7 +12,7 @@ class CustomDialogBox(wx.Dialog):
 
     Public methods
     --------------
-    getStringSelection(self): 
+    getSelectedItem(self): 
     """
 
     def __init__(self, parent, title, message, choices):
@@ -25,7 +25,7 @@ class CustomDialogBox(wx.Dialog):
         sizer.Add(text, flag=wx.ALL, border=5)
 
         self.list_box = wx.ListBox(self, choices=choices, style=wx.LB_SINGLE | wx.LB_NEEDED_SB)
-        self.list_box.SetSizeHints(minSize=(150, 150))
+        self.list_box.SetSizeHints(minSize=(250, 150))
         sizer.Add(self.list_box, proportion=1, flag=wx.EXPAND | wx.ALL, border=5)
 
         button_sizer = self.CreateButtonSizer(wx.OK | wx.CANCEL)
@@ -34,7 +34,7 @@ class CustomDialogBox(wx.Dialog):
         self.SetSizer(sizer)
         self.Fit()
 
-    def getStringSelection(self):
+    def getSelectedItem(self):
         selection_index = self.list_box.GetSelection()
         if selection_index != wx.NOT_FOUND:
             return self.list_box.GetString(selection_index)

@@ -457,7 +457,7 @@ class Gui(wx.Frame):
         self.right_sizer.Add(self.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
 
         # Monitors section
-        self.monitors_active_list = ["G1", "G2","G3", "G4", "G5", "D1", "D2"]
+        self.monitors_active_list = ["G1", "G2","G3", "G4", "G5", "D1", "D2", "D4", "G6", "G7", "G8", "G9", "G10"]
         self.monitors_inactive_list = ["D3"]
 
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)

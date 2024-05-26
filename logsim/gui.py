@@ -306,7 +306,6 @@ class Gui(wx.Frame):
         self.dark_button_color = "#555555"
         self.dark_background_color = "#333333"
         self.dark_background_secondary = "#444444"
-
         self.dark_text_color = "#FFFFFF"
 
         # Terminal Colours
@@ -625,7 +624,7 @@ class Gui(wx.Frame):
     
     def on_add_monitor_button(self, event):
         """Handle the click event of the add monitor button."""
-        dialog = CustomDialogBox(self, "Add Monitor", "Select a Monitor to Add:", self.monitors_inactive_list)
+        dialog = CustomDialogBox(self, "Add Monitor", "Select a Monitor to Add:", self.monitors_inactive_list, self.theme)
         if dialog.ShowModal() == wx.ID_OK:
             selection = dialog.getSelectedItem()
             if selection:
@@ -637,7 +636,7 @@ class Gui(wx.Frame):
 
     def on_remove_monitor_button(self, event):
         """Handle the click event of the remove monitor button."""
-        dialog = CustomDialogBox(self, "Remove Monitor", "Select a Monitor to Remove:", self.monitors_active_list)
+        dialog = CustomDialogBox(self, "Remove Monitor", "Select a Monitor to Remove:", self.monitors_active_list, self.theme)
         if dialog.ShowModal() == wx.ID_OK:
             selection = dialog.getSelectedItem()
             if selection:

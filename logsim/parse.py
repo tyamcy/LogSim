@@ -183,21 +183,10 @@ class Parser:
         # expect semicolon
         if not self.semicolon():
             return False
-        self.advance()
-
-        # make device
-        if not self.error_count():
-            device_type = self.current_device_kind.id
-            device_id = self.current_qualifier.id
-            device_property = self.current_qualifier.id if self.current_identifier else None
-            error_type = self.devices.make_device(device_id, device_type, device_property)
-            if error_type == self.devices.NO_ERROR:
-                return True
-            elif error_type == self.devices.DEVICE_PRESENT:
-                self.error_handler.handle_error(error_type, self.current_identifier)
-                return False
-            elif error_type == self.devices.QUALIFIER_PRESENT:
-                self.error_handler.handle_error(error_type, self.current_qualifier)
+        else:
+            #  attempts to make device if there is no syntax error so far
+            self.make_device()
+            return True
 
     def clock(self) -> bool:
         # expect identifier
@@ -216,7 +205,11 @@ class Parser:
         self.advance()
 
         # expect semicolon
-        return self.semicolon()
+        if not self.semicolon():
+            return False
+        else:
+            self.make_device()
+            return True
 
     def switch(self) -> bool:
         # expect identifier
@@ -235,7 +228,11 @@ class Parser:
         self.advance()
 
         # expect semicolon
-        return self.semicolon()
+        if not self.semicolon():
+            return False
+        else:
+            self.make_device()
+            return True
 
     def monitor(self) -> bool:
         # expect identifier
@@ -265,7 +262,12 @@ class Parser:
             self.error_handler.handle_error(self.error_handler.EXPECT_FULL_STOP_OR_SEMICOLON, self.symbol)
             return False
         # expect semicolon
-        return self.semicolon()
+        if not self.semicolon():
+            return False
+        else:
+            #  attempts to make monitor
+            self.make_monitor()
+            return True
 
     def connect(self) -> bool:
         # expect identifier
@@ -459,4 +461,25 @@ class Parser:
         return self.error_handler.error_output_list
 
     def error_count(self):
-        return self.error_handler.error_count
+        return len(self.error_handler.error_output_list)
+
+    def make_device(self):
+        if not self.error_count():
+            device_kind = self.current_device_kind.id
+            device_id = self.current_identifier.id
+            device_property = int(self.current_qualifier.id) if self.current_qualifier else None
+            error_type = self.devices.make_device(device_id, device_kind, device_property)
+            if error_type == self.devices.NO_ERROR:
+                pass
+            elif error_type == self.devices.DEVICE_PRESENT:
+                self.error_handler.handle_error(error_type, self.current_identifier)
+            elif error_type == self.devices.QUALIFIER_PRESENT:
+                self.error_handler.handle_error(error_type, self.current_qualifier)
+            else:
+                print(f"Error type: {error_type}, should not be encountered")
+
+    def make_monitor(self):
+        pass
+
+    def make_connection(self):
+        pass

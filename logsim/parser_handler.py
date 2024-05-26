@@ -42,7 +42,7 @@ class ParserErrorHandler:
 
         # semantic error
         [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.MISSING_INPUT_TO_PIN, self.WRONG_BLOCK_ORDER, self.MISSING_MONITOR
-         ] = names.unique_error_codes(4)
+         ] = names.unique_error_codes(5)
 
     def handle_error(self, error_code: int, symbol: Symbol) -> None:
         print("handling error")
@@ -138,7 +138,7 @@ class ParserErrorHandler:
             return f"Missing input to pin {name}"
         elif error_code == self.network.INPUT_DEVICE_ABSENT or error_code == self.network.OUTPUT_DEVICE_ABSENT:
             return f"Identifier {name} is not defined"
-        elif error_code == self.devices.DEVICE_PRESENT or error_code == self.monitors.MONITOR_PRESENT:
+        elif error_code == self.devices.DEVICE_PRESENT or error_code == self.monitors.MONITOR_IDENTIFIER_PRESENT:
             return f"Identifier {name} should not be redefined"
         elif error_code == self.MISSING_CLOCK_OR_SWITCH:
             return f"At least one list between 'CLOCK' and 'SWITCH' is needed. neither is found"

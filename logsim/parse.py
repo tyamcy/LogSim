@@ -254,6 +254,7 @@ class Parser:
         # expect identifier
         if not self.identifier():
             return False
+        identifier_symbol = copy(self.symbol)
         self.advance()
 
         # expect colon
@@ -264,15 +265,18 @@ class Parser:
         # expect identifier
         if not self.identifier():
             return False
+        device_symbol = copy(self.symbol)
         self.advance()
 
         # except full stop or semicolon
         # optionally expect full stop
+        port_symbol = None
         if self.symbol.type == Scanner.FULL_STOP:
             self.advance()
             if not self.pin_in_or_out():
                 # expect pin in or out
                 return False
+            port_symbol = self.symbol
             self.advance()
         elif self.symbol.type != Scanner.SEMICOLON:  # not full stop or semicolon
             self.error_handler.handle_error(self.error_handler.EXPECT_FULL_STOP_OR_SEMICOLON, self.symbol)
@@ -282,7 +286,7 @@ class Parser:
             return False
         else:
             #  attempts to make monitor
-            self.make_monitor()
+            self.make_monitor(identifier_symbol=identifier_symbol, port_symbol=port_symbol, device_symbol=device_symbol)
             return True
 
     def connect(self) -> bool:
@@ -503,8 +507,16 @@ class Parser:
             else:
                 print(f"Error type: {error_type}, should not be encountered")
 
-    def make_monitor(self):
-        pass
+    def make_monitor(self, identifier_symbol, port_symbol, device_symbol):
+        if not self.error_count():
+            identifier = self.names.get_name_string(identifier_symbol.id)
+            port_id = port_symbol.id if port_symbol else None
+            device_id = device_symbol.id
+            error_type = self.monitors.make_monitor(identifier=identifier, port_id=port_id, device_id=device_id)
+            if error_type == self.monitors.NO_ERROR:
+                pass
+            elif error_type == self.monitors.MONITOR_IDENTIFIER_PRESENT:
+                self.error_handler.handle_error(self.monitors.MONITOR_IDENTIFIER_PRESENT, identifier_symbol)
 
     def make_connection(self, out_device_symbol, out_port_symbol, in_device_symbol, in_port_symbol):
         if not self.error_count():

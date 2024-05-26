@@ -34,8 +34,11 @@ class Monitors:
     make_monitor(self, device_id, port_id): Sets a specified monitor on the
                                               specified output.
 
-    remove_monitor(self, device_id, port_id): Removes a monitor from the
-                                                specified output.
+    remove_monitor_by_port(self, device_id, port_id): Removes a monitor from the
+                                                specified output by its port.
+
+    remove_monitor_by_identifier(self, device_id, identifier): Removes a monitor from the
+                                                specified output by its identifier (alias).
 
     get_monitor_signal(self, device_id, port_id): Returns the signal level of
                                                     the specified monitor.

@@ -31,6 +31,8 @@ def new_monitors():
     new_monitors.make_monitor(SW1_ID, None, "B")
     new_monitors.make_monitor(SW2_ID, None, "C")
     new_monitors.make_monitor(OR1_ID, None, "A2")
+    new_monitors.make_monitor(OR1_ID, I1, "Input1")
+    new_monitors.make_monitor(OR1_ID, I2, "Input2")
 
     return new_monitors
 
@@ -38,21 +40,27 @@ def new_monitors():
 def test_make_monitor(new_monitors):
     """Test if make_monitor correctly updates the signals dictionary."""
     names = new_monitors.names
-    [SW1_ID, SW2_ID, OR1_ID] = names.lookup(["Sw1", "Sw2", "Or1"])
+    [SW1_ID, SW2_ID, OR1_ID, I1, I2] = names.lookup(["Sw1", "Sw2", "Or1",
+                                                         "I1", "I2"])
 
     assert new_monitors.signals_dictionary == {(SW1_ID, None): [],
                                                (SW2_ID, None): [],
-                                               (OR1_ID, None): []}
+                                               (OR1_ID, None): [],
+                                               (OR1_ID, I1): [],
+                                               (OR1_ID, I2): []}
 
 
 def test_identify_monitor(new_monitors):
     """Test if make_monitor correctly updates the identifiers dictionary."""
     names = new_monitors.names
-    [SW1_ID, SW2_ID, OR1_ID] = names.lookup(["Sw1", "Sw2", "Or1"])
+    [SW1_ID, SW2_ID, OR1_ID, I1, I2] = names.lookup(["Sw1", "Sw2", "Or1",
+                                                     "I1", "I2"])
 
     assert new_monitors.port_to_identifier == {(SW1_ID, None): {"B"},
                                                (SW2_ID, None): {"C"},
-                                               (OR1_ID, None): {"A1", "A2"}}
+                                               (OR1_ID, None): {"A1", "A2"},
+                                               (OR1_ID, I1): {"Input1"},
+                                               (OR1_ID, I2): {"Input2"}}
 
 
 def test_make_monitor_gives_errors(new_monitors):
@@ -84,16 +92,40 @@ def test_make_monitor_gives_errors(new_monitors):
 
 
 def test_remove_monitor_by_port(new_monitors):
-    """Test if remove_monitor correctly updates the signals and identifiers dictionary."""
+    """Test if remove_monitor_ correctly updates the signals and identifiers dictionary."""
     names = new_monitors.names
-    [SW1_ID, SW2_ID, OR1_ID] = names.lookup(["Sw1", "Sw2", "Or1"])
+    [SW1_ID, SW2_ID, OR1_ID, I1, I2] = names.lookup(["Sw1", "Sw2", "Or1",
+                                                     "I1", "I2"])
 
     new_monitors.remove_monitor_by_port(SW1_ID, None)
     assert new_monitors.signals_dictionary == {(SW2_ID, None): [],
-                                               (OR1_ID, None): []}
+                                               (OR1_ID, None): [],
+                                               (OR1_ID, I1): [],
+                                               (OR1_ID, I2): []}
 
     assert new_monitors.port_to_identifier == {(SW2_ID, None): {"C"},
-                                               (OR1_ID, None): {"A1", "A2"}}
+                                               (OR1_ID, None): {"A1", "A2"},
+                                               (OR1_ID, I1): {"Input1"},
+                                               (OR1_ID, I2): {"Input2"}}
+
+def test_remove_monitor_by_identifier(new_monitors):
+    """Test if remove_monitor correctly updates the signals and identifiers dictionary."""
+    names = new_monitors.names
+    [SW1_ID, SW2_ID, OR1_ID, I1, I2] = names.lookup(["Sw1", "Sw2", "Or1",
+                                                     "I1", "I2"])
+    new_monitors.remove_monitor_by_identifier(identifier="A1")
+    assert new_monitors.signals_dictionary == {(SW1_ID, None): [],
+                                               (SW2_ID, None): [],
+                                               (OR1_ID, None): [],
+                                               (OR1_ID, I1): [],
+                                               (OR1_ID, I2): []}
+
+    assert new_monitors.port_to_identifier == {(SW1_ID, None): {"B"},
+                                               (SW2_ID, None): {"C"},
+                                               (OR1_ID, None): {"A2"},
+                                               (OR1_ID, I1): {"Input1"},
+                                               (OR1_ID, I2): {"Input2"}}
+
 
 
 def test_get_signal_names(new_monitors):
@@ -105,7 +137,7 @@ def test_get_signal_names(new_monitors):
     # Create a D-type device
     devices.make_device(D_ID, devices.D_TYPE)
 
-    assert new_monitors.get_signal_names() == [["Or1", "Sw1", "Sw2"],
+    assert new_monitors.get_signal_names() == [["Or1", "Sw1", "Sw2", "Or1.I1", "Or1.I2"],
                                                ["D1.Q", "D1.QBAR"]]
 
 
@@ -115,7 +147,8 @@ def test_record_signals(new_monitors):
     devices = new_monitors.devices
     network = new_monitors.network
 
-    [SW1_ID, SW2_ID, OR1_ID] = names.lookup(["Sw1", "Sw2", "Or1"])
+    [SW1_ID, SW2_ID, OR1_ID, I1, I2] = names.lookup(["Sw1", "Sw2", "Or1",
+                                                     "I1", "I2"])
 
     HIGH = devices.HIGH
     LOW = devices.LOW
@@ -137,7 +170,9 @@ def test_record_signals(new_monitors):
     assert new_monitors.signals_dictionary == {
         (OR1_ID, None): [LOW, HIGH, HIGH],
         (SW1_ID, None): [LOW, HIGH, HIGH],
-        (SW2_ID, None): [LOW, LOW, HIGH]}
+        (SW2_ID, None): [LOW, LOW, HIGH],
+        (OR1_ID, I1): [LOW, HIGH, HIGH],
+        (OR1_ID, I2): [LOW, LOW, HIGH]}
 
 
 def test_get_margin(new_monitors):
@@ -160,18 +195,23 @@ def test_reset_monitors(new_monitors):
     """Test if reset_monitors clears the signal lists of all the monitors."""
     names = new_monitors.names
     devices = new_monitors.devices
-    [SW1_ID, SW2_ID, OR1_ID] = names.lookup(["Sw1", "Sw2", "Or1"])
+    [SW1_ID, SW2_ID, OR1_ID, I1, I2] = names.lookup(["Sw1", "Sw2", "Or1",
+                                                     "I1", "I2"])
 
     LOW = devices.LOW
     new_monitors.record_signals()
     new_monitors.record_signals()
     assert new_monitors.signals_dictionary == {(SW1_ID, None): [LOW, LOW],
                                                (SW2_ID, None): [LOW, LOW],
-                                               (OR1_ID, None): [LOW, LOW]}
+                                               (OR1_ID, None): [LOW, LOW],
+                                               (OR1_ID, I1): [LOW, LOW],
+                                               (OR1_ID, I2): [LOW, LOW]}
     new_monitors.reset_monitors()
     assert new_monitors.signals_dictionary == {(SW1_ID, None): [],
                                                (SW2_ID, None): [],
-                                               (OR1_ID, None): []}
+                                               (OR1_ID, None): [],
+                                               (OR1_ID, I1): [],
+                                               (OR1_ID, I2): []}
 
 
 def test_display_signals(capsys, new_monitors):
@@ -205,16 +245,18 @@ def test_display_signals(capsys, new_monitors):
     out, _ = capsys.readouterr()
 
     traces = out.split("\n")
-    assert len(traces) == 6
-    assert "A1 : __________----------" in traces
-    assert "B  : __________----------" in traces
-    assert "C  : ____________________" in traces
-    assert "A2 : __________----------" in traces
+    assert len(traces) == 8
+    assert "A1    : __________----------" in traces
+    assert "B     : __________----------" in traces
+    assert "C     : ____________________" in traces
+    assert "A2    : __________----------" in traces
+    assert "Input1: __________----------" in traces
+    assert "Input2: ____________________" in traces
 
     # Clock could be anywhere in its cycle, but its half period is 2
-    assert ("CLK: __--__--__--__--__--" in traces or
-            "CLK: _--__--__--__--__--_" in traces or
-            "CLK: --__--__--__--__--__" in traces or
-            "CLK: -__--__--__--__--__-" in traces)
+    assert ("CLK   : __--__--__--__--__--" in traces or
+            "CLK   : _--__--__--__--__--_" in traces or
+            "CLK   : --__--__--__--__--__" in traces or
+            "CLK   : -__--__--__--__--__-" in traces)
 
     assert "" in traces  # additional empty line at the end

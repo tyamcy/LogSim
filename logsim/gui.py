@@ -64,12 +64,15 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         # Colour themes
         self.light_color_background = (0.98, 0.98, 0.98, 1)
         self.light_color_text = (0, 0, 0)
+        self.light_color_trace = (0, 0, 0)
         self.dark_color_background = (0.267, 0.267, 0.267, 1)
         self.dark_color_text = (1, 1, 1)
+        self.dark_color_trace = (1, 1, 1)
         
         # Initialise colours
         self.color_background = self.light_color_background
         self.color_text = self.light_color_text
+        self.color_trace = self.light_color_trace
 
         # Initialise variables for panning
         self.pan_x = 0
@@ -115,7 +118,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.render_text(text, 10, 10)
 
         # Draw a sample signal trace
-        GL.glColor3f(0.0, 0.0, 1.0)  # signal trace is blue
+        GL.glColor3f(*self.color_trace) 
         GL.glBegin(GL.GL_LINE_STRIP)
         for i in range(10):
             x = (i * 20) + 10
@@ -222,11 +225,13 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         if theme == "dark":
             self.color_background = self.light_color_background
             self.color_text = self.light_color_text
+            self.color_trace = self.light_color_trace
             GL.glClearColor(*self.light_color_background)
             GL.glColor3f(*self.light_color_text)
         elif theme == "light":
             self.color_background = self.dark_color_background
             self.color_text = self.dark_color_text
+            self.color_trace = self.dark_color_trace
             GL.glClearColor(*self.dark_color_background)
             GL.glColor3f(*self.dark_color_text)
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
@@ -261,7 +266,7 @@ class Gui(wx.Frame):
         """Initialise widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
-        """Initialise variables."""
+        # Initialise variables
         self.names = names
         self.devices = devices
         self.network = network
@@ -270,6 +275,8 @@ class Gui(wx.Frame):
         # self.monitors_active_list = self.monitors.getSignalNames()[0]
         # self.monitors_inactive_list = self.monitors.getSignalNames()[1]
 
+        # State management
+        self.file_present = False
 
         # Colour styles 
         self.color_primary = "#4DA2B4"
@@ -403,7 +410,6 @@ class Gui(wx.Frame):
 
         self.update_monitors_display()
 
-        #self.monitors_scrolled.SetSizer(self.monitors_scrolled_sizer)  
         self.monitors_scrolled.SetMinSize((250, 150))
         self.monitors_scrolled.SetBackgroundColour(self.light_background_secondary)
         self.monitors_sizer.Add(self.monitors_text, 0, wx.ALL, 5)  
@@ -461,8 +467,9 @@ class Gui(wx.Frame):
 
         # Run and continue button
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
-        self.run_button.SetBackgroundColour(self.color_primary)
+        self.run_button.SetBackgroundColour(self.color_disabled)
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
+        self.run_button.Disable()
         self.right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
 
         self.continue_button = wx.Button(self, wx.ID_ANY, "Continue")
@@ -495,7 +502,7 @@ class Gui(wx.Frame):
                           "\nNo. of Cycles: Change the number of simulation cycles.\n"
                           "\nMonitor: The monitor section displays active monitor points.\n"
                           "\nAdd: Add monitor points.\n"
-                          "\nDelete: Remove monitor points.\n"
+                          "\nRemove: Delete monitor points.\n"
                           "\nSwitch: Toggle the button to turn the switch on and off.\n"
                           "\nRun: Runs the simulation.\n"
                           "\nContinue: Continues the simulation with updated paramaters.\n",
@@ -506,7 +513,6 @@ class Gui(wx.Frame):
         wildcard = "Text files (*.txt)|*.txt"
         with wx.FileDialog(self, "Open Specification File", wildcard=wildcard,
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
-            
             # Canceling the action 
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 return
@@ -514,22 +520,52 @@ class Gui(wx.Frame):
             path = fileDialog.GetPath() # extracting the file path
             filename = os.path.basename(path) # extracting the file name
 
+            # Check if file is a text file
+            if not path.lower().endswith(".txt"):
+                wx.MessageBox("Please select a valid .txt file", "Error", wx.OK | wx.ICON_ERROR)
+                return
+
+            # Processing the file
             try:
                 with open(path, "r") as file:
-                    content = file.read()
-                    # Parsing the file
+                    # Initialise instances of the inner simulator classes
+                    """
+                    names = Names()
+                    devices = Devices(names)
+                    network = Network(names, devices)
+                    monitors = Monitors(names, devices, network)
+                    scanner = Scanner(path, names, devices, network, monitors)
+                    parser = Parser(names, devices, network, monitors, scanner)
+                    
+                    if parser.parse_network():
+                        # Instantiate the circuit
+                        self.names = names
+                        self.devices = devices
+                        self.network = network
+                        self.monitors = monitors
+                        self.scanner = scanner
+                        self.parser = parser
+                    else:
+                        self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
+                        self.terminal.AppendText("Error in the specification file.")
+                        return
+                    """
+                
                 self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_success_color))
                 self.terminal.AppendText(f"\nFile {filename} uploaded successfully.")
+
+                # Enable run button and disable continue button
+                self.run_button.Enable()
+                self.run_button.SetBackgroundColour(self.color_primary)
+                self.continue_button.Disable()
+                self.continue_button.SetBackgroundColour(self.color_disabled)
             except IOError:
-                wx.LogError("Cannot open file.")
                 self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
                 self.terminal.AppendText(f"\nFile {filename} upload failed.")
     
     def on_cycles_spin(self, event):
         """Handle the event when the user changes the spin control value."""
         spin_value = self.cycles_spin.GetValue()
-        text = "".join(["New spin control value: ", str(spin_value)])
-        self.canvas.render(text)
 
     def update_monitors_display(self):
         """Handle the event of updating the list of monitors upon change."""
@@ -596,7 +632,6 @@ class Gui(wx.Frame):
         self.terminal.AppendText("\nRunning simulation...")
         self.run_button.SetBackgroundColour(self.color_disabled)
         self.run_button.Disable()
-
         self.continue_button.Enable()
         self.continue_button.SetBackgroundColour(self.color_primary)
 
@@ -608,8 +643,6 @@ class Gui(wx.Frame):
     def on_text_box(self, event):
         """Handle the event when the user enters text."""
         text_box_value = self.text_box.GetValue()
-        text = "".join(["New text box value: ", text_box_value])
-        self.canvas.render(text)
     
     def on_toggle_switch(self, event):
         """Handle the event when the user toggles a switch."""

@@ -5,7 +5,7 @@ from monitors import Monitors
 from scanner import Scanner, Symbol
 
 
-class TerminalOutput:
+class LineTerminalOutput:
     def __init__(self):
         self.line_location = None
         self.line_with_issue = None
@@ -14,6 +14,14 @@ class TerminalOutput:
 
     def __str__(self):
         return f"\n{self.line_location}\n{self.line_with_issue}{self.arrow}\n{self.message}\n"
+
+
+class FileTerminalOutput:
+    def __init__(self):
+        self.message = None
+
+    def __str__(self):
+        return f"\nFile error: {self.message}\n"
 
 
 class ParserErrorHandler:
@@ -64,16 +72,17 @@ class ParserErrorHandler:
         else:
             raise ValueError("Invalid symbol type")
         error_message = self.get_error_message(error_code=error_code, name=name)
-        print(error_message)
-        if symbol.type != Scanner.EOF:
-            error_output = self.get_error_output(line=symbol.line, character_in_line=symbol.character_in_line,
-                                                 message=error_message)
-        else:
-            error_output = error_message
+        error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,
+                                                         message=error_message)
         self.error_output_list.append(error_output)
 
-    def get_error_output(self, line: int, character_in_line: int, message: str) -> TerminalOutput:
-        terminal_output = TerminalOutput()
+    def file_error(self, error_code: int) -> None:
+        error_output = FileTerminalOutput()
+        error_output.message = self.get_error_message(error_code=error_code)
+        self.error_output_list.append(error_output)
+
+    def get_line_terminal_output(self, line: int, character_in_line: int, message: str) -> LineTerminalOutput:
+        terminal_output = LineTerminalOutput()
 
         terminal_output.line_location = f"Line {line + 1}:"
         terminal_output.line_with_issue = self.scanner.file_lines[line]

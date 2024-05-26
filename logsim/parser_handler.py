@@ -68,7 +68,7 @@ class ParserErrorHandler:
     def get_error_output(self, line: int, character_in_line: int, message: str) -> TerminalOutput:
         terminal_output = TerminalOutput()
 
-        terminal_output.line_location = f"Line {line}:"
+        terminal_output.line_location = f"Line {line + 1}:"
         terminal_output.line_with_issue = self.scanner.file_lines[line]
         terminal_output.arrow = " "*character_in_line + "^"
         terminal_output.message = message

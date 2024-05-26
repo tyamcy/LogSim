@@ -80,25 +80,33 @@ class Parser:
                 keyword = self.names.get_name_string(self.symbol.id)
                 if self.block_parse_flags[keyword]:
                     self.error_handler.handle_error(self.error_handler.DUPLICATE_KEYWORD, self.symbol)
-                    self.skip_to_keyword()
+                    self.skip_to_close_bracket()
+                    self.advance()
                     continue
                 if self.block_order_flags[keyword]:
                     self.error_handler.handle_error(self.error_handler.WRONG_BLOCK_ORDER, self.symbol)
-                    self.skip_to_keyword()
+                    self.skip_to_close_bracket()
+                    self.advance()
                     continue
                 if keyword == "DEVICE":
                     self.device_list()
+                    self.advance()
                 elif keyword == "SWITCH":
                     self.switch_list()
+                    self.advance()
                 elif keyword == "CLOCK":
                     self.clock_list()
+                    self.advance()
                 elif keyword == "MONITOR":
                     self.monitor_list()
+                    self.advance()
                 elif keyword == "CONNECTION":
                     self.connect_list()
+                    self.advance()
             else:
                 self.error_handler.handle_error(self.error_handler.EXPECT_KEYWORD, self.symbol)
-                self.skip_to_keyword()
+                self.skip_to_close_bracket()
+                self.advance()
         if not self.block_parse_flags["MONITOR"]:
             self.error_handler.handle_error(self.error_handler.MONITOR_NOT_DEFINED, self.symbol)  # should not have symbol
         if not self.block_parse_flags["CLOCK"] and not self.block_parse_flags["SWITCH"]:
@@ -110,20 +118,24 @@ class Parser:
         if self.symbol.type == Scanner.OPEN_CURLY_BRACKET:
             self.advance()
             # list cannot be empty
-            # wrong sub-rule
+            # wrong first sub-rule
             if not sub_rule():
                 self.skip_after_semicolon_or_to_close_bracket()
+
+            # check for subsequent subrule if any
             while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and Scanner.EOF:
                 # wrong sub-rule
                 if not sub_rule():
                     self.skip_after_semicolon_or_to_close_bracket()
-            self.advance()
+
+            #  set the flags
             self.block_parse_flags[keyword] = True
             for key in self.block_order_flags:
                 if key == keyword:
                     break
                 else:
                     self.block_order_flags[key] = True
+
         else:
             # expect open curly bracket
             self.error_handler.handle_error(self.error_handler.EXPECT_OPEN_CURLY_BRACKET, self.symbol)

@@ -24,6 +24,7 @@ class ParserErrorHandler:
         self.monitors = monitors
         self.scanner = scanner
         self.error_output_list = []
+        self.error_count = 0
 
         # syntax error
         [self.EXPECT_IDENTIFIER, self.EXPECT_INPUT_DEVICE, self.EXPECT_VARIABLE_INPUT_NUMBER,
@@ -38,6 +39,7 @@ class ParserErrorHandler:
 
     def handle_error(self, error_code: int, symbol: Symbol) -> None:
         print("handling error")
+        self.error_count += 1
         if symbol.id:  # symbol id is not None, i.e. symbol.type is KEYWORD, NUMBER or NAME
             if symbol.type == Scanner.NUMBER:
                 name = symbol.id
@@ -57,12 +59,17 @@ class ParserErrorHandler:
             name = "{"
         elif symbol.type == Scanner.CLOSE_CURLY_BRACKET:
             name = "}"
-        else:  # EOF should not raise errors anyway
+        elif symbol.type == Scanner.EOF:
+            name = ""
+        else:
             raise ValueError("Invalid symbol type")
         error_message = self.get_error_message(error_code=error_code, name=name)
         print(error_message)
-        error_output = self.get_error_output(line=symbol.line, character_in_line=symbol.character_in_line,
-                                             message=error_message)
+        if symbol.type != Scanner.EOF:
+            error_output = self.get_error_output(line=symbol.line, character_in_line=symbol.character_in_line,
+                                                 message=error_message)
+        else:
+            error_output = error_message
         self.error_output_list.append(error_output)
 
     def get_error_output(self, line: int, character_in_line: int, message: str) -> TerminalOutput:
@@ -70,7 +77,7 @@ class ParserErrorHandler:
 
         terminal_output.line_location = f"Line {line + 1}:"
         terminal_output.line_with_issue = self.scanner.file_lines[line]
-        terminal_output.arrow = " "*character_in_line + "^"
+        terminal_output.arrow = " " * character_in_line + "^"
         terminal_output.message = message
 
         return terminal_output
@@ -134,6 +141,7 @@ class ParserErrorHandler:
             return f"{name} block should not be redefined"
         elif error_code == self.WRONG_BLOCK_ORDER:
             return f"{name} block order is wrong"
+        elif error_code == self.MONITOR_NOT_DEFINED:
+            return f"At least one monitor should be defined"
         else:
             raise ValueError(f"Invalid error code '{error_code}' or invalid empty name")
-

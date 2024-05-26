@@ -432,3 +432,6 @@ class Parser:
 
     def fetch_error_output(self):
         return self.error_handler.error_output_list
+
+    def error_count(self):
+        return self.error_handler.error_count

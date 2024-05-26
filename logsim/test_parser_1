@@ -16,11 +16,6 @@ CLOCK {
 CLK1: 2;
 }
 
-/ Initial monitoring points /
-MONITOR {
-S1: G1;
-f: G3;
-}
 
 / Internal connections of the circuit /
 CONNECTION {

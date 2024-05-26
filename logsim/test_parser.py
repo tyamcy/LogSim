@@ -6,7 +6,7 @@ from scanner import Scanner
 from parser_handler import ParserErrorHandler
 from parse import Parser
 
-PATH = "test_parser_1"
+PATH = "logsim/test_parser_1"
 
 names = Names()
 devices = Devices(names=names)

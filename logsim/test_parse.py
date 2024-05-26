@@ -20,6 +20,7 @@ path_semantic_error_device_present = "logsim/test_text/test_semantic_errors/sema
 path_semantic_error_duplicate_keyword = "logsim/test_text/test_semantic_errors/semantic_error_duplicate_keyword"
 path_semantic_error_input_connected = "logsim/test_text/test_semantic_errors/semantic_error_input_connected"
 path_semantic_error_missing_clock_or_switch = "logsim/test_text/test_semantic_errors/semantic_error_missing_clock_or_switch"
+path_semantic_error_missing_input_to_pin = "logsim/test_text/test_semantic_errors/semantic_error_missing_input_to_pin"
 path_semantic_error_monitor_present = "logsim/test_text/test_semantic_errors/semantic_error_monitor_present"
 path_semantic_error_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_port_absent"
 path_semantic_error_wrong_block_order = "logsim/test_text/test_semantic_errors/semantic_error_wrong_block_order"
@@ -102,6 +103,11 @@ def semantic_error_missing_clock_or_switch_expected(parser: Parser):
         (parser.error_handler.MISSING_CLOCK_OR_SWITCH)
     ]
 
+def semantic_error_missing_input_to_pin_expected(parser: Parser):
+    return [
+        (parser.error_handler.MISSING_INPUT_TO_PIN)
+    ]
+
 def semantic_error_monitor_present_expected(parser: Parser):
     return [
         ("Line 24", parser.error_handler.monitors.MONITOR_PRESENT)
@@ -136,6 +142,7 @@ def test_parse_network(new_parser, path, expected_result):
     (path_semantic_error_duplicate_keyword, semantic_error_duplicate_keyword_expected),
     (path_semantic_error_input_connected, semantic_error_input_connected_expected),
     (path_semantic_error_missing_clock_or_switch, semantic_error_missing_clock_or_switch_expected),
+    (path_semantic_error_missing_input_to_pin, path_semantic_error_missing_input_to_pin),
     (path_semantic_error_monitor_present, semantic_error_monitor_present_expected),
     (path_semantic_error_port_absent, semantic_error_port_absent_expected),
     (path_semantic_error_wrong_block_order, semantic_error_wrong_block_order_expected)

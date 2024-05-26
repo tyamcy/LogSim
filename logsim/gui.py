@@ -299,7 +299,7 @@ class Gui(wx.Frame):
         """Initialise widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
-        """Initialise variables."""
+        # Initialise variables
         self.names = names
         self.devices = devices
         self.network = network
@@ -510,8 +510,9 @@ class Gui(wx.Frame):
 
         # Run and continue button
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
-        self.run_button.SetBackgroundColour(self.color_primary)
+        self.run_button.SetBackgroundColour(self.color_disabled)
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
+        self.run_button.Disable()
         self.right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
 
         self.continue_button = wx.Button(self, wx.ID_ANY, "Continue")

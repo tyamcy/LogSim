@@ -99,7 +99,10 @@ class Parser:
             else:
                 self.error_handler.handle_error(self.error_handler.EXPECT_KEYWORD, self.symbol)
                 self.skip_to_keyword()
-
+        if not self.block_parse_flags["MONITOR"]:
+            self.error_handler.handle_error(self.error_handler.MONITOR_NOT_DEFINED, self.symbol)  # should not have symbol
+        if not self.block_parse_flags["CLOCK"] and not self.block_parse_flags["SWITCH"]:
+            self.error_handler.handle_error(self.error_handler.MISSING_CLOCK_OR_SWITCH, self.symbol) # should not have symbol
         return False if self.fetch_error_output() else True
 
     def parse_list(self, keyword: str, sub_rule: bool()):

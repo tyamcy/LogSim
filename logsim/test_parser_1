@@ -1,21 +1,26 @@
 / Combinational logic /
 DEVICE {
 G1: NAND, 16;
-G2: XOR;
 G3: NAND, 3;
+G2: XOR;
 }
 
+/ Inputs /
 SWITCH {
-A: 1;
-B: 1;
+A: 0;
+B: 0;
 C: 0;
 }
-
 
 CLOCK {
 CLK1: 2;
 }
 
+/ Initial monitoring points /
+MONITOR {
+S1: G1;
+f: G3;
+}
 
 / Internal connections of the circuit /
 CONNECTION {

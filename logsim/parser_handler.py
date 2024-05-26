@@ -32,7 +32,6 @@ class ParserErrorHandler:
         self.monitors = monitors
         self.scanner = scanner
         self.error_output_list = []
-        self.error_count = 0
 
         # syntax error
         [self.EXPECT_IDENTIFIER, self.EXPECT_INPUT_DEVICE, self.EXPECT_VARIABLE_INPUT_NUMBER,
@@ -47,7 +46,6 @@ class ParserErrorHandler:
 
     def handle_error(self, error_code: int, symbol: Symbol) -> None:
         print("handling error")
-        self.error_count += 1
         if symbol.id:  # symbol id is not None, i.e. symbol.type is KEYWORD, NUMBER or NAME
             if symbol.type == Scanner.NUMBER:
                 name = symbol.id
@@ -151,4 +149,4 @@ class ParserErrorHandler:
         elif error_code == self.MONITOR_NOT_DEFINED:
             return f"At least one monitor should be defined"
         else:
-            raise ValueError(f"Invalid error code '{error_code}' or invalid empty name")
+            raise ValueError(f"Invalid error code '{error_code}'")

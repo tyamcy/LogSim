@@ -39,7 +39,7 @@ class ParserErrorHandler:
          self.EXPECT_CLOCK_CYCLE, self.EXPECT_INITIAL_STATE, self.EXPECT_PIN_IN, self.EXPECT_PIN_OUT,
          self.EXPECT_PIN_IN_OR_OUT, self.EXPECT_KEYWORD, self.EXPECT_OPEN_CURLY_BRACKET, self.EXPECT_COMMA,
          self.EXPECT_SEMICOLON, self.EXPECT_COLON, self.EXPECT_FULL_STOP_OR_SEMICOLON, self.EXPECT_FULL_STOP,
-         self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW, self.MISSING_MONITOR] = names.unique_error_codes(18)
+         self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW] = names.unique_error_codes(17)
 
         # semantic error
         [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.WRONG_BLOCK_ORDER, self.MONITOR_NOT_DEFINED
@@ -93,7 +93,7 @@ class ParserErrorHandler:
 
     def get_error_message(self, error_code: int, name: str = "") -> str:
         name = "\"" + name + "\""
-        if error_code not in [self.MISSING_MONITOR, self.MISSING_CLOCK_OR_SWITCH] and not name:
+        if error_code != self.MISSING_CLOCK_OR_SWITCH and not name:
             raise TypeError(f"error_code = {error_code} has 1 required positional argument: 'name'")
         # syntax error
         if error_code == self.EXPECT_IDENTIFIER:
@@ -130,8 +130,6 @@ class ParserErrorHandler:
             return f"Found {name}, expected '>'"
         elif error_code == self.EXPECT_FULL_STOP_OR_ARROW:  # for [".", pinOut] , ">" in connection
             return f"Found {name}, expected '.' (if pin has to be defined) or ';' (if pin does not have to be defined)"
-        elif error_code == self.MISSING_MONITOR:
-            return f"'MONITOR' list not found"
 
         # semantic error
         elif error_code == self.network.PORT_ABSENT:

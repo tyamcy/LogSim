@@ -238,7 +238,7 @@ class UserInterface:
         monitor = self.read_signal_name()
         if monitor is not None:
             [device, port] = monitor
-            if self.monitors.remove_monitor(device, port):
+            if self.monitors.remove_monitor_by_port(device, port):
                 print("Successfully zapped monitor")
             else:
                 print("Error! Could not zap monitor.")

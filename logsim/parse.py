@@ -18,6 +18,7 @@ from parser_handler import ParserErrorHandler
 from collections import OrderedDict
 from copy import copy
 
+
 class Parser:
     DTYPE_PIN_IN = ["DATA", "CLK", "SET", "CLEAR"]
     DTYPE_PIN_OUT = ["Q", "QBAR"]
@@ -273,15 +274,17 @@ class Parser:
         # expect identifier
         if not self.identifier():
             return False
+        in_device_id = self.symbol.id
         self.advance()
-
         # expect full stop or arrow
         # optionally expect full stop
+        in_port_id = None
         if self.symbol.type == Scanner.FULL_STOP:
             self.advance()
             # expect pin out
             if not self.pin_out():
                 return False
+            in_port_id = self.symbol.id
             self.advance()
         elif self.symbol.type != Scanner.ARROW:  # not full stop or arrow
             self.error_handler.handle_error(self.error_handler.EXPECT_FULL_STOP_OR_ARROW, self.symbol)
@@ -295,6 +298,7 @@ class Parser:
         # expect identifier
         if not self.identifier():
             return False
+        out_device_id = self.symbol.id
         self.advance()
 
         # expect full stop
@@ -305,10 +309,16 @@ class Parser:
         # expect pin in
         if not self.pin_in():
             return False
+        out_port_id = self.symbol.id
         self.advance()
 
         # expect semicolon
-        return self.semicolon()
+        if not self.semicolon():
+            return False
+        else:
+            # attempts to make connection between devices
+            self.make_connection(in_device_id, in_port_id, out_device_id, out_port_id)
+            return True
 
     def colon(self) -> bool:
         if not self.symbol.type == Scanner.COLON:
@@ -481,5 +491,11 @@ class Parser:
     def make_monitor(self):
         pass
 
-    def make_connection(self):
-        pass
+    def make_connection(self, in_device_id, in_port_id, out_device_id, out_port_id):
+        if not self.error_count():
+            error_type = self.network.make_connection(in_device_id, in_port_id, out_device_id, out_port_id)
+            if error_type == self.network.NO_ERROR:
+                pass
+            elif error_type == self.network.PORT_ABSENT:
+                self.error_handler.handle_error(self.network.PORT_ABSENT, self.symbol)
+

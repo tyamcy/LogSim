@@ -13,6 +13,8 @@ import wx.glcanvas as wxcanvas
 from OpenGL import GL, GLUT
 import os
 
+from gui_widgets import CustomDialogBox
+
 from names import Names
 from devices import Devices
 from network import Network
@@ -237,6 +239,16 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         self.SwapBuffers()
 
+    def reset_display(self):
+        """Return to the initial viewpoint at the origin."""
+        # Reset location parameters
+        self.pan_x = 0
+        self.pan_y = 0
+        self.zoom = 1
+        self.on_paint(None)
+        GL.glMatrixMode(GL.GL_MODELVIEW)
+        GL.glLoadIdentity()
+
 class Gui(wx.Frame):
     """Configure the main window and all the widgets.
 
@@ -272,8 +284,9 @@ class Gui(wx.Frame):
         self.network = network
         self.monitors = monitors
 
-        # self.monitors_active_list = self.monitors.getSignalNames()[0]
-        # self.monitors_inactive_list = self.monitors.getSignalNames()[1]
+        # self.monitors_active_list = [] self.monitors.getSignalNames()[0]
+        # self.monitors_inactive_list = [] self.monitors.getSignalNames()[1]
+        # self.
 
         # State management
         self.file_present = False
@@ -399,7 +412,7 @@ class Gui(wx.Frame):
 
 
         # Monitors section
-        self.monitors_active_list = ["G1", "G2","G3", "G4", "G5", "D1", "D2"]
+        self.monitors_active_list = ["G1", "G2","G3", "G4", "G5", "D1", "D2", "D4", "G6", "G7", "G8", "G9", "G10"]
         self.monitors_inactive_list = ["D3"]
 
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -505,7 +518,7 @@ class Gui(wx.Frame):
                           "\nRemove: Delete monitor points.\n"
                           "\nSwitch: Toggle the button to turn the switch on and off.\n"
                           "\nRun: Runs the simulation.\n"
-                          "\nContinue: Continues the simulation with updated paramaters.\n",
+                          "\nContinue: Continues the simulation with updated paramaters.",
                           "Controls", wx.ICON_INFORMATION | wx.OK)
 
     def on_upload_button(self, event):
@@ -550,7 +563,8 @@ class Gui(wx.Frame):
                         self.terminal.AppendText("Error in the specification file.")
                         return
                     """
-                
+                self.canvas.reset_display()
+                self.canvas.render("")
                 self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_success_color))
                 self.terminal.AppendText(f"\nFile {filename} uploaded successfully.")
 
@@ -562,6 +576,9 @@ class Gui(wx.Frame):
             except IOError:
                 self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
                 self.terminal.AppendText(f"\nFile {filename} upload failed.")
+
+    def run_simulation(self, names, devices):
+        return
     
     def on_cycles_spin(self, event):
         """Handle the event when the user changes the spin control value."""
@@ -601,33 +618,35 @@ class Gui(wx.Frame):
         """Updates the enabled/disabled state of the add and remove buttons."""
         self.add_monitor_button.Enable(bool(self.monitors_inactive_list))
         self.remove_monitor_button.Enable(bool(self.monitors_active_list))
-
-    def on_add_monitor_button(self, event):
-        """Handle the click event of the add monitor button, opening a dialog box that allows the user to add a monitor point."""
-        dialog = wx.SingleChoiceDialog(self, "Select a Monitor to Add:", "Add Monitor", self.monitors_inactive_list)
-        if dialog.ShowModal() == wx.ID_OK:
-            selection = dialog.GetStringSelection()
-            self.monitors_active_list.append(selection)
-            self.monitors_inactive_list.remove(selection)
-            self.monitors_scrolled.DestroyChildren()
-            self.update_monitors_display()
-            self.update_add_remove_button_states()
-        dialog.Destroy()
     
-    def on_remove_monitor_button(self, event):
-        """Handle the click event of the remove monitor button, opening a dialog box that allows the user to remove a monitor point."""
-        dialog = wx.SingleChoiceDialog(self, "Select a Monitor to Remove:", "Remove Monitor", self.monitors_active_list)
+    def on_add_monitor_button(self, event):
+        """Handle the click event of the add monitor button."""
+        dialog = CustomDialogBox(self, "Select a Monitor to Add:", "Add Monitor", self.monitors_inactive_list)
         if dialog.ShowModal() == wx.ID_OK:
-            selection = dialog.GetStringSelection()
-            self.monitors_active_list.remove(selection)
-            self.monitors_inactive_list.append(selection)
-            self.monitors_scrolled.DestroyChildren()
-            self.update_monitors_display()
-            self.update_add_remove_button_states()
+            selection = dialog.getStringSelection()
+            if selection:
+                self.monitors_active_list.append(selection)
+                self.monitors_inactive_list.remove(selection)
+                self.update_monitors_display()
+                self.update_add_remove_button_states()
+        dialog.Destroy()
+
+    def on_remove_monitor_button(self, event):
+        """Handle the click event of the remove monitor button."""
+        dialog = CustomDialogBox(self, "Select a Monitor to Remove:", "Remove Monitor", self.monitors_active_list)
+        if dialog.ShowModal() == wx.ID_OK:
+            selection = dialog.getStringSelection()
+            if selection:
+                self.monitors_active_list.remove(selection)
+                self.monitors_inactive_list.append(selection)
+                self.update_monitors_display()
+                self.update_add_remove_button_states()
         dialog.Destroy()
 
     def on_run_button(self, event):
         """Handle the event when the user clicks the run button."""        
+        self.canvas.reset_display()
+        self.canvas.render("")
         self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
         self.terminal.AppendText("\nRunning simulation...")
         self.run_button.SetBackgroundColour(self.color_disabled)
@@ -637,6 +656,8 @@ class Gui(wx.Frame):
 
     def on_continue_button(self, event):
         """Handle the event when the user continue button."""
+        self.canvas.reset_display()
+        self.canvas.render("")
         self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
         self.terminal.AppendText("\nUpdated parameters, continuing simulation...")
 

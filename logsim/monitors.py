@@ -60,13 +60,17 @@ class Monitors:
 
         # signals_dictionary stores
         # {(device_id, port_id): [signal_list]}
-        self.signals_dictionary = collections.OrderedDict()
+        self.signals_dictionary = dict()
 
-        # identifiers_dictionary stores
-        # {(device_id, port_id): identifier}
-        self.identifiers_dictionary = collections.OrderedDict()
+        # identifier_to_port stores
+        # {(device_id, port_id): {identifier}}
+        self.port_to_identifier = collections.defaultdict(set)
 
-        [self.NO_ERROR, self.MONITOR_PRESENT] = self.names.unique_error_codes(2)
+        # port_to_identifier stores
+        # {identifier: (device_id, port_id)}
+        self.identifier_to_port = collections.OrderedDict()
+
+        [self.NO_ERROR, self.MONITOR_IDENTIFIER_PRESENT] = self.names.unique_error_codes(2)
 
     def make_monitor(self, device_id: int, port_id: int, identifier: str, cycles_completed: int = 0) -> int:
         """Add the specified signal to the monitors dictionary.
@@ -76,29 +80,54 @@ class Monitors:
         monitor_device = self.devices.get_device(device_id)
         if monitor_device is None:
             return self.network.DEVICE_ABSENT
-        elif (device_id, port_id) in self.signals_dictionary:
-            return self.MONITOR_PRESENT
+        elif identifier in self.identifier_to_port:
+            return self.MONITOR_IDENTIFIER_PRESENT
         else:
             # If n simulation cycles have been completed before making this
             # monitor, then initialise the signal trace with an n-length list
             # of BLANK signals. Otherwise, initialise the trace with an empty
             # list.
-            self.signals_dictionary[(device_id, port_id)] = [
-                self.devices.BLANK] * cycles_completed
-            self.identifiers_dictionary[(device_id, port_id)] = identifier
+            if (device_id, port_id) not in self.signals_dictionary:
+                self.signals_dictionary[(device_id, port_id)] = [
+                    self.devices.BLANK] * cycles_completed
+
+            self.port_to_identifier[(device_id, port_id)].add(identifier)
+            self.identifier_to_port[identifier] = (device_id, port_id)
             return self.NO_ERROR
 
-    def remove_monitor(self, device_id: int, port_id: int) -> bool:
-        """Remove the specified signal from the monitors dictionary.
+    def remove_monitor_by_port(self, device_id: int, port_id: int) -> bool:
+        """Remove the specified signal from the signals, identifier_to_port and port_to_identifier dictionary by port.
 
         Return True if successful.
         """
         if ((device_id, port_id) not in self.signals_dictionary
-                or (device_id, port_id) not in self.identifiers_dictionary):
+                or (device_id, port_id) not in self.port_to_identifier):
             return False
         else:
             del self.signals_dictionary[(device_id, port_id)]
-            del self.identifiers_dictionary[(device_id, port_id)]
+            del self.port_to_identifier[(device_id, port_id)]
+            for identifier, port in self.identifier_to_port.copy().items():
+                if port == (device_id, port_id):
+                    del self.identifier_to_port[identifier]
+            return True
+
+    def remove_monitor_by_identifier(self, identifier: str) -> bool:
+        """Remove the specified signal from the signals, identifier_to_port and port_to_identifier dictionary by
+        identifier.
+
+        Return True if successful.
+        """
+        if identifier not in self.identifier_to_port:
+            return False
+        else:
+            del self.identifier_to_port[identifier]
+            for port, identifier_set in self.port_to_identifier.copy().items():
+                if identifier in identifier_set:
+                    if len(identifier_set) == 1:  # only one identifier associated to the port
+                        del self.signals_dictionary[port]
+                        del self.port_to_identifier[port]
+                    else:
+                        self.port_to_identifier[port].remove(identifier)
             return True
 
     def get_monitor_signal(self, device_id: int, port_id: int) -> int or None:
@@ -160,9 +189,10 @@ class Monitors:
         """
         length_list = []  # for storing name lengths
         for device_id, port_id in self.signals_dictionary:
-            monitor_name = self.identifiers_dictionary[(device_id, port_id)]
-            name_length = len(monitor_name)
-            length_list.append(name_length)
+            monitor_name_set = self.port_to_identifier[(device_id, port_id)]
+            for monitor_name in monitor_name_set:
+                name_length = len(monitor_name)
+                length_list.append(name_length)
         if length_list:  # if the list is not empty
             return max(length_list)
         else:
@@ -171,11 +201,11 @@ class Monitors:
     def display_signals(self) -> None:
         """Display the signal trace(s) in the text console."""
         margin = self.get_margin()
-        for device_id, port_id in self.signals_dictionary:
-            monitor_name = self.identifiers_dictionary[(device_id, port_id)]
-            name_length = len(monitor_name)
+
+        for identifier, (device_id, port_id) in self.identifier_to_port.items():
+            name_length = len(identifier)
             signal_list = self.signals_dictionary[(device_id, port_id)]
-            print(monitor_name + (margin - name_length) * " ", end=": ")
+            print(identifier + (margin - name_length) * " ", end=": ")
             for signal in signal_list:
                 if signal == self.devices.HIGH:
                     print("-", end="")

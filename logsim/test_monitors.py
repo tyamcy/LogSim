@@ -18,18 +18,19 @@ def new_monitors():
     [SW1_ID, SW2_ID, OR1_ID, I1, I2] = new_names.lookup(["Sw1", "Sw2", "Or1",
                                                         "I1", "I2"])
     # Add 2 switches and an OR gate
+    new_devices.make_device(OR1_ID, new_devices.OR, 2)
     new_devices.make_device(SW1_ID, new_devices.SWITCH, 0)
     new_devices.make_device(SW2_ID, new_devices.SWITCH, 0)
-    new_devices.make_device(OR1_ID, new_devices.OR, 2)
 
     # Make connections
     new_network.make_connection(SW1_ID, None, OR1_ID, I1)
     new_network.make_connection(SW2_ID, None, OR1_ID, I2)
 
     # Set monitors
-    new_monitors.make_monitor(SW1_ID, None, "A")
-    new_monitors.make_monitor(SW2_ID, None, "B")
-    new_monitors.make_monitor(OR1_ID, None, "C")
+    new_monitors.make_monitor(OR1_ID, None, "A1")
+    new_monitors.make_monitor(SW1_ID, None, "B")
+    new_monitors.make_monitor(SW2_ID, None, "C")
+    new_monitors.make_monitor(OR1_ID, None, "A2")
 
     return new_monitors
 
@@ -49,9 +50,9 @@ def test_identify_monitor(new_monitors):
     names = new_monitors.names
     [SW1_ID, SW2_ID, OR1_ID] = names.lookup(["Sw1", "Sw2", "Or1"])
 
-    assert new_monitors.identifiers_dictionary == {(SW1_ID, None): "A",
-                                               (SW2_ID, None): "B",
-                                               (OR1_ID, None): "C"}
+    assert new_monitors.port_to_identifier == {(SW1_ID, None): {"B"},
+                                               (SW2_ID, None): {"C"},
+                                               (OR1_ID, None): {"A1", "A2"}}
 
 
 def test_make_monitor_gives_errors(new_monitors):
@@ -64,31 +65,35 @@ def test_make_monitor_gives_errors(new_monitors):
                                                             "SWITCH"])
 
     # input is allowed
-    assert new_monitors.make_monitor(OR1_ID, I1, "D") == new_monitors.NO_ERROR
+    assert new_monitors.make_monitor(OR1_ID, I1, "E") == new_monitors.NO_ERROR
 
+    # multiple identifiers for the same port is allowed
     assert new_monitors.make_monitor(SW1_ID,
-                                     None, "E") == new_monitors.MONITOR_PRESENT
+                                     None, "F") == new_monitors.NO_ERROR
+    # repeated identifier is not allowed
+    assert new_monitors.make_monitor(SW1_ID,
+                                     None, "F") == new_monitors.MONITOR_IDENTIFIER_PRESENT
     # I1 is not a device_id in the network
     assert new_monitors.make_monitor(I1,
-                                     None, "F") == network.DEVICE_ABSENT
+                                     None, "G") == network.DEVICE_ABSENT
 
     # Make a new switch device
     devices.make_device(SW3_ID, SWITCH_ID, 0)
 
-    assert new_monitors.make_monitor(SW3_ID, None, "G") == new_monitors.NO_ERROR
+    assert new_monitors.make_monitor(SW3_ID, None, "H") == new_monitors.NO_ERROR
 
 
-def test_remove_monitor(new_monitors):
+def test_remove_monitor_by_port(new_monitors):
     """Test if remove_monitor correctly updates the signals and identifiers dictionary."""
     names = new_monitors.names
     [SW1_ID, SW2_ID, OR1_ID] = names.lookup(["Sw1", "Sw2", "Or1"])
 
-    new_monitors.remove_monitor(SW1_ID, None)
+    new_monitors.remove_monitor_by_port(SW1_ID, None)
     assert new_monitors.signals_dictionary == {(SW2_ID, None): [],
                                                (OR1_ID, None): []}
 
-    assert new_monitors.identifiers_dictionary == {(SW2_ID, None): "B",
-                                               (OR1_ID, None): "C"}
+    assert new_monitors.port_to_identifier == {(SW2_ID, None): {"C"},
+                                               (OR1_ID, None): {"A1", "A2"}}
 
 
 def test_get_signal_names(new_monitors):
@@ -100,7 +105,7 @@ def test_get_signal_names(new_monitors):
     # Create a D-type device
     devices.make_device(D_ID, devices.D_TYPE)
 
-    assert new_monitors.get_signal_names() == [["Sw1", "Sw2", "Or1"],
+    assert new_monitors.get_signal_names() == [["Or1", "Sw1", "Sw2"],
                                                ["D1.Q", "D1.QBAR"]]
 
 
@@ -130,9 +135,9 @@ def test_record_signals(new_monitors):
     new_monitors.record_signals()
 
     assert new_monitors.signals_dictionary == {
+        (OR1_ID, None): [LOW, HIGH, HIGH],
         (SW1_ID, None): [LOW, HIGH, HIGH],
-        (SW2_ID, None): [LOW, LOW, HIGH],
-        (OR1_ID, None): [LOW, HIGH, HIGH]}
+        (SW2_ID, None): [LOW, LOW, HIGH]}
 
 
 def test_get_margin(new_monitors):
@@ -200,10 +205,11 @@ def test_display_signals(capsys, new_monitors):
     out, _ = capsys.readouterr()
 
     traces = out.split("\n")
-    assert len(traces) == 5
-    assert "A  : __________----------" in traces
-    assert "B  : ____________________" in traces
-    assert "C  : __________----------" in traces
+    assert len(traces) == 6
+    assert "A1 : __________----------" in traces
+    assert "B  : __________----------" in traces
+    assert "C  : ____________________" in traces
+    assert "A2 : __________----------" in traces
 
     # Clock could be anywhere in its cycle, but its half period is 2
     assert ("CLK: __--__--__--__--__--" in traces or

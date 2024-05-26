@@ -66,9 +66,8 @@ class Network:
         self.names = names
         self.devices = devices
 
-        [self.NO_ERROR, self.INPUT_TO_INPUT, self.OUTPUT_TO_OUTPUT,
-         self.INPUT_CONNECTED, self.PORT_ABSENT,
-         self.DEVICE_ABSENT] = self.names.unique_error_codes(6)
+        [self.NO_ERROR, self.INPUT_CONNECTED, self.INPUT_PORT_ABSENT, self.OUTPUT_PORT_ABSENT,
+         self.INPUT_DEVICE_ABSENT, self.OUTPUT_DEVICE_ABSENT] = self.names.unique_error_codes(6)
         self.steady_state = True  # for checking if signals have settled
 
     def get_connected_output(self, device_id, input_id):
@@ -116,30 +115,12 @@ class Network:
         """
         first_device = self.devices.get_device(first_device_id)
         second_device = self.devices.get_device(second_device_id)
-
-        if first_device is None or second_device is None:
-            error_type = self.DEVICE_ABSENT
-
-        elif first_port_id in first_device.inputs:
-            if first_device.inputs[first_port_id] is not None:
-                # Input is already in a connection
-                error_type = self.INPUT_CONNECTED
-            elif second_port_id in second_device.inputs:
-                # Both ports are inputs
-                error_type = self.INPUT_TO_INPUT
-            elif second_port_id in second_device.outputs:
-                # Make connection
-                first_device.inputs[first_port_id] = (second_device_id,
-                                                      second_port_id)
-                error_type = self.NO_ERROR
-            else:  # second_port_id is not a valid input or output port
-                error_type = self.PORT_ABSENT
-
+        if first_device is None:
+            error_type = self.OUTPUT_DEVICE_ABSENT
+        elif second_device is None:
+            error_type = self.INPUT_DEVICE_ABSENT
         elif first_port_id in first_device.outputs:
-            if second_port_id in second_device.outputs:
-                # Both ports are outputs
-                error_type = self.OUTPUT_TO_OUTPUT
-            elif second_port_id in second_device.inputs:
+            if second_port_id in second_device.inputs:
                 if second_device.inputs[second_port_id] is not None:
                     # Input is already in a connection
                     error_type = self.INPUT_CONNECTED
@@ -148,10 +129,10 @@ class Network:
                                                             first_port_id)
                     error_type = self.NO_ERROR
             else:
-                error_type = self.PORT_ABSENT
+                error_type = self.INPUT_PORT_ABSENT
 
         else:  # first_port_id not a valid input or output port
-            error_type = self.PORT_ABSENT
+            error_type = self.OUTPUT_PORT_ABSENT
 
         return error_type
 

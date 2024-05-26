@@ -71,7 +71,7 @@ class ParserErrorHandler:
             raise ValueError("Invalid symbol type")
         error_message = self.get_error_message(error_code=error_code, name=name)
         error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,
-                                                         message=error_message)
+                                                     message=error_message)
         self.error_output_list.append(error_output)
 
     def file_error(self, error_code: int) -> None:
@@ -130,13 +130,13 @@ class ParserErrorHandler:
             return f"Found {name}, expected '.' (if pin has to be defined) or ';' (if pin does not have to be defined)"
 
         # semantic error
-        elif error_code == self.network.PORT_ABSENT:
+        elif error_code == self.network.INPUT_PORT_ABSENT or error_code == self.network.OUTPUT_PORT_ABSENT:
             return f"Pin {name} does not exist"
         elif error_code == self.network.INPUT_CONNECTED:
             return f"Connection repeatedly assigned to input pin {name}"
         elif False:  # undefined error code now - implement later
             return f"Missing input to pin {name}"
-        elif error_code == self.network.DEVICE_ABSENT:
+        elif error_code == self.network.INPUT_DEVICE_ABSENT or error_code == self.network.OUTPUT_DEVICE_ABSENT:
             return f"Identifier {name} is not defined"
         elif error_code == self.devices.DEVICE_PRESENT or error_code == self.monitors.MONITOR_PRESENT:
             return f"Identifier {name} should not be redefined"

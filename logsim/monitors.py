@@ -53,14 +53,18 @@ class Monitors:
         self.network = network
         self.devices = devices
 
-        # monitors_dictionary stores
+        # signals_dictionary stores
         # {(device_id, output_id): [signal_list]}
-        self.monitors_dictionary = collections.OrderedDict()
+        self.signals_dictionary = collections.OrderedDict()
+
+        # identifiers_dictionary stores
+        # {(device_id, output_id): identifier}
+        self.identifiers_dictionary = collections.OrderedDict()
 
         [self.NO_ERROR, self.NOT_OUTPUT,
          self.MONITOR_PRESENT] = self.names.unique_error_codes(3)
 
-    def make_monitor(self, device_id, output_id, cycles_completed=0):
+    def make_monitor(self, device_id, output_id, identifier, cycles_completed=0):
         """Add the specified signal to the monitors dictionary.
 
         Return NO_ERROR if successful, or the corresponding error if not.
@@ -70,15 +74,16 @@ class Monitors:
             return self.network.DEVICE_ABSENT
         elif output_id not in monitor_device.outputs:
             return self.NOT_OUTPUT
-        elif (device_id, output_id) in self.monitors_dictionary:
+        elif (device_id, output_id) in self.signals_dictionary:
             return self.MONITOR_PRESENT
         else:
             # If n simulation cycles have been completed before making this
             # monitor, then initialise the signal trace with an n-length list
             # of BLANK signals. Otherwise, initialise the trace with an empty
             # list.
-            self.monitors_dictionary[(device_id, output_id)] = [
+            self.signals_dictionary[(device_id, output_id)] = [
                 self.devices.BLANK] * cycles_completed
+            self.identifiers_dictionary[(device_id, output_id)] = identifier
             return self.NO_ERROR
 
     def remove_monitor(self, device_id, output_id):
@@ -86,10 +91,12 @@ class Monitors:
 
         Return True if successful.
         """
-        if (device_id, output_id) not in self.monitors_dictionary:
+        if ((device_id, output_id) not in self.signals_dictionary
+                or (device_id, output_id) not in self.identifiers_dictionary):
             return False
         else:
-            del self.monitors_dictionary[(device_id, output_id)]
+            del self.signals_dictionary[(device_id, output_id)]
+            del self.identifiers_dictionary[(device_id, output_id)]
             return True
 
     def get_monitor_signal(self, device_id, output_id):
@@ -97,7 +104,7 @@ class Monitors:
 
         If the monitor does not exist, return None.
         """
-        if (device_id, output_id) in self.monitors_dictionary:
+        if (device_id, output_id) in self.signals_dictionary:
             return self.network.get_output_signal(device_id, output_id)
         else:
             return None
@@ -107,23 +114,23 @@ class Monitors:
 
         This function is called at every simulation cycle.
         """
-        for device_id, output_id in self.monitors_dictionary:
+        for device_id, output_id in self.signals_dictionary:
             signal_level = self.get_monitor_signal(device_id, output_id)
-            self.monitors_dictionary[(device_id,
-                                      output_id)].append(signal_level)
+            self.signals_dictionary[(device_id,
+                                     output_id)].append(signal_level)
 
     def get_signal_names(self):
         """Return two signal name lists: monitored and not monitored."""
         non_monitored_signal_list = []
         monitored_signal_list = []
-        for device_id, output_id in self.monitors_dictionary:
+        for device_id, output_id in self.signals_dictionary:
             monitor_name = self.devices.get_signal_name(device_id, output_id)
             monitored_signal_list.append(monitor_name)
 
         for device_id in self.devices.find_devices():
             device = self.devices.get_device(device_id)
             for output_id in device.outputs:
-                if (device_id, output_id) not in self.monitors_dictionary:
+                if (device_id, output_id) not in self.signals_dictionary:
                     signal_name = self.devices.get_signal_name(device_id,
                                                                output_id)
                     non_monitored_signal_list.append(signal_name)
@@ -135,8 +142,8 @@ class Monitors:
 
         The list of stored signal levels for each monitor is deleted.
         """
-        for device_id, output_id in self.monitors_dictionary:
-            self.monitors_dictionary[(device_id, output_id)] = []
+        for device_id, output_id in self.signals_dictionary:
+            self.signals_dictionary[(device_id, output_id)] = []
 
     def get_margin(self):
         """Return the length of the longest monitor's name.
@@ -146,8 +153,8 @@ class Monitors:
         starting to draw the signal trace.
         """
         length_list = []  # for storing name lengths
-        for device_id, output_id in self.monitors_dictionary:
-            monitor_name = self.devices.get_signal_name(device_id, output_id)
+        for device_id, output_id in self.signals_dictionary:
+            monitor_name = self.identifiers_dictionary[(device_id, output_id)]
             name_length = len(monitor_name)
             length_list.append(name_length)
         if length_list:  # if the list is not empty
@@ -158,10 +165,10 @@ class Monitors:
     def display_signals(self):
         """Display the signal trace(s) in the text console."""
         margin = self.get_margin()
-        for device_id, output_id in self.monitors_dictionary:
-            monitor_name = self.devices.get_signal_name(device_id, output_id)
+        for device_id, output_id in self.signals_dictionary:
+            monitor_name = self.identifiers_dictionary[(device_id, output_id)]
             name_length = len(monitor_name)
-            signal_list = self.monitors_dictionary[(device_id, output_id)]
+            signal_list = self.signals_dictionary[(device_id, output_id)]
             print(monitor_name + (margin - name_length) * " ", end=": ")
             for signal in signal_list:
                 if signal == self.devices.HIGH:

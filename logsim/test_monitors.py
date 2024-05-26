@@ -27,21 +27,30 @@ def new_monitors():
     new_network.make_connection(SW2_ID, None, OR1_ID, I2)
 
     # Set monitors
-    new_monitors.make_monitor(SW1_ID, None)
-    new_monitors.make_monitor(SW2_ID, None)
-    new_monitors.make_monitor(OR1_ID, None)
+    new_monitors.make_monitor(SW1_ID, None, "A")
+    new_monitors.make_monitor(SW2_ID, None, "B")
+    new_monitors.make_monitor(OR1_ID, None, "C")
 
     return new_monitors
 
 
 def test_make_monitor(new_monitors):
-    """Test if make_monitor correctly updates the monitors dictionary."""
+    """Test if make_monitor correctly updates the signals dictionary."""
     names = new_monitors.names
     [SW1_ID, SW2_ID, OR1_ID] = names.lookup(["Sw1", "Sw2", "Or1"])
 
-    assert new_monitors.monitors_dictionary == {(SW1_ID, None): [],
-                                                (SW2_ID, None): [],
-                                                (OR1_ID, None): []}
+    assert new_monitors.signals_dictionary == {(SW1_ID, None): [],
+                                               (SW2_ID, None): [],
+                                               (OR1_ID, None): []}
+
+def test_identify_monitor(new_monitors):
+    """Test if make_monitor correctly updates the identifiers dictionary."""
+    names = new_monitors.names
+    [SW1_ID, SW2_ID, OR1_ID] = names.lookup(["Sw1", "Sw2", "Or1"])
+
+    assert new_monitors.identifiers_dictionary == {(SW1_ID, None): "A",
+                                               (SW2_ID, None): "B",
+                                               (OR1_ID, None): "C"}
 
 
 def test_make_monitor_gives_errors(new_monitors):
@@ -53,27 +62,31 @@ def test_make_monitor_gives_errors(new_monitors):
                                                             "Or1", "I1",
                                                             "SWITCH"])
 
-    assert new_monitors.make_monitor(OR1_ID, I1) == new_monitors.NOT_OUTPUT
+    assert new_monitors.make_monitor(OR1_ID, I1, "D") == new_monitors.NOT_OUTPUT
     assert new_monitors.make_monitor(SW1_ID,
-                                     None) == new_monitors.MONITOR_PRESENT
+                                     None, "E") == new_monitors.MONITOR_PRESENT
     # I1 is not a device_id in the network
     assert new_monitors.make_monitor(I1,
-                                     None) == network.DEVICE_ABSENT
+                                     None, "F") == network.DEVICE_ABSENT
+
 
     # Make a new switch device
     devices.make_device(SW3_ID, SWITCH_ID, 0)
 
-    assert new_monitors.make_monitor(SW3_ID, None) == new_monitors.NO_ERROR
+    assert new_monitors.make_monitor(SW3_ID, None, "G") == new_monitors.NO_ERROR
 
 
 def test_remove_monitor(new_monitors):
-    """Test if remove_monitor correctly updates the monitors dictionary."""
+    """Test if remove_monitor correctly updates the signals and identifiers dictionary."""
     names = new_monitors.names
     [SW1_ID, SW2_ID, OR1_ID] = names.lookup(["Sw1", "Sw2", "Or1"])
 
     new_monitors.remove_monitor(SW1_ID, None)
-    assert new_monitors.monitors_dictionary == {(SW2_ID, None): [],
-                                                (OR1_ID, None): []}
+    assert new_monitors.signals_dictionary == {(SW2_ID, None): [],
+                                               (OR1_ID, None): []}
+
+    assert new_monitors.identifiers_dictionary == {(SW2_ID, None): "B",
+                                               (OR1_ID, None): "C"}
 
 
 def test_get_signal_names(new_monitors):
@@ -114,7 +127,7 @@ def test_record_signals(new_monitors):
     network.execute_network()
     new_monitors.record_signals()
 
-    assert new_monitors.monitors_dictionary == {
+    assert new_monitors.signals_dictionary == {
         (SW1_ID, None): [LOW, HIGH, HIGH],
         (SW2_ID, None): [LOW, LOW, HIGH],
         (OR1_ID, None): [LOW, HIGH, HIGH]}
@@ -129,11 +142,11 @@ def test_get_margin(new_monitors):
 
     # Create a D-type device and set monitors on its outputs
     devices.make_device(D_ID, DTYPE_ID)
-    new_monitors.make_monitor(D_ID, QBAR_ID)
-    new_monitors.make_monitor(D_ID, Q_ID)
+    new_monitors.make_monitor(D_ID, QBAR_ID, "D1_QBAR")
+    new_monitors.make_monitor(D_ID, Q_ID, "D1_Q")
 
-    # Longest name should be Dtype1.QBAR
-    assert new_monitors.get_margin() == 11
+    # Longest name should be D1_QBAR
+    assert new_monitors.get_margin() == 7
 
 
 def test_reset_monitors(new_monitors):
@@ -145,13 +158,13 @@ def test_reset_monitors(new_monitors):
     LOW = devices.LOW
     new_monitors.record_signals()
     new_monitors.record_signals()
-    assert new_monitors.monitors_dictionary == {(SW1_ID, None): [LOW, LOW],
-                                                (SW2_ID, None): [LOW, LOW],
-                                                (OR1_ID, None): [LOW, LOW]}
+    assert new_monitors.signals_dictionary == {(SW1_ID, None): [LOW, LOW],
+                                               (SW2_ID, None): [LOW, LOW],
+                                               (OR1_ID, None): [LOW, LOW]}
     new_monitors.reset_monitors()
-    assert new_monitors.monitors_dictionary == {(SW1_ID, None): [],
-                                                (SW2_ID, None): [],
-                                                (OR1_ID, None): []}
+    assert new_monitors.signals_dictionary == {(SW1_ID, None): [],
+                                               (SW2_ID, None): [],
+                                               (OR1_ID, None): []}
 
 
 def test_display_signals(capsys, new_monitors):
@@ -166,7 +179,7 @@ def test_display_signals(capsys, new_monitors):
 
     # Make a clock and set a monitor on its output
     devices.make_device(CL_ID, CLOCK_ID, 2)
-    new_monitors.make_monitor(CL_ID, None)
+    new_monitors.make_monitor(CL_ID, None, "CLK")
 
     # Both switches are currently LOW
     for _ in range(10):
@@ -186,14 +199,14 @@ def test_display_signals(capsys, new_monitors):
 
     traces = out.split("\n")
     assert len(traces) == 5
-    assert "Sw1   : __________----------" in traces
-    assert "Sw2   : ____________________" in traces
-    assert "Or1   : __________----------" in traces
+    assert "A  : __________----------" in traces
+    assert "B  : ____________________" in traces
+    assert "C  : __________----------" in traces
 
     # Clock could be anywhere in its cycle, but its half period is 2
-    assert ("Clock1: __--__--__--__--__--" in traces or
-            "Clock1: _--__--__--__--__--_" in traces or
-            "Clock1: --__--__--__--__--__" in traces or
-            "Clock1: -__--__--__--__--__-" in traces)
+    assert ("CLK: __--__--__--__--__--" in traces or
+            "CLK: _--__--__--__--__--_" in traces or
+            "CLK: --__--__--__--__--__" in traces or
+            "CLK: -__--__--__--__--__-" in traces)
 
     assert "" in traces  # additional empty line at the end

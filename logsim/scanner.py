@@ -79,9 +79,6 @@ class Scanner:
         """Translate the next sequence of characters into a symbol and return the symbol."""
 
         symbol = Symbol()
-        symbol.line = self.current_line
-        symbol.character_in_line = self.current_character_in_line
-
         self.skip_spaces()  # current character now not whitespace
 
         while self.current_character == "#" or self.current_character == "/":  # comment
@@ -90,6 +87,9 @@ class Scanner:
             else:  # multi-line comment
                 self.skip_multi_line_comment()
             self.skip_spaces()
+
+        symbol.line = self.current_line
+        symbol.character_in_line = self.current_character_in_line
 
         if self.current_character.isalpha():  # name
             name_string = self.get_name()
@@ -156,7 +156,7 @@ class Scanner:
         char = self.file.read(1)
         if char == "\n":  # next line
             self.current_line += 1
-            self.current_character_in_line = 0
+            self.current_character_in_line = -1
         else:
             self.current_character_in_line += 1
         return char

@@ -203,12 +203,14 @@ class Parser:
         # expect clock cycle
         if not self.clock_cycle():
             return False
+        self.current_qualifier = copy(self.symbol)
         self.advance()
 
         # expect semicolon
         if not self.semicolon():
             return False
         else:
+            self.current_device_kind = self.devices.CLOCK
             self.make_device()
             return True
 
@@ -226,12 +228,14 @@ class Parser:
         # expect initial state
         if not self.initial_state():
             return False
+        self.current_qualifier = copy(self.symbol)
         self.advance()
 
         # expect semicolon
         if not self.semicolon():
             return False
         else:
+            self.current_device_kind = self.devices.SWITCH
             self.make_device()
             return True
 
@@ -274,17 +278,17 @@ class Parser:
         # expect identifier
         if not self.identifier():
             return False
-        in_device_id = self.symbol.id
+        out_device_symbol = copy(self.symbol)
         self.advance()
         # expect full stop or arrow
         # optionally expect full stop
-        in_port_id = None
+        out_port_symbol = None
         if self.symbol.type == Scanner.FULL_STOP:
             self.advance()
             # expect pin out
             if not self.pin_out():
                 return False
-            in_port_id = self.symbol.id
+            out_port_symbol = copy(self.symbol)
             self.advance()
         elif self.symbol.type != Scanner.ARROW:  # not full stop or arrow
             self.error_handler.handle_error(self.error_handler.EXPECT_FULL_STOP_OR_ARROW, self.symbol)
@@ -298,7 +302,7 @@ class Parser:
         # expect identifier
         if not self.identifier():
             return False
-        out_device_id = self.symbol.id
+        in_device_symbol = copy(self.symbol)
         self.advance()
 
         # expect full stop
@@ -309,7 +313,7 @@ class Parser:
         # expect pin in
         if not self.pin_in():
             return False
-        out_port_id = self.symbol.id
+        in_port_symbol = copy(self.symbol)
         self.advance()
 
         # expect semicolon
@@ -317,7 +321,7 @@ class Parser:
             return False
         else:
             # attempts to make connection between devices
-            self.make_connection(in_device_id, in_port_id, out_device_id, out_port_id)
+            self.make_connection(out_device_symbol, out_port_symbol, in_device_symbol, in_port_symbol)
             return True
 
     def colon(self) -> bool:
@@ -354,7 +358,7 @@ class Parser:
     def input_device(self) -> bool:
         if self.symbol.type == Scanner.NAME:
             if self.symbol_string() in self.VARIABLE_INPUT_DEVICE:
-                self.current_device_kind = copy(self.symbol)
+                self.current_device_kind = self.symbol.id
                 self.advance()
                 if self.symbol.type != Scanner.COMMA:
                     # expect comma
@@ -366,7 +370,7 @@ class Parser:
                 return self.variable_input_number()
             elif self.symbol_string() in self.FIXED_INPUT_DEVICE:
                 self.current_qualifier = None
-                self.current_device_kind = copy(self.symbol)
+                self.current_device_kind = self.symbol.id
                 return True
 
         # expect input device
@@ -475,7 +479,7 @@ class Parser:
 
     def make_device(self):
         if not self.error_count():
-            device_kind = self.current_device_kind.id
+            device_kind = self.current_device_kind
             device_id = self.current_identifier.id
             device_property = int(self.current_qualifier.id) if self.current_qualifier else None
             error_type = self.devices.make_device(device_id, device_kind, device_property)
@@ -491,11 +495,24 @@ class Parser:
     def make_monitor(self):
         pass
 
-    def make_connection(self, in_device_id, in_port_id, out_device_id, out_port_id):
+    def make_connection(self, out_device_symbol, out_port_symbol, in_device_symbol, in_port_symbol):
         if not self.error_count():
-            error_type = self.network.make_connection(in_device_id, in_port_id, out_device_id, out_port_id)
+            out_device_id = out_device_symbol.id
+            out_port_id = out_port_symbol.id if out_port_symbol else None
+            in_device_id = in_device_symbol.id
+            in_port_id = in_port_symbol.id
+            error_type = self.network.make_connection(out_device_id, out_port_id, in_device_id, in_port_id)
             if error_type == self.network.NO_ERROR:
                 pass
-            elif error_type == self.network.PORT_ABSENT:
-                self.error_handler.handle_error(self.network.PORT_ABSENT, self.symbol)
-
+            elif error_type == self.network.INPUT_PORT_ABSENT:
+                self.error_handler.handle_error(self.network.INPUT_PORT_ABSENT, in_port_symbol)
+            elif error_type == self.network.OUTPUT_PORT_ABSENT:
+                self.error_handler.handle_error(self.network.OUTPUT_PORT_ABSENT, out_port_symbol)
+            elif error_type == self.network.INPUT_DEVICE_ABSENT:
+                self.error_handler.handle_error(self.network.INPUT_DEVICE_ABSENT, in_device_symbol)
+            elif error_type == self.network.OUTPUT_DEVICE_ABSENT:
+                self.error_handler.handle_error(self.network.OUTPUT_DEVICE_ABSENT, out_device_symbol)
+            elif error_type == self.network.INPUT_CONNECTED:
+                self.error_handler.handle_error(self.network.INPUT_CONNECTED, in_port_symbol)
+            else:
+                print(f"Error type: {error_type}, should not be encountered")

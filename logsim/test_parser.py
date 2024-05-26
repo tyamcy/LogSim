@@ -15,6 +15,6 @@ monitors = Monitors(names=names, devices=devices, network=network)
 scanner = Scanner(names=names, path=PATH)
 parser = Parser(names=names, devices=devices, network=network, monitors=monitors, scanner=scanner)
 
-print(parser.parse_network())
+parser.parse_network()
 for error in parser.fetch_error_output():
     print(error)

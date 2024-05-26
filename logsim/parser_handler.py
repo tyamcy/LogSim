@@ -33,7 +33,8 @@ class ParserErrorHandler:
          self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW, self.MISSING_MONITOR] = names.unique_error_codes(18)
 
         # semantic error
-        [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.WRONG_BLOCK_ORDER] = names.unique_error_codes(3)
+        [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.WRONG_BLOCK_ORDER, self.MONITOR_NOT_DEFINED
+         ] = names.unique_error_codes(4)
 
     def handle_error(self, error_code: int, symbol: Symbol) -> None:
         print("handling error")

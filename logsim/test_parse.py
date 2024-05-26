@@ -58,6 +58,14 @@ def all_error_1_expected_content(parser: Parser):
         ("Line 65:", parser.network.DEVICE_ABSENT)
     ]
 
+def all_error_2_expected_content(parser: Parser):
+    return [
+        ("Line 1", parser.error_handler.WRONG_BLOCK_ORDER),
+        ("Line 5", parser.error_handler.DUPLICATE_KEYWORD),
+        ("Line 12", parser.error_handler.EXPECT_KEYWORD),
+        ("Line 16", parser.error_handler.EXPECT_OPEN_CURLY_BRACKET),
+    ]
+    # Need to test MISSING_MONITOR and MISSING_CLOCK_OR_SWITCH
 
 @pytest.mark.parametrize("path, expected_result", [
     (path_correct, True),

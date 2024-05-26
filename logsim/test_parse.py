@@ -8,7 +8,7 @@ from network import Network
 from monitors import Monitors
 from scanner import Scanner
 
-path_correct = "logsim/test_text/test_correct_text"
+path_correct = "logsim/test_text/test_parse_correct_text"
 path_wrong_order = "logsim/test_text/test_parse_wrong_order_text"
 path_wrong_content = "logsim/test_text/test_parse_wrong_content_text"
 
@@ -44,4 +44,4 @@ def another_parser():
 def test_parse_network(another_parser, path, expected_result):
     """Test if network parses correctly."""
 
-    assert another_parser == expected_result
+    assert another_parser.parse_network() == expected_result

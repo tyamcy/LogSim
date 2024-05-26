@@ -1,0 +1,20 @@
+from names import Names
+from devices import Devices
+from network import Network
+from monitors import Monitors
+from scanner import Scanner
+from parser_handler import ParserErrorHandler
+from parse import Parser
+
+PATH = "logsim/test_text/test_parse_wrong_content_text"
+
+names = Names()
+devices = Devices(names=names)
+network = Network(names=names, devices=devices)
+monitors = Monitors(names=names, devices=devices, network=network)
+scanner = Scanner(names=names, path=PATH)
+parser = Parser(names=names, devices=devices, network=network, monitors=monitors, scanner=scanner)
+
+parser.parse_network()
+for error in parser.fetch_error_output():
+    print(error)

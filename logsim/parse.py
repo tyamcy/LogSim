@@ -107,10 +107,12 @@ class Parser:
                 self.error_handler.handle_error(self.error_handler.EXPECT_KEYWORD, self.symbol)
                 self.skip_to_close_bracket()
                 self.advance()
+
+        # check file level error
         if not self.block_parse_flags["MONITOR"]:
-            self.error_handler.handle_error(self.error_handler.MONITOR_NOT_DEFINED, self.symbol)  # should not have symbol
+            self.error_handler.file_error(self.error_handler.MONITOR_NOT_DEFINED)
         if not self.block_parse_flags["CLOCK"] and not self.block_parse_flags["SWITCH"]:
-            self.error_handler.handle_error(self.error_handler.MISSING_CLOCK_OR_SWITCH, self.symbol) # should not have symbol
+            self.error_handler.file_error(self.error_handler.MISSING_CLOCK_OR_SWITCH)
         return False if self.fetch_error_output() else True
 
     def parse_list(self, keyword: str, sub_rule: bool()):
@@ -122,7 +124,7 @@ class Parser:
             if not sub_rule():
                 self.skip_after_semicolon_or_to_close_bracket()
 
-            # check for subsequent subrule if any
+            # check for subsequent sub-rule if any
             while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and Scanner.EOF:
                 # wrong sub-rule
                 if not sub_rule():

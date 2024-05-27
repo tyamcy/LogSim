@@ -97,7 +97,8 @@ class ParserErrorHandler:
         name = "\'" + name + "\'"
         if not (error_code == self.MISSING_CLOCK_OR_SWITCH or error_code == self.MISSING_MONITOR) and not name:
             raise TypeError(f"error_code = {error_code} has 1 required positional argument: 'name'")
-        # syntax error
+
+        # syntax line error
         if error_code == self.EXPECT_IDENTIFIER:
             return f"Found {name}, expected a non-keyword identifier"
         elif error_code == self.EXPECT_INPUT_DEVICE:
@@ -132,27 +133,30 @@ class ParserErrorHandler:
             return f"Found {name}, expected '>'"
         elif error_code == self.EXPECT_FULL_STOP_OR_ARROW:  # for [".", pinOut] , ">" in connection
             return f"Found {name}, expected '.' (if pin has to be defined) or '>' (if pin does not have to be defined)"
+        elif error_code == self.DUPLICATE_KEYWORD:
+            return f"{name} block should not be redefined"
+        elif error_code == self.WRONG_BLOCK_ORDER:
+            return f"{name} block order is wrong"
 
-        # semantic error
+        # semantic line error
         elif (error_code == self.network.INPUT_PORT_ABSENT or error_code == self.network.OUTPUT_PORT_ABSENT or
               error_code == self.monitors.MONITOR_PORT_ABSENT):
             return f"Pin {name} does not exist"
         elif error_code == self.network.INPUT_CONNECTED:
             return f"Connection repeatedly assigned to input pin {name}"
-        elif error_code == self.MISSING_INPUT_TO_PIN:
-            return f"Missing input to pin {name}"
         elif (error_code == self.network.INPUT_DEVICE_ABSENT or error_code == self.network.OUTPUT_DEVICE_ABSENT or
               error_code == self.monitors.MONITOR_DEVICE_ABSENT):
             return f"Identifier {name} is not defined"
         elif error_code == self.devices.DEVICE_PRESENT or error_code == self.monitors.MONITOR_IDENTIFIER_PRESENT:
             return f"Identifier {name} should not be redefined"
-        elif error_code == self.MISSING_CLOCK_OR_SWITCH:
-            return f"At least one list between 'CLOCK' and 'SWITCH' is needed. neither is found"
-        elif error_code == self.DUPLICATE_KEYWORD:
-            return f"{name} block should not be redefined"
-        elif error_code == self.WRONG_BLOCK_ORDER:
-            return f"{name} block order is wrong"
+
+        # file error
+        elif error_code == self.MISSING_INPUT_TO_PIN:
+            return f"Missing input to pin {name}"
         elif error_code == self.MISSING_MONITOR:
             return f"At least one monitor should be defined"
+        elif error_code == self.MISSING_CLOCK_OR_SWITCH:
+            return f"At least one list between 'CLOCK' and 'SWITCH' is needed. neither is found"
+
         else:
             raise ValueError(f"Invalid error code '{error_code}'")

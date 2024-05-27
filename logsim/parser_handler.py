@@ -6,19 +6,22 @@ from scanner import Scanner, Symbol
 
 
 class LineTerminalOutput:
-    def __init__(self):
-        self.line_location = None
-        self.line_with_issue = None
-        self.arrow = None
-        self.message = None
+    def __init__(self, line_location: str = None, line_with_issue: str = None, arrow: str = None, message: str = None,
+                 error_code: int = None):
+        self.line_location = line_location
+        self.line_with_issue = line_with_issue
+        self.arrow = arrow
+        self.message = message
+        self.error_code = error_code
 
     def __str__(self):
         return f"\n{self.line_location}\n{self.line_with_issue}{self.arrow}\n{self.message}\n"
 
 
 class FileTerminalOutput:
-    def __init__(self):
-        self.message = None
+    def __init__(self, message: str = None, error_code: int = None):
+        self.message = message
+        self.error_code = error_code
 
     def __str__(self):
         return f"\nFile error: {self.message}\n"
@@ -69,27 +72,28 @@ class ParserErrorHandler:
             name = ""
         else:
             raise ValueError("Invalid symbol type")
-        error_message = self.get_line_error_message(error_code=error_code, name=name)
         error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,
-                                                     message=error_message)
+                                                     error_code=error_code, name=name)
         self.error_output_list.append(error_output)
 
     def file_error(self, error_code: int, name: str = "") -> None:
-        error_output = FileTerminalOutput()
-        error_output.message = self.get_line_error_message(error_code=error_code, name=name)
+        error_output = FileTerminalOutput(
+            message=self.get_error_message(error_code=error_code, name=name),
+            error_code=error_code
+        )
         self.error_output_list.append(error_output)
 
-    def get_line_terminal_output(self, line: int, character_in_line: int, message: str) -> LineTerminalOutput:
-        terminal_output = LineTerminalOutput()
+    def get_line_terminal_output(self, line: int, character_in_line: int, error_code: int, name: str) -> (
+            LineTerminalOutput):
+        return LineTerminalOutput(
+            line_location=f"Line {line + 1}:",
+            line_with_issue=self.scanner.file_lines[line],
+            arrow=" " * character_in_line + "^",
+            message=self.get_error_message(error_code=error_code, name=name),
+            error_code=error_code
+        )
 
-        terminal_output.line_location = f"Line {line + 1}:"
-        terminal_output.line_with_issue = self.scanner.file_lines[line]
-        terminal_output.arrow = " " * character_in_line + "^"
-        terminal_output.message = message
-
-        return terminal_output
-
-    def get_line_error_message(self, error_code: int, name: str = "") -> str:
+    def get_error_message(self, error_code: int, name: str = "") -> str:
         name = "\'" + name + "\'"
         if not (error_code == self.MISSING_CLOCK_OR_SWITCH or error_code == self.MISSING_MONITOR) and not name:
             raise TypeError(f"error_code = {error_code} has 1 required positional argument: 'name'")

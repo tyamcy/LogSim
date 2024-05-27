@@ -158,23 +158,18 @@ class Parser:
             self.skip_to_close_bracket()
 
     def device_list(self):
-        print("parsing device list")
         self.parse_list(keyword="DEVICE", sub_rule=self.device)
 
     def clock_list(self):
-        print("parsing clock list")
         self.parse_list(keyword="CLOCK", sub_rule=self.clock)
 
     def switch_list(self):
-        print("parsing switch list")
         self.parse_list(keyword="SWITCH", sub_rule=self.switch)
 
     def monitor_list(self):
-        print("parsing monitor list")
         self.parse_list(keyword="MONITOR", sub_rule=self.monitor)
 
     def connect_list(self):
-        print("parsing connect list")
         self.parse_list(keyword="CONNECTION", sub_rule=self.connect)
 
     def device(self) -> bool:
@@ -519,6 +514,8 @@ class Parser:
                 self.error_handler.line_error(self.monitors.MONITOR_IDENTIFIER_PRESENT, identifier_symbol)
             elif error_type == self.monitors.MONITOR_DEVICE_ABSENT:
                 self.error_handler.line_error(self.monitors.MONITOR_DEVICE_ABSENT, device_symbol)
+            elif error_type == self.monitors.MONITOR_PORT_ABSENT:
+                self.error_handler.line_error(self.monitors.MONITOR_PORT_ABSENT, port_symbol)
             else:
                 print(f"Error type: {error_type}, should not be encountered")
 

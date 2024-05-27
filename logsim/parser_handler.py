@@ -46,7 +46,7 @@ class ParserErrorHandler:
         [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.MISSING_INPUT_TO_PIN, self.WRONG_BLOCK_ORDER, self.MISSING_MONITOR
          ] = names.unique_error_codes(5)
 
-    def handle_error(self, error_code: int, symbol: Symbol) -> None:
+    def line_error(self, error_code: int, symbol: Symbol) -> None:
         error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,
                                                      error_code=error_code, name=self.symbol_to_name(symbol))
         self.error_output_list.append(error_output)

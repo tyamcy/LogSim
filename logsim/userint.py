@@ -190,7 +190,7 @@ class UserInterface:
             else:
                 port_id = None
         else:
-            print("Error! Invalid name format (identifier:device_name OR device_name.port_number)")
+            print("Error! Invalid format (identifier:device_name OR device_name.port_number)")
             return None
         return [device_id, port_id, identifier]
 

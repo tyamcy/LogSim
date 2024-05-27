@@ -81,12 +81,12 @@ class Parser:
             if self.symbol.type == Scanner.KEYWORD:
                 keyword = self.names.get_name_string(self.symbol.id)
                 if self.block_parse_flags[keyword]:
-                    self.error_handler.handle_error(self.error_handler.DUPLICATE_KEYWORD, self.symbol)
+                    self.error_handler.line_error(self.error_handler.DUPLICATE_KEYWORD, self.symbol)
                     self.skip_to_close_bracket()
                     self.advance()
                     continue
                 if self.block_order_flags[keyword]:
-                    self.error_handler.handle_error(self.error_handler.WRONG_BLOCK_ORDER, self.symbol)
+                    self.error_handler.line_error(self.error_handler.WRONG_BLOCK_ORDER, self.symbol)
                     self.skip_to_close_bracket()
                     self.advance()
                     continue
@@ -106,7 +106,7 @@ class Parser:
                     self.connect_list()
                     self.advance()
             else:
-                self.error_handler.handle_error(self.error_handler.EXPECT_KEYWORD, self.symbol)
+                self.error_handler.line_error(self.error_handler.EXPECT_KEYWORD, self.symbol)
                 self.skip_to_close_bracket()
                 self.advance()
 
@@ -154,7 +154,7 @@ class Parser:
 
         else:
             # expect open curly bracket
-            self.error_handler.handle_error(self.error_handler.EXPECT_OPEN_CURLY_BRACKET, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_OPEN_CURLY_BRACKET, self.symbol)
             self.skip_to_close_bracket()
 
     def device_list(self):
@@ -280,7 +280,7 @@ class Parser:
             port_symbol = self.symbol
             self.advance()
         elif self.symbol.type != Scanner.SEMICOLON:  # not full stop or semicolon
-            self.error_handler.handle_error(self.error_handler.EXPECT_FULL_STOP_OR_SEMICOLON, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_FULL_STOP_OR_SEMICOLON, self.symbol)
             return False
         # expect semicolon
         if not self.semicolon():
@@ -307,11 +307,11 @@ class Parser:
             out_port_symbol = copy(self.symbol)
             self.advance()
         elif self.symbol.type != Scanner.ARROW:  # not full stop or arrow
-            self.error_handler.handle_error(self.error_handler.EXPECT_FULL_STOP_OR_ARROW, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_FULL_STOP_OR_ARROW, self.symbol)
             return False
         # expect arrow
         if self.symbol.type != Scanner.ARROW:
-            self.error_handler.handle_error(self.error_handler.EXPECT_ARROW, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_ARROW, self.symbol)
             return False
         self.advance()
 
@@ -342,14 +342,14 @@ class Parser:
 
     def colon(self) -> bool:
         if not self.symbol.type == Scanner.COLON:
-            self.error_handler.handle_error(self.error_handler.EXPECT_COLON, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_COLON, self.symbol)
             return False
         else:
             return True
 
     def semicolon(self) -> bool:
         if not self.symbol.type == Scanner.SEMICOLON:
-            self.error_handler.handle_error(self.error_handler.EXPECT_SEMICOLON, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_SEMICOLON, self.symbol)
             return False
         else:
             self.advance()
@@ -357,7 +357,7 @@ class Parser:
 
     def full_stop(self) -> bool:
         if not self.symbol.type == Scanner.FULL_STOP:
-            self.error_handler.handle_error(self.error_handler.EXPECT_FULL_STOP, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_FULL_STOP, self.symbol)
             return False
         else:
             return True
@@ -368,7 +368,7 @@ class Parser:
             self.current_identifier = copy(self.symbol)
             return True
         else:
-            self.error_handler.handle_error(self.error_handler.EXPECT_IDENTIFIER, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_IDENTIFIER, self.symbol)
             return False
 
     def input_device(self) -> bool:
@@ -378,7 +378,7 @@ class Parser:
                 self.advance()
                 if self.symbol.type != Scanner.COMMA:
                     # expect comma
-                    self.error_handler.handle_error(self.error_handler.EXPECT_COMMA, self.symbol)
+                    self.error_handler.line_error(self.error_handler.EXPECT_COMMA, self.symbol)
                     return False
                 self.advance()
 
@@ -390,7 +390,7 @@ class Parser:
                 return True
 
         # expect input device
-        self.error_handler.handle_error(self.error_handler.EXPECT_INPUT_DEVICE, self.symbol)
+        self.error_handler.line_error(self.error_handler.EXPECT_INPUT_DEVICE, self.symbol)
         return False
 
     def variable_input_number(self) -> bool:
@@ -400,7 +400,7 @@ class Parser:
             return True
         else:
             # expect variable input number
-            self.error_handler.handle_error(self.error_handler.EXPECT_VARIABLE_INPUT_NUMBER, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_VARIABLE_INPUT_NUMBER, self.symbol)
             return False
 
     def initial_state(self) -> bool:
@@ -408,7 +408,7 @@ class Parser:
             return True
         else:
             # expect initial state
-            self.error_handler.handle_error(self.error_handler.EXPECT_INITIAL_STATE, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_INITIAL_STATE, self.symbol)
             return False
 
     def pin_in(self) -> bool:
@@ -419,16 +419,16 @@ class Parser:
                 if 1 <= variable_number <= 16:
                     return True
                 else:
-                    self.error_handler.handle_error(self.error_handler.EXPECT_VARIABLE_INPUT_NUMBER, self.symbol)
+                    self.error_handler.line_error(self.error_handler.EXPECT_VARIABLE_INPUT_NUMBER, self.symbol)
                     return False
             except ValueError:
-                self.error_handler.handle_error(self.error_handler.EXPECT_PIN_IN, self.symbol)
+                self.error_handler.line_error(self.error_handler.EXPECT_PIN_IN, self.symbol)
                 return False
         elif self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_IN:
             return True
         else:
             # expect pin in
-            self.error_handler.handle_error(self.error_handler.EXPECT_PIN_IN, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_PIN_IN, self.symbol)
             return False
 
     def pin_out(self) -> bool:
@@ -436,7 +436,7 @@ class Parser:
             return True
         else:
             # expect pin out
-            self.error_handler.handle_error(self.error_handler.EXPECT_PIN_OUT, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_PIN_OUT, self.symbol)
             return False
 
     def pin_in_or_out(self) -> bool:
@@ -450,7 +450,7 @@ class Parser:
             return True
         else:
             # expect pin in or out
-            self.error_handler.handle_error(self.error_handler.EXPECT_PIN_IN_OR_OUT, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_PIN_IN_OR_OUT, self.symbol)
             return False
 
     def clock_cycle(self) -> bool:
@@ -458,7 +458,7 @@ class Parser:
             return True
         else:
             # expect clock cycle
-            self.error_handler.handle_error(self.error_handler.EXPECT_CLOCK_CYCLE, self.symbol)
+            self.error_handler.line_error(self.error_handler.EXPECT_CLOCK_CYCLE, self.symbol)
             return False
 
     def skip_after_semicolon_or_to_close_bracket(self) -> None:
@@ -499,9 +499,9 @@ class Parser:
             if error_type == self.devices.NO_ERROR:
                 pass
             elif error_type == self.devices.DEVICE_PRESENT:
-                self.error_handler.handle_error(error_type, self.current_identifier)
+                self.error_handler.line_error(error_type, self.current_identifier)
             elif error_type == self.devices.QUALIFIER_PRESENT:
-                self.error_handler.handle_error(error_type, self.current_qualifier)
+                self.error_handler.line_error(error_type, self.current_qualifier)
             else:
                 print(f"Error type: {error_type}, should not be encountered")
 
@@ -514,9 +514,9 @@ class Parser:
             if error_type == self.monitors.NO_ERROR:
                 pass
             elif error_type == self.monitors.MONITOR_IDENTIFIER_PRESENT:
-                self.error_handler.handle_error(self.monitors.MONITOR_IDENTIFIER_PRESENT, identifier_symbol)
+                self.error_handler.line_error(self.monitors.MONITOR_IDENTIFIER_PRESENT, identifier_symbol)
             elif error_type == self.network.MONITOR_DEVICE_ABSENT:
-                self.error_handler.handle_error(self.network.MONITOR_DEVICE_ABSENT, device_symbol)
+                self.error_handler.line_error(self.network.MONITOR_DEVICE_ABSENT, device_symbol)
             else:
                 print(f"Error type: {error_type}, should not be encountered")
 
@@ -530,14 +530,14 @@ class Parser:
             if error_type == self.network.NO_ERROR:
                 pass
             elif error_type == self.network.INPUT_PORT_ABSENT:
-                self.error_handler.handle_error(self.network.INPUT_PORT_ABSENT, in_port_symbol)
+                self.error_handler.line_error(self.network.INPUT_PORT_ABSENT, in_port_symbol)
             elif error_type == self.network.OUTPUT_PORT_ABSENT:
-                self.error_handler.handle_error(self.network.OUTPUT_PORT_ABSENT, out_port_symbol)
+                self.error_handler.line_error(self.network.OUTPUT_PORT_ABSENT, out_port_symbol)
             elif error_type == self.network.INPUT_DEVICE_ABSENT:
-                self.error_handler.handle_error(self.network.INPUT_DEVICE_ABSENT, in_device_symbol)
+                self.error_handler.line_error(self.network.INPUT_DEVICE_ABSENT, in_device_symbol)
             elif error_type == self.network.OUTPUT_DEVICE_ABSENT:
-                self.error_handler.handle_error(self.network.OUTPUT_DEVICE_ABSENT, out_device_symbol)
+                self.error_handler.line_error(self.network.OUTPUT_DEVICE_ABSENT, out_device_symbol)
             elif error_type == self.network.INPUT_CONNECTED:
-                self.error_handler.handle_error(self.network.INPUT_CONNECTED, in_port_symbol)
+                self.error_handler.line_error(self.network.INPUT_CONNECTED, in_port_symbol)
             else:
                 print(f"Error type: {error_type}, should not be encountered")

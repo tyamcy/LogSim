@@ -48,33 +48,34 @@ class ParserErrorHandler:
          ] = names.unique_error_codes(5)
 
     def handle_error(self, error_code: int, symbol: Symbol) -> None:
-        print("handling error")
+        error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,
+                                                     error_code=error_code, name=self.symbol_to_name(symbol))
+        self.error_output_list.append(error_output)
+
+    def symbol_to_name(self, symbol: Symbol) -> str:
         if symbol.id:  # symbol id is not None, i.e. symbol.type is KEYWORD, NUMBER, NAME or INVALID
             if symbol.type == Scanner.NUMBER or symbol.type == Scanner.INVALID:
-                name = symbol.id
+                return symbol.id
             else:
-                name = self.names.get_name_string(symbol.id)
+                return self.names.get_name_string(symbol.id)
         elif symbol.type == Scanner.COMMA:
-            name = ","
+            return ","
         elif symbol.type == Scanner.SEMICOLON:
-            name = ";"
+            return ";"
         elif symbol.type == Scanner.COLON:
-            name = ":"
+            return ":"
         elif symbol.type == Scanner.FULL_STOP:
-            name = "."
+            return "."
         elif symbol.type == Scanner.ARROW:
-            name = ">"
+            return ">"
         elif symbol.type == Scanner.OPEN_CURLY_BRACKET:
-            name = "{"
+            return "{"
         elif symbol.type == Scanner.CLOSE_CURLY_BRACKET:
-            name = "}"
+            return "}"
         elif symbol.type == Scanner.EOF:
-            name = ""
+            return ""
         else:
             raise ValueError("Invalid symbol type")
-        error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,
-                                                     error_code=error_code, name=name)
-        self.error_output_list.append(error_output)
 
     def file_error(self, error_code: int, name: str = "") -> None:
         error_output = FileTerminalOutput(

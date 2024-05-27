@@ -67,7 +67,8 @@ class Network:
         self.devices = devices
 
         [self.NO_ERROR, self.INPUT_CONNECTED, self.INPUT_PORT_ABSENT, self.OUTPUT_PORT_ABSENT,
-         self.INPUT_DEVICE_ABSENT, self.OUTPUT_DEVICE_ABSENT, self.DEVICE_ABSENT] = self.names.unique_error_codes(7)
+         self.INPUT_DEVICE_ABSENT, self.OUTPUT_DEVICE_ABSENT, self.MONITOR_DEVICE_ABSENT] = (
+            self.names.unique_error_codes(7))
         self.steady_state = True  # for checking if signals have settled
 
     def get_connected_output(self, device_id, input_id):

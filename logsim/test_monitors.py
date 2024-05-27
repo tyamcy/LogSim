@@ -83,7 +83,7 @@ def test_make_monitor_gives_errors(new_monitors):
                                      None, "F") == new_monitors.MONITOR_IDENTIFIER_PRESENT
     # I1 is not a device_id in the network
     assert new_monitors.make_monitor(I1,
-                                     None, "G") == network.DEVICE_ABSENT
+                                     None, "G") == network.MONITOR_DEVICE_ABSENT
 
     # Make a new switch device
     devices.make_device(SW3_ID, SWITCH_ID, 0)
@@ -108,6 +108,7 @@ def test_remove_monitor_by_port(new_monitors):
                                                (OR1_ID, I1): {"Input1"},
                                                (OR1_ID, I2): {"Input2"}}
 
+
 def test_remove_monitor_by_identifier(new_monitors):
     """Test if remove_monitor correctly updates the signals and identifiers dictionary."""
     names = new_monitors.names
@@ -125,7 +126,6 @@ def test_remove_monitor_by_identifier(new_monitors):
                                                (OR1_ID, None): {"A2"},
                                                (OR1_ID, I1): {"Input1"},
                                                (OR1_ID, I2): {"Input2"}}
-
 
 
 def test_get_signal_names(new_monitors):

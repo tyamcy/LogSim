@@ -66,7 +66,7 @@ test_list = [
     (Scanner.FULL_STOP, None),
     (Scanner.NAME, NameTest.CLEAR),
     (Scanner.SEMICOLON, None),
-    (None, None),  # '[' is not a valid symbol
+    (Scanner.INVALID, '['),
     (Scanner.NAME, NameTest.D1),
     (Scanner.FULL_STOP, None),
     (Scanner.NAME, NameTest.Q),

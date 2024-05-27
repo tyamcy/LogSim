@@ -131,7 +131,7 @@ class ParserErrorHandler:
         elif error_code == self.EXPECT_ARROW:
             return f"Found {name}, expected '>'"
         elif error_code == self.EXPECT_FULL_STOP_OR_ARROW:  # for [".", pinOut] , ">" in connection
-            return f"Found {name}, expected '.' (if pin has to be defined) or ';' (if pin does not have to be defined)"
+            return f"Found {name}, expected '.' (if pin has to be defined) or '>' (if pin does not have to be defined)"
 
         # semantic error
         elif error_code == self.network.INPUT_PORT_ABSENT or error_code == self.network.OUTPUT_PORT_ABSENT:

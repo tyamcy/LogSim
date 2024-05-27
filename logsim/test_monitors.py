@@ -83,7 +83,7 @@ def test_make_monitor_gives_errors(new_monitors):
                                      None, "F") == new_monitors.MONITOR_IDENTIFIER_PRESENT
     # I1 is not a device_id in the network
     assert new_monitors.make_monitor(I1,
-                                     None, "G") == network.MONITOR_DEVICE_ABSENT
+                                     None, "G") == new_monitors.MONITOR_DEVICE_ABSENT
 
     # Make a new switch device
     devices.make_device(SW3_ID, SWITCH_ID, 0)

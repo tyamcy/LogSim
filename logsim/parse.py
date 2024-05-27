@@ -513,10 +513,12 @@ class Parser:
             error_type = self.monitors.make_monitor(identifier=identifier, port_id=port_id, device_id=device_id)
             if error_type == self.monitors.NO_ERROR:
                 pass
+            elif error_type == self.monitors.MONITOR_PORT_ABSENT:
+                self.error_handler.line_error(self.monitors.MONITOR_PORT_ABSENT, identifier_symbol)
             elif error_type == self.monitors.MONITOR_IDENTIFIER_PRESENT:
                 self.error_handler.line_error(self.monitors.MONITOR_IDENTIFIER_PRESENT, identifier_symbol)
-            elif error_type == self.network.MONITOR_DEVICE_ABSENT:
-                self.error_handler.line_error(self.network.MONITOR_DEVICE_ABSENT, device_symbol)
+            elif error_type == self.monitors.MONITOR_DEVICE_ABSENT:
+                self.error_handler.line_error(self.monitors.MONITOR_DEVICE_ABSENT, device_symbol)
             else:
                 print(f"Error type: {error_type}, should not be encountered")
 

@@ -43,8 +43,8 @@ class ParserErrorHandler:
          self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW] = names.unique_error_codes(17)
 
         # semantic error
-        [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.MISSING_INPUT_TO_PIN, self.WRONG_BLOCK_ORDER, self.MISSING_MONITOR
-         ] = names.unique_error_codes(5)
+        [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.MISSING_INPUT_TO_PIN, self.WRONG_BLOCK_ORDER,
+         self.MISSING_MONITOR] = names.unique_error_codes(5)
 
     def line_error(self, error_code: int, symbol: Symbol) -> None:
         error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,
@@ -134,13 +134,15 @@ class ParserErrorHandler:
             return f"Found {name}, expected '.' (if pin has to be defined) or '>' (if pin does not have to be defined)"
 
         # semantic error
-        elif error_code == self.network.INPUT_PORT_ABSENT or error_code == self.network.OUTPUT_PORT_ABSENT:
+        elif (error_code == self.network.INPUT_PORT_ABSENT or error_code == self.network.OUTPUT_PORT_ABSENT or
+              error_code == self.monitors.MONITOR_PORT_ABSENT):
             return f"Pin {name} does not exist"
         elif error_code == self.network.INPUT_CONNECTED:
             return f"Connection repeatedly assigned to input pin {name}"
         elif error_code == self.MISSING_INPUT_TO_PIN:
             return f"Missing input to pin {name}"
-        elif error_code == self.network.INPUT_DEVICE_ABSENT or error_code == self.network.OUTPUT_DEVICE_ABSENT:
+        elif (error_code == self.network.INPUT_DEVICE_ABSENT or error_code == self.network.OUTPUT_DEVICE_ABSENT or
+              error_code == self.monitors.MONITOR_DEVICE_ABSENT):
             return f"Identifier {name} is not defined"
         elif error_code == self.devices.DEVICE_PRESENT or error_code == self.monitors.MONITOR_IDENTIFIER_PRESENT:
             return f"Identifier {name} should not be redefined"

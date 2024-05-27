@@ -1,4 +1,4 @@
-"""Test the scanner module with 'test_scaner_text'."""
+"""Test the scanner module with 'test_scanner_text'."""
 import pytest
 
 from scanner import Scanner
@@ -66,7 +66,7 @@ test_list = [
     (Scanner.FULL_STOP, None),
     (Scanner.NAME, NameTest.CLEAR),
     (Scanner.SEMICOLON, None),
-    (None, None),  # '[' is not a valid symbol
+    (Scanner.INVALID, '['),
     (Scanner.NAME, NameTest.D1),
     (Scanner.FULL_STOP, None),
     (Scanner.NAME, NameTest.Q),
@@ -76,7 +76,7 @@ test_list = [
     (Scanner.NAME, NameTest.DATA),
     (Scanner.SEMICOLON, None),
     (Scanner.CLOSE_CURLY_BRACKET, None),
-    (Scanner.EOF, None)
+    (Scanner.EOF, None),
 ]
 
 

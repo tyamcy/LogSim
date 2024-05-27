@@ -136,6 +136,7 @@ class Scanner:
 
         else:  # not a valid character
             print(f"Error! Invalid character '{self.current_character}'")
+            symbol.id = self.current_character
             symbol.type = self.INVALID
             self.advance()
 

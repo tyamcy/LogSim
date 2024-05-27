@@ -46,8 +46,8 @@ class ParserErrorHandler:
 
     def handle_error(self, error_code: int, symbol: Symbol) -> None:
         print("handling error")
-        if symbol.id:  # symbol id is not None, i.e. symbol.type is KEYWORD, NUMBER or NAME
-            if symbol.type == Scanner.NUMBER:
+        if symbol.id:  # symbol id is not None, i.e. symbol.type is KEYWORD, NUMBER, NAME or INVALID
+            if symbol.type == Scanner.NUMBER or symbol.type == Scanner.INVALID:
                 name = symbol.id
             else:
                 name = self.names.get_name_string(symbol.id)

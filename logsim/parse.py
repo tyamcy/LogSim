@@ -479,9 +479,6 @@ class Parser:
 
     def advance(self) -> None:
         self.symbol = self.scanner.get_symbol()
-        if self.symbol.type == Scanner.INVALID:
-            self.symbol = self.scanner.get_symbol()
-            # raise a warning here
 
     def symbol_string(self) -> str:
         return self.names.get_name_string(self.symbol.id)

@@ -7,7 +7,7 @@ G2: XOR;
 
 / Inputs /
 SWITCH {
-A: 1;
+A: 0;
 B: 0;
 C: 0;
 }

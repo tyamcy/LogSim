@@ -118,13 +118,14 @@ class Parser:
         if not self.block_parse_flags["CLOCK"] and not self.block_parse_flags["SWITCH"]:
             self.error_handler.file_error(self.error_handler.MISSING_CLOCK_OR_SWITCH)
         # missing input to pin
-        for device in self.devices.devices_list:
-            device_id = device.device_id
-            for input_id in device.inputs:
-                input_signal = self.network.get_input_signal(device_id, input_id)
-                if input_signal is None:  # this input is unconnected
-                    self.error_handler.file_error(self.error_handler.MISSING_INPUT_TO_PIN,
-                                                  self.devices.get_signal_name(device_id, input_id))
+        if not len(self.fetch_error_output()):
+            for device in self.devices.devices_list:
+                device_id = device.device_id
+                for input_id in device.inputs:
+                    input_signal = self.network.get_input_signal(device_id, input_id)
+                    if input_signal is None:  # this input is unconnected
+                        self.error_handler.file_error(self.error_handler.MISSING_INPUT_TO_PIN,
+                                                      self.devices.get_signal_name(device_id, input_id))
 
         return False if self.fetch_error_output() else True
 

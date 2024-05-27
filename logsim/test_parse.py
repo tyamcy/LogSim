@@ -2,7 +2,7 @@
 import pytest
 
 from parse import Parser
-from parser_handler import LineTerminalOutput
+from parser_handler import LineTerminalOutput, FileTerminalOutput
 from names import Names
 from devices import Devices
 from network import Network
@@ -27,7 +27,8 @@ path_semantic_error_missing_clock_or_switch = \
     "logsim/test_text/test_semantic_errors/semantic_error_missing_clock_or_switch"
 path_semantic_error_missing_input_to_pin = "logsim/test_text/test_semantic_errors/semantic_error_missing_input_to_pin"
 path_semantic_error_monitor_present = "logsim/test_text/test_semantic_errors/semantic_error_monitor_present"
-path_semantic_error_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_port_absent"
+path_semantic_error_input_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_input_port_absent"
+path_semantic_error_output_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_output_port_absent"
 path_semantic_error_wrong_block_order = "logsim/test_text/test_semantic_errors/semantic_error_wrong_block_order"
 
 
@@ -134,19 +135,25 @@ def semantic_error_missing_input_to_pin_expected(parser: Parser):
 
 def semantic_error_monitor_present_expected(parser: Parser):
     return [
-        ("Line 24", parser.error_handler.monitors.MONITOR_PRESENT)
+        ("Line 24:", parser.error_handler.monitors.MONITOR_PRESENT)
     ]
 
 
-def semantic_error_port_absent_expected(parser: Parser):
+def semantic_error_input_port_absent_expected(parser: Parser):
     return [
-        ("Line 39", parser.error_handler.network.PORT_ABSENT)
+        ("Line 39:", parser.error_handler.network.INPUT_PORT_ABSENT)
+    ]
+
+
+def semantic_error_output_port_absent_expected(parser: Parser):
+    return [
+        ("Line 54:", parser.error_handler.network.OUTPUT_PORT_ABSENT)
     ]
 
 
 def semantic_error_wrong_block_order_expected(parser: Parser):
     return [
-        ("Line 3", parser.error_handler.WRONG_BLOCK_ORDER)
+        ("Line 3:", parser.error_handler.WRONG_BLOCK_ORDER)
     ]
 
 
@@ -172,9 +179,10 @@ def test_parse_network(new_parser, path, expected_result):
     (path_semantic_error_duplicate_keyword, semantic_error_duplicate_keyword_expected),
     (path_semantic_error_input_connected, semantic_error_input_connected_expected),
     (path_semantic_error_missing_clock_or_switch, semantic_error_missing_clock_or_switch_expected),
-    # (path_semantic_error_missing_input_to_pin, path_semantic_error_missing_input_to_pin),
-    # (path_semantic_error_monitor_present, semantic_error_monitor_present_expected),
-    # (path_semantic_error_port_absent, semantic_error_port_absent_expected),
+    (path_semantic_error_missing_input_to_pin, semantic_error_missing_input_to_pin_expected),
+    (path_semantic_error_monitor_present, semantic_error_monitor_present_expected),
+    (path_semantic_error_input_port_absent, semantic_error_input_port_absent_expected),
+    (path_semantic_error_output_port_absent, semantic_error_output_port_absent_expected),
     # (path_semantic_error_wrong_block_order, semantic_error_wrong_block_order_expected)
 ])
 def test_parse_error(new_parser, path, expected_content):

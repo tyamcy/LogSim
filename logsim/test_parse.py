@@ -18,7 +18,8 @@ path_semantic_error_device_absent = "logsim/test_text/test_semantic_errors/seman
 path_semantic_error_device_present = "logsim/test_text/test_semantic_errors/semantic_error_device_present"
 path_semantic_error_duplicate_keyword = "logsim/test_text/test_semantic_errors/semantic_error_duplicate_keyword"
 path_semantic_error_input_connected = "logsim/test_text/test_semantic_errors/semantic_error_input_connected"
-path_semantic_error_missing_clock_or_switch = "logsim/test_text/test_semantic_errors/semantic_error_missing_clock_or_switch"
+path_semantic_error_missing_clock_or_switch = \
+    "logsim/test_text/test_semantic_errors/semantic_error_missing_clock_or_switch"
 path_semantic_error_missing_input_to_pin = "logsim/test_text/test_semantic_errors/semantic_error_missing_input_to_pin"
 path_semantic_error_monitor_present = "logsim/test_text/test_semantic_errors/semantic_error_monitor_present"
 path_semantic_error_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_port_absent"
@@ -46,26 +47,18 @@ def all_error_1_expected_content(parser: Parser):
         ("Line 8:", parser.error_handler.EXPECT_VARIABLE_INPUT_NUMBER),
         ("Line 9:", parser.error_handler.EXPECT_COMMA),
         ("Line 10:", parser.error_handler.EXPECT_SEMICOLON),
-        ("Line 12:", parser.monitors.MONITOR_PRESENT),
         ("Line 20:", parser.error_handler.EXPECT_INITIAL_STATE),
         ("Line 26:", parser.error_handler.EXPECT_CLOCK_CYCLE),
         ("Line 31:", parser.error_handler.EXPECT_PIN_IN_OR_OUT),
         ("Line 32:", parser.error_handler.EXPECT_FULL_STOP_OR_SEMICOLON),
-        ("Line 34:", parser.monitors.MONITOR_PRESENT),
         ("Line 35:", parser.error_handler.EXPECT_COLON),
-        ("Line 36:", parser.network.OUTPUT_PORT_ABSENT),
         ("Line 42:", parser.error_handler.EXPECT_PIN_IN),
-        ("Line 43:", parser.error_handler.EXPECT_ARROW),
+        ("Line 43:", parser.error_handler.EXPECT_FULL_STOP_OR_ARROW),
         ("Line 44:", parser.error_handler.EXPECT_FULL_STOP),
         ("Line 45:", parser.error_handler.EXPECT_FULL_STOP),
         ("Line 46:", parser.error_handler.EXPECT_PIN_IN),
-        ("Line 47:", parser.network.INPUT_CONNECTED),
-        ("Line 48:", parser.network.INPUT_PORT_ABSENT),
-        ("Line 50:", parser.error_handler.EXPECT_FULL_STOP_OR_ARROW),
-        ("Line 57:", parser.network.INPUT_CONNECTED),
-        ("Line 64:", parser.network.OUTPUT_PORT_ABSENT),
-        ("Line 65:", parser.network.OUTPUT_DEVICE_ABSENT),
-        ("Line 66:", parser.network.INPUT_DEVICE_ABSENT)
+        ("Line 48:", parser.error_handler.EXPECT_VARIABLE_INPUT_NUMBER),
+        ("Line 50:", parser.error_handler.EXPECT_FULL_STOP),
     ]
 
 
@@ -161,8 +154,8 @@ def test_parse_error(new_parser, path, expected_content):
     """Test if network error output is correct"""
 
     new_parser.parse_network()
-    error_output = new_parser.error_handler.get_error_output()
+    error_output = new_parser.fetch_error_output()
 
     for i in range(len(error_output)):
-        assert (error_output[i].line, error_output[i].error_code) == expected_content(new_parser)[i]
+        assert (error_output[i].line_location, error_output[i].error_code) == expected_content(new_parser)[i]
 

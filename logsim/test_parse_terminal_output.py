@@ -5,7 +5,7 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 
-PATH = "logsim/test_text/test_parse_wrong_content_text"
+PATH = "logsim/test_text/test_parse_all_error_1"
 
 names = Names()
 devices = Devices(names=names)

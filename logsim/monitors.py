@@ -82,7 +82,7 @@ class Monitors:
         """
         monitor_device = self.devices.get_device(device_id)
         if monitor_device is None:
-            return self.network.INPUT_DEVICE_ABSENT
+            return self.network.DEVICE_ABSENT
         elif identifier in self.identifier_to_port:
             return self.MONITOR_IDENTIFIER_PRESENT
         else:

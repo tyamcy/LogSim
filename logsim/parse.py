@@ -514,8 +514,8 @@ class Parser:
                 pass
             elif error_type == self.monitors.MONITOR_IDENTIFIER_PRESENT:
                 self.error_handler.handle_error(self.monitors.MONITOR_IDENTIFIER_PRESENT, identifier_symbol)
-            elif error_type == self.network.INPUT_DEVICE_ABSENT:
-                self.error_handler.handle_error(self.network.INPUT_DEVICE_ABSENT, device_symbol)
+            elif error_type == self.network.DEVICE_ABSENT:
+                self.error_handler.handle_error(self.network.DEVICE_ABSENT, device_symbol)
             else:
                 print(f"Error type: {error_type}, should not be encountered")
 

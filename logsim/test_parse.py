@@ -2,6 +2,7 @@
 import pytest
 
 from parse import Parser
+from parser_handler import LineTerminalOutput
 from names import Names
 from devices import Devices
 from network import Network
@@ -64,12 +65,13 @@ def all_error_1_expected_content(parser: Parser):
 
 def all_error_2_expected_content(parser: Parser):
     return [
-        ("Line 1", parser.error_handler.WRONG_BLOCK_ORDER),
-        ("Line 5", parser.error_handler.DUPLICATE_KEYWORD),
-        ("Line 12", parser.error_handler.EXPECT_KEYWORD),
-        ("Line 16", parser.error_handler.EXPECT_OPEN_CURLY_BRACKET),
+        ("Line 1:", parser.error_handler.WRONG_BLOCK_ORDER),
+        ("Line 5:", parser.error_handler.DUPLICATE_KEYWORD),
+        ("Line 12:", parser.error_handler.EXPECT_KEYWORD),
+        ("Line 16:", parser.error_handler.WRONG_BLOCK_ORDER),
+        (parser.error_handler.MISSING_MONITOR),
+        (parser.error_handler.MISSING_CLOCK_OR_SWITCH)
     ]
-    # Need to test MISSING_MONITOR and MISSING_CLOCK_OR_SWITCH
 
 
 def semantic_error_device_absent_expected(parser: Parser):
@@ -157,5 +159,8 @@ def test_parse_error(new_parser, path, expected_content):
     error_output = new_parser.fetch_error_output()
 
     for i in range(len(error_output)):
-        assert (error_output[i].line_location, error_output[i].error_code) == expected_content(new_parser)[i]
+        if isinstance(error_output[i], LineTerminalOutput):
+            assert (error_output[i].line_location, error_output[i].error_code) == expected_content(new_parser)[i]
+        else:
+            assert error_output[i].error_code == expected_content(new_parser)[i]
 

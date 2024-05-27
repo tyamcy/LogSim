@@ -73,7 +73,7 @@ class Scanner:
             = self.names.lookup(self.keywords_list)
         self.current_character = " "
         self.current_line = 0
-        self.current_character_in_line = 0
+        self.current_character_in_line = -1
 
     def get_symbol(self) -> Symbol:
         """Translate the next sequence of characters into a symbol and return the symbol."""

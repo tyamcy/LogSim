@@ -103,8 +103,14 @@ class Parser:
                     self.monitor_list()
                     self.advance()
                 elif keyword == "CONNECTION":
-                    self.connect_list()
-                    self.advance()
+                    if self.block_parse_flags["MONITOR"]:
+                        self.connect_list()
+                        self.advance()
+                    else:
+                        self.error_handler.line_error(self.error_handler.WRONG_BLOCK_ORDER, self.symbol)
+                        self.skip_to_close_bracket()
+                        self.advance()
+                self.set_flag(keyword)
             else:
                 self.error_handler.line_error(self.error_handler.EXPECT_KEYWORD, self.symbol)
                 self.skip_to_close_bracket()
@@ -144,18 +150,19 @@ class Parser:
                 if not sub_rule():
                     self.skip_after_semicolon_or_to_close_bracket()
 
-            #  set the flags
-            self.block_parse_flags[keyword] = True
-            for key in self.block_order_flags:
-                if key == keyword:
-                    break
-                else:
-                    self.block_order_flags[key] = True
-
         else:
             # expect open curly bracket
             self.error_handler.line_error(self.error_handler.EXPECT_OPEN_CURLY_BRACKET, self.symbol)
             self.skip_to_close_bracket()
+
+    def set_flag(self, keyword: str) -> None:
+        # set block parse flag
+        self.block_parse_flags[keyword] = True
+        # set block order flag
+        for key in self.block_order_flags:
+            if key == keyword:
+                break
+            self.block_order_flags[key] = True
 
     def device_list(self):
         self.parse_list(keyword="DEVICE", sub_rule=self.device)

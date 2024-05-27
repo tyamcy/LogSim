@@ -1,14 +1,13 @@
 / Combinational logic /
 DEVICE {
-G1: NAND, 16;
+G1: NAND, 2;
 G3: NAND, 3;
 G2: XOR;
-D: DTYPE;
 }
 
 / Inputs /
 SWITCH {
-A: 0;
+A: 1;
 B: 0;
 C: 0;
 }
@@ -21,7 +20,6 @@ CLK1: 2;
 MONITOR {
 S1: G1;
 f: G3;
-S1: G1;
 }
 
 / Internal connections of the circuit /
@@ -31,6 +29,6 @@ A > G1.I2;
 B > G2.I1;
 CLK1 > G2.I2;
 G1 > G3.I1;
-D.Q > G3.I3;
+B > G3.I3;
 G2 > G3.I2;
 }

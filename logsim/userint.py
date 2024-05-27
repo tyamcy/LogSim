@@ -171,6 +171,23 @@ class UserInterface:
             port_id = None
         return [device_id, port_id]
 
+    def read_monitor(self):
+        """Return the devic, port IDs and identifier (alias) of the monitor point.
+
+        Return None if either is invalid.
+        """
+        device_id = self.read_name()
+        if device_id is None:
+            return None
+        elif self.character == ".":
+            port_id = self.read_name()
+            if port_id is None:
+                return None
+        else:
+            port_id = None
+        identifier = self.read_string()
+        return [device_id, port_id, identifier]
+
     def read_number(self, lower_bound, upper_bound):
         """Return the current number.
 
@@ -223,10 +240,10 @@ class UserInterface:
 
     def monitor_command(self):
         """Set the specified monitor."""
-        monitor = self.read_signal_name()
+        monitor = self.read_monitor()
         if monitor is not None:
-            [device, port] = monitor
-            monitor_error = self.monitors.make_monitor(device, port,
+            [device, port, identifier] = monitor
+            monitor_error = self.monitors.make_monitor(device, port, identifier,
                                                        self.cycles_completed)
             if monitor_error == self.monitors.NO_ERROR:
                 print("Successfully made monitor.")

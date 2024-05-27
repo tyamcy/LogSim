@@ -19,6 +19,8 @@ path_semantic_error_monitor_device_absent = "logsim/test_text/test_semantic_erro
 path_semantic_error_input_device_absent = "logsim/test_text/test_semantic_errors/semantic_error_input_device_absent"
 path_semantic_error_output_device_absent = "logsim/test_text/test_semantic_errors/semantic_error_output_device_absent"
 path_semantic_error_device_present = "logsim/test_text/test_semantic_errors/semantic_error_device_present"
+path_semantic_error_monitor_identifier_present = \
+    "logsim/test_text/test_semantic_errors/semantic_error_monitor_identifier_present"
 path_semantic_error_duplicate_keyword = "logsim/test_text/test_semantic_errors/semantic_error_duplicate_keyword"
 path_semantic_error_input_connected = "logsim/test_text/test_semantic_errors/semantic_error_input_connected"
 path_semantic_error_missing_clock_or_switch = \
@@ -96,7 +98,13 @@ def semantic_error_output_device_absent_expected(parser: Parser):
 
 def semantic_error_device_present_expected(parser: Parser):
     return [
-        ("Line 6", parser.error_handler.devices.DEVICE_PRESENT)
+        ("Line 6:", parser.devices.DEVICE_PRESENT)
+    ]
+
+
+def semantic_error_monitor_identifier_present_expected(parser: Parser):
+    return [
+        ("Line 31:", parser.monitors.MONITOR_IDENTIFIER_PRESENT)
     ]
 
 
@@ -160,6 +168,7 @@ def test_parse_network(new_parser, path, expected_result):
     (path_semantic_error_input_device_absent, semantic_error_input_device_absent_expected),
     (path_semantic_error_output_device_absent, semantic_error_output_device_absent_expected),
     (path_semantic_error_device_present, semantic_error_device_present_expected),
+    (path_semantic_error_monitor_identifier_present, semantic_error_monitor_identifier_present_expected),
     (path_semantic_error_duplicate_keyword, semantic_error_duplicate_keyword_expected),
     (path_semantic_error_input_connected, semantic_error_input_connected_expected),
     (path_semantic_error_missing_clock_or_switch, semantic_error_missing_clock_or_switch_expected),

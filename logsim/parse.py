@@ -84,13 +84,11 @@ class Parser:
                     self.error_handler.line_error(self.error_handler.DUPLICATE_KEYWORD, self.symbol)
                     self.skip_to_close_bracket()
                     self.advance()
-                    continue
-                if self.block_order_flags[keyword]:
+                elif self.block_order_flags[keyword]:
                     self.error_handler.line_error(self.error_handler.WRONG_BLOCK_ORDER, self.symbol)
                     self.skip_to_close_bracket()
                     self.advance()
-                    continue
-                if keyword == "DEVICE":
+                elif keyword == "DEVICE":
                     self.device_list()
                     self.advance()
                 elif keyword == "SWITCH":
@@ -132,6 +130,8 @@ class Parser:
                     if input_signal is None:  # this input is unconnected
                         self.error_handler.file_error(self.error_handler.MISSING_INPUT_TO_PIN,
                                                       self.devices.get_signal_name(device_id, input_id))
+        print(self.block_parse_flags)
+        print(self.block_order_flags)
 
         return False if self.fetch_error_output() else True
 

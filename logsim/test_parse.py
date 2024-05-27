@@ -153,7 +153,11 @@ def semantic_error_output_port_absent_expected(parser: Parser):
 
 def semantic_error_wrong_block_order_expected(parser: Parser):
     return [
-        ("Line 3:", parser.error_handler.WRONG_BLOCK_ORDER)
+        ("Line 3:", parser.error_handler.WRONG_BLOCK_ORDER),
+        ("Line 18:", parser.error_handler.WRONG_BLOCK_ORDER),
+        ("Line 25:", parser.error_handler.WRONG_BLOCK_ORDER),
+        ("Line 32:", parser.error_handler.WRONG_BLOCK_ORDER),
+        ("Line 37:", parser.error_handler.WRONG_BLOCK_ORDER)
     ]
 
 
@@ -183,7 +187,7 @@ def test_parse_network(new_parser, path, expected_result):
     (path_semantic_error_monitor_present, semantic_error_monitor_present_expected),
     (path_semantic_error_input_port_absent, semantic_error_input_port_absent_expected),
     (path_semantic_error_output_port_absent, semantic_error_output_port_absent_expected),
-    # (path_semantic_error_wrong_block_order, semantic_error_wrong_block_order_expected)
+    (path_semantic_error_wrong_block_order, semantic_error_wrong_block_order_expected)
 ])
 def test_parse_error(new_parser, path, expected_content):
     """Test if network error output is correct"""

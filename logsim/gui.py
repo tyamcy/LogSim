@@ -14,6 +14,9 @@ from OpenGL import GL, GLUT
 import os
 
 from gui_widgets import CustomDialogBox
+import os
+
+from gui_widgets import CustomDialogBox
 
 from names import Names
 from devices import Devices
@@ -49,6 +52,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
     render_text(self, text, x_pos, y_pos): Handles text drawing
                                            operations.
+
+    update_theme(self, theme): Updates the colour palette. 
 
     update_theme(self, theme): Updates the colour palette. 
     """
@@ -101,6 +106,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         size = self.GetClientSize()
         self.SetCurrent(self.context)
         GL.glDrawBuffer(GL.GL_BACK)
+        GL.glClearColor(*self.color_background)
         GL.glClearColor(*self.color_background)
         GL.glViewport(0, 0, size.width, size.height)
         GL.glMatrixMode(GL.GL_PROJECTION)
@@ -171,6 +177,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         #text = "".join(["Canvas redrawn on paint event, size is ",
         #                str(size.width), ", ", str(size.height)])
         self.render("")
+        #text = "".join(["Canvas redrawn on paint event, size is ",
+        #                str(size.width), ", ", str(size.height)])
+        self.render("")
 
     def on_size(self, event):
         """Handle the canvas resize event."""
@@ -197,12 +206,23 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         #if event.Leaving():
             #text = "".join(["Mouse left canvas at: ", str(event.GetX()),
             #                ", ", str(event.GetY())])
+            #text = "".join(["Mouse button pressed at: ", str(event.GetX()),
+            #                ", ", str(event.GetY())])
+        #if event.ButtonUp():
+            #text = "".join(["Mouse button released at: ", str(event.GetX()),
+            #                ", ", str(event.GetY())])
+        #if event.Leaving():
+            #text = "".join(["Mouse left canvas at: ", str(event.GetX()),
+            #                ", ", str(event.GetY())])
         if event.Dragging():
             self.pan_x += event.GetX() - self.last_mouse_x
             self.pan_y -= event.GetY() - self.last_mouse_y
             self.last_mouse_x = event.GetX()
             self.last_mouse_y = event.GetY()
             self.init = False
+            #text = "".join(["Mouse dragged to: ", str(event.GetX()),
+            #                ", ", str(event.GetY()), ". Pan is now: ",
+            #                str(self.pan_x), ", ", str(self.pan_y)])
             #text = "".join(["Mouse dragged to: ", str(event.GetX()),
             #                ", ", str(event.GetY()), ". Pan is now: ",
             #                str(self.pan_x), ", ", str(self.pan_y)])
@@ -215,6 +235,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.init = False
             #text = "".join(["Negative mouse wheel rotation. Zoom is now: ",
             #                str(self.zoom)])
+            #text = "".join(["Negative mouse wheel rotation. Zoom is now: ",
+            #                str(self.zoom)])
         if event.GetWheelRotation() > 0:
             self.zoom /= (1.0 - (
                 event.GetWheelRotation() / (20 * event.GetWheelDelta())))
@@ -222,6 +244,8 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.pan_x -= (self.zoom - old_zoom) * ox
             self.pan_y -= (self.zoom - old_zoom) * oy
             self.init = False
+            #text = "".join(["Positive mouse wheel rotation. Zoom is now: ",
+            #                str(self.zoom)])
             #text = "".join(["Positive mouse wheel rotation. Zoom is now: ",
             #                str(self.zoom)])
         if text:
@@ -232,6 +256,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
     def render_text(self, text, x_pos, y_pos):
         """Handle text drawing operations."""
         GL.glColor3f(*self.color_text)  
+        GL.glColor3f(*self.color_text)  
         GL.glRasterPos2f(x_pos, y_pos)
         font = GLUT.GLUT_BITMAP_HELVETICA_12
 
@@ -241,6 +266,34 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 GL.glRasterPos2f(x_pos, y_pos)
             else:
                 GLUT.glutBitmapCharacter(font, ord(character))
+    
+    def update_theme(self, theme):
+        """Handle background colour update."""
+        self.SetCurrent(self.context)
+        if theme == "dark":
+            self.color_background = self.light_color_background
+            self.color_text = self.light_color_text
+            self.color_trace = self.light_color_trace
+            GL.glClearColor(*self.light_color_background)
+            GL.glColor3f(*self.light_color_text)
+        elif theme == "light":
+            self.color_background = self.dark_color_background
+            self.color_text = self.dark_color_text
+            self.color_trace = self.dark_color_trace
+            GL.glClearColor(*self.dark_color_background)
+            GL.glColor3f(*self.dark_color_text)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+        self.SwapBuffers()
+
+    def reset_display(self):
+        """Return to the initial viewpoint at the origin."""
+        # Reset location parameters
+        self.pan_x = 0
+        self.pan_y = 0
+        self.zoom = 1
+        self.on_paint(None)
+        GL.glMatrixMode(GL.GL_MODELVIEW)
+        GL.glLoadIdentity()
     
     def update_theme(self, theme):
         """Handle background colour update."""
@@ -291,6 +344,8 @@ class Gui(wx.Frame):
                                 button.
 
     on_text_box(self, event): Event handler for when the user enters text.
+    
+    toggle_theme(self, event): Event handler for when the user changes the color theme.
     
     toggle_theme(self, event): Event handler for when the user changes the color theme.
     """
@@ -396,10 +451,42 @@ class Gui(wx.Frame):
         helpMenu.Append(help_item)
 
         # Adding everything to menuBar
+
+        # File menu
+        fileMenu = wx.Menu()
+        theme_icon = wx.ArtProvider.GetBitmap(wx.ART_TIP, wx.ART_MENU, (16, 16))
+        about_icon = wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_MENU, (16, 16))
+        exit_icon = wx.ArtProvider.GetBitmap(wx.ART_QUIT, wx.ART_MENU, (16, 16))
+        toggle_theme_item = wx.MenuItem(fileMenu, wx.ID_PAGE_SETUP, "&Toggle theme")
+        about_item = wx.MenuItem(fileMenu, wx.ID_ABOUT, "&About")
+        exit_item = wx.MenuItem(fileMenu, wx.ID_EXIT, "&Exit")
+        toggle_theme_item.SetBitmap(theme_icon)
+        about_item.SetBitmap(about_icon)
+        exit_item.SetBitmap(exit_icon)
+        fileMenu.Append(toggle_theme_item)
+        fileMenu.AppendSeparator()
+        fileMenu.Append(about_item)
+        fileMenu.Append(exit_item)
+
+        # Help menu
+        helpMenu = wx.Menu()
+        help_icon = wx.ArtProvider.GetBitmap(wx.ART_HELP, wx.ART_MENU, (16, 16))
+        help_item = wx.MenuItem(helpMenu, wx.ID_HELP, "&Quick Guide")
+        help_item.SetBitmap(help_icon)
+        helpMenu.Append(help_item)
+
+        # Adding everything to menuBar
         menuBar.Append(fileMenu, "&File")
+        menuBar.Append(helpMenu, "&Help")
         menuBar.Append(helpMenu, "&Help")
         self.SetMenuBar(menuBar)
 
+        # Bind event to menuBar
+        self.Bind(wx.EVT_MENU, self.on_menu)
+
+
+        # Main UI layout
+        # Canvas for drawing / plotting signals
         # Bind event to menuBar
         self.Bind(wx.EVT_MENU, self.on_menu)
 
@@ -511,6 +598,7 @@ class Gui(wx.Frame):
         # Run and continue button
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
         self.run_button.SetBackgroundColour(self.color_primary)
+        self.run_button.SetBackgroundColour(self.color_primary)
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
         #self.run_button.Disable()
         self.right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
@@ -537,6 +625,9 @@ class Gui(wx.Frame):
         if Id == wx.ID_EXIT:
             self.Close(True)
         if Id == wx.ID_ABOUT:
+            wx.MessageBox("Logic Simulator\n"
+                          "\nCreated by Mojisola Agboola\n2017\n"
+                          "\nModified by Thomas Yam, Maxwell Li, Chloe Yiu\n2024",
             wx.MessageBox("Logic Simulator\n"
                           "\nCreated by Mojisola Agboola\n2017\n"
                           "\nModified by Thomas Yam, Maxwell Li, Chloe Yiu\n2024",

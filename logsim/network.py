@@ -108,26 +108,25 @@ class Network:
                 return device.outputs[output_id]
         return None
 
-    def make_connection(self, first_device_id, first_port_id, second_device_id,
-                        second_port_id):
-        """Connect the first device to the second device.
+    def make_connection(self, output_device_id, output_port_id, input_device_id,
+                        input_port_id):
+        """Connect the output device to the input device.
 
         Return self.NO_ERROR if successful, or the corresponding error if not.
         """
-        first_device = self.devices.get_device(first_device_id)
-        second_device = self.devices.get_device(second_device_id)
-        if first_device is None:
+        output_device = self.devices.get_device(output_device_id)
+        input_device = self.devices.get_device(input_device_id)
+        if output_device is None:
             error_type = self.OUTPUT_DEVICE_ABSENT
-        elif second_device is None:
+        elif input_device is None:
             error_type = self.INPUT_DEVICE_ABSENT
-        elif first_port_id in first_device.outputs:
-            if second_port_id in second_device.inputs:
-                if second_device.inputs[second_port_id] is not None:
+        elif output_port_id in output_device.outputs:
+            if input_port_id in input_device.inputs:
+                if input_device.inputs[input_port_id] is not None:
                     # Input is already in a connection
                     error_type = self.INPUT_CONNECTED
                 else:
-                    second_device.inputs[second_port_id] = (first_device_id,
-                                                            first_port_id)
+                    input_device.inputs[input_port_id] = (output_device_id, output_port_id)
                     error_type = self.NO_ERROR
             else:
                 error_type = self.INPUT_PORT_ABSENT

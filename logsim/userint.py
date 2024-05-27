@@ -172,13 +172,12 @@ class UserInterface:
         return [device_id, port_id]
 
     def read_monitor(self):
-        """Return the devic, port IDs and identifier (alias) of the monitor point.
+        """Return the device, port IDs and identifier (alias) of the monitor point.
 
         Return None if either is invalid.
         """
         identifier = self.read_string()
         if identifier is None:
-            print("Need to have arguments after add monitor command!")
             return None
         elif self.character == ":":
             device_id = self.read_name()
@@ -191,7 +190,7 @@ class UserInterface:
             else:
                 port_id = None
         else:
-            print("Invalid format!!")
+            print("Error! Invalid name format (identifier:device_name OR device_name.port_number)")
             return None
         return [device_id, port_id, identifier]
 
@@ -230,7 +229,7 @@ class UserInterface:
         print("c N       - continue the simulation for N cycles")
         print("s X N     - set switch X to N (0 or 1)")
         print("m I:X     - set a monitor on signal X by identifier I "
-              "(output: device name, input: device name.port number)")
+              "(identifier: device_name OR device_name.port_number)")
         print("z X       - zap the monitor on signal X")
         print("h         - help (this command)")
         print("q         - quit the program")

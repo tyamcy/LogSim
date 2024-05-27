@@ -1,4 +1,4 @@
-"""Test the scanner module with 'test_scaner_text'."""
+"""Test the scanner module with 'test_scanner_text'."""
 import pytest
 
 from scanner import Scanner

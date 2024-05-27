@@ -6,8 +6,7 @@ from scanner import Scanner, Symbol
 
 
 class LineTerminalOutput:
-    def __init__(self, line_location: str = None, line_with_issue: str = None, arrow: str = None, message: str = None,
-                 error_code: int = None):
+    def __init__(self, line_location: str, line_with_issue: str, arrow: str, message: str, error_code: int):
         self.line_location = line_location
         self.line_with_issue = line_with_issue
         self.arrow = arrow
@@ -19,7 +18,7 @@ class LineTerminalOutput:
 
 
 class FileTerminalOutput:
-    def __init__(self, message: str = None, error_code: int = None):
+    def __init__(self, message: str, error_code: int):
         self.message = message
         self.error_code = error_code
 

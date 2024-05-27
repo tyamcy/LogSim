@@ -457,8 +457,8 @@ class Gui(wx.Frame):
         self.right_sizer.Add(self.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
 
         # Monitors section
-        self.monitors_active_list = ["G1", "G2","G3", "G4", "G5", "D1", "D2", "D4", "G6", "G7", "G8", "G9", "G10"]
-        self.monitors_inactive_list = ["D3"]
+        #self.monitors_active_list = ["G1", "G2","G3", "G4", "G5", "D1", "D2", "D4", "G6", "G7", "G8", "G9", "G10"]
+        #self.monitors_inactive_list = ["D3"]
 
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)
         self.monitors_text = wx.StaticText(self, wx.ID_ANY, "Monitors")
@@ -510,9 +510,9 @@ class Gui(wx.Frame):
 
         # Run and continue button
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
-        self.run_button.SetBackgroundColour(self.color_disabled)
+        self.run_button.SetBackgroundColour(self.color_primary)
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
-        self.run_button.Disable()
+        #self.run_button.Disable()
         self.right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
 
         self.continue_button = wx.Button(self, wx.ID_ANY, "Continue")
@@ -649,7 +649,7 @@ class Gui(wx.Frame):
 
             except IOError:
                 self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
-                self.terminal.AppendText(f"\nFile {filename} upload failed.")
+                self.terminal.AppendText(f"File {filename} upload failed.")
 
     def run_simulation(self):
         """Runs the simulation and plot the monitored traces."""

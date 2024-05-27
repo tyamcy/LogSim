@@ -73,7 +73,8 @@ class Monitors:
         # {identifier: (device_id, port_id)}
         self.identifier_to_port = collections.OrderedDict()
 
-        [self.NO_ERROR, self.MONITOR_IDENTIFIER_PRESENT] = self.names.unique_error_codes(2)
+        [self.NO_ERROR, self.MONITOR_IDENTIFIER_PRESENT, self.MONITOR_DEVICE_ABSENT, self.MONITOR_PORT_ABSENT] = (
+            self.names.unique_error_codes(4))
 
     def make_monitor(self, device_id: int, port_id: int, identifier: str, cycles_completed: int = 0) -> int:
         """Add the specified signal to the monitors dictionary.
@@ -82,7 +83,9 @@ class Monitors:
         """
         monitor_device = self.devices.get_device(device_id)
         if monitor_device is None:
-            return self.network.MONITOR_DEVICE_ABSENT
+            return self.MONITOR_DEVICE_ABSENT
+        elif port_id not in monitor_device.outputs and port_id not in monitor_device.inputs:
+            return self.MONITOR_PORT_ABSENT
         elif identifier in self.identifier_to_port:
             return self.MONITOR_IDENTIFIER_PRESENT
         else:

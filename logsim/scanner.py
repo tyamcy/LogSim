@@ -177,7 +177,7 @@ class Scanner:
 
         char = self.get_next_character()
 
-        while char != "\n" or "":
+        while char and char != "\n":
             char = self.get_next_character()
 
         self.current_character = self.get_next_character()
@@ -187,7 +187,7 @@ class Scanner:
 
         char = self.get_next_character()
 
-        while char != "/" or "":
+        while char and char != "/":
             char = self.get_next_character()
 
         self.current_character = self.get_next_character()

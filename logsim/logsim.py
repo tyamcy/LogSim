@@ -35,6 +35,7 @@ def main(arg_list) -> None:
                      "Show help: logsim.py -h\n"
                      "Command line user interface: logsim.py -c <file path>\n"
                      "Graphical user interface: logsim.py <file path>")
+    parsing_message = "Assembling logic circuit..."
     try:
         options, arguments = getopt.getopt(arg_list, "hc:")
     except getopt.GetoptError:
@@ -62,10 +63,15 @@ def main(arg_list) -> None:
                 print(f"Error: file '{path}' is not a unicode text file")
                 sys.exit()
             parser = Parser(names, devices, network, monitors, scanner)
+            print(parsing_message)
             if parser.parse_network():
                 # Initialise an instance of the userint.UserInterface() class
                 userint = UserInterface(names, devices, network, monitors)
                 userint.command_interface()
+            else:
+                print(f"\u001b[31m\nError in the specification file\n{path}.\u001b[0m")
+                for error in parser.fetch_error_output():
+                    print(error)
 
     if not options:  # no option given, use the graphical user interface
 
@@ -80,6 +86,7 @@ def main(arg_list) -> None:
 
         # It is possible to provide a file that is wrong initially
         # An error will be given in the GUI terminal
+        print(parsing_message)
         parser.parse_network()
         # Initialise an instance of the gui.Gui() class
         app = wx.App()

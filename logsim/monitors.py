@@ -227,6 +227,7 @@ class Monitors:
             print("\n", end="")
 
     def fetch_identifier_to_device_port_name(self) -> dict:
+        """Fetch device name and port name from a given identifier."""
         # {identifier: (device_name, port_name)}
         identifier_to_device_port_name = {}
         for identifier, (device_id, port_id) in self.identifier_to_port.items():
@@ -234,3 +235,7 @@ class Monitors:
             port_name = self.names.get_name_string(port_id) if port_id else None
             identifier_to_device_port_name[identifier] = (device_name, port_name)
         return identifier_to_device_port_name
+
+    def get_all_monitor_signal(self) -> dict:
+        """Fetch all the signal levels from all monitors."""
+        return self.signals_dictionary

@@ -260,3 +260,12 @@ def test_display_signals(capsys, new_monitors):
             "CLK   : -__--__--__--__--__-" in traces)
 
     assert "" in traces  # additional empty line at the end
+
+
+def test_fetch_identifier_to_device_name(new_monitors):
+    assert new_monitors.fetch_identifier_to_device_port_name()["A1"] == ("Or1", None)
+    assert new_monitors.fetch_identifier_to_device_port_name()["A2"] == ("Or1", None)
+    assert new_monitors.fetch_identifier_to_device_port_name()["B"] == ("Sw1", None)
+    assert new_monitors.fetch_identifier_to_device_port_name()["C"] == ("Sw2", None)
+    assert new_monitors.fetch_identifier_to_device_port_name()["Input1"] == ("Or1", "I1")
+    assert new_monitors.fetch_identifier_to_device_port_name()["Input2"] == ("Or1", "I2")

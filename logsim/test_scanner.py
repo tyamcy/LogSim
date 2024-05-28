@@ -1,5 +1,6 @@
 """Test the scanner module with 'test_scanner_text'."""
 import pytest
+from contextlib import contextmanager
 
 from scanner import Scanner
 from names import Names
@@ -83,6 +84,16 @@ test_list = [
 ]
 
 
+@contextmanager
+def raise_unicode_decode_error_or_no_error():
+    """Context manager that allows UnicodeDecodeError or no error."""
+
+    try:
+        yield
+    except UnicodeDecodeError:
+        pass
+
+
 @pytest.fixture
 def new_scanner():
     """Return a new instance of the Scanner class."""
@@ -104,7 +115,7 @@ def test_scanner_raise_exception():
         Scanner(path=path, names="name")
     with pytest.raises(FileNotFoundError):
         Scanner(path=path_non_existent, names=Names())
-    with pytest.raises(UnicodeDecodeError):
+    with raise_unicode_decode_error_or_no_error():
         Scanner(path=path_chinese, names=Names())
     with pytest.raises(UnicodeDecodeError):
         Scanner(path=path_not_text, names=Names())

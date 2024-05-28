@@ -53,7 +53,14 @@ def main(arg_list):
             print(usage_message)
             sys.exit()
         elif option == "-c":  # use the command line user interface
-            scanner = Scanner(path, names)
+            try:
+                scanner = Scanner(path, names)
+            except FileNotFoundError:
+                print(f"Error: no such file '{path}'")
+                sys.exit()
+            except UnicodeDecodeError:
+                print(f"Error: file '{path}' is not a unicode text file")
+                sys.exit()
             parser = Parser(names, devices, network, monitors, scanner)
             if parser.parse_network():
                 # Initialise an instance of the userint.UserInterface() class

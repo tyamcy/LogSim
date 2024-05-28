@@ -7,6 +7,11 @@ Classes:
 --------
 UserInterface - reads and parses user commands.
 """
+from names import Names
+from devices import Devices
+from monitors import Monitors
+from network import Network
+from typing import Union, List
 
 
 class UserInterface:
@@ -66,7 +71,7 @@ class UserInterface:
     continue_command(self): Continues a previously run simulation.
     """
 
-    def __init__(self, names, devices, network, monitors):
+    def __init__(self, names: Names, devices: Devices, network: Network, monitors: Monitors):
         """Initialise variables."""
         self.names = names
         self.devices = devices
@@ -79,7 +84,7 @@ class UserInterface:
         self.line = ""  # current string entered by the user
         self.cursor = 0  # cursor position
 
-    def command_interface(self):
+    def command_interface(self) -> None:
         """Read the command entered and call the corresponding function."""
         print("Logic Simulator: interactive command line user interface.\n"
               "Enter 'h' for help.")
@@ -103,19 +108,19 @@ class UserInterface:
             self.get_line()  # get the user entry
             command = self.read_command()  # read the first character
 
-    def get_line(self):
+    def get_line(self) -> None:
         """Print prompt for the user and update the user entry."""
         self.cursor = 0
         self.line = input("#: ")
         while self.line == "":  # if the user enters a blank line
             self.line = input("#: ")
 
-    def read_command(self):
+    def read_command(self) -> str:
         """Return the first non-whitespace character."""
         self.skip_spaces()
         return self.character
 
-    def get_character(self):
+    def get_character(self) -> None:
         """Move the cursor forward by one character in the user entry."""
         if self.cursor < len(self.line):
             self.character = self.line[self.cursor]
@@ -123,13 +128,13 @@ class UserInterface:
         else:  # end of the line
             self.character = ""
 
-    def skip_spaces(self):
+    def skip_spaces(self) -> None:
         """Skip whitespace until a non-whitespace character is reached."""
         self.get_character()
         while self.character.isspace():
             self.get_character()
 
-    def read_string(self):
+    def read_string(self) -> Union[None, str]:
         """Return the next alphanumeric string."""
         self.skip_spaces()
         name_string = ""
@@ -141,7 +146,7 @@ class UserInterface:
             self.get_character()
         return name_string
 
-    def read_name(self):
+    def read_name(self) -> Union[None, int]:
         """Return the name ID of the current string if valid.
 
         Return None if the current string is not a valid name string.
@@ -155,7 +160,7 @@ class UserInterface:
             print("Error! Unknown name.")
         return name_id
 
-    def read_signal_name(self):
+    def read_signal_name(self) -> Union[None, List[Union[int, str, None]]]:
         """Return the device and port IDs of the current signal name.
 
         Return None if either is invalid.
@@ -171,7 +176,7 @@ class UserInterface:
             port_id = None
         return [device_id, port_id]
 
-    def read_monitor(self):
+    def read_monitor(self) -> Union[None, List[Union[int, str, None]]]:
         """Return the device, port IDs and identifier (alias) of the monitor point.
 
         Return None if either is invalid.
@@ -194,7 +199,7 @@ class UserInterface:
             return None
         return [device_id, port_id, identifier]
 
-    def read_number(self, lower_bound, upper_bound):
+    def read_number(self, lower_bound: Union[None, int], upper_bound: Union[None, int]) -> Union[None, int]:
         """Return the current number.
 
         Return None if no number is provided or if it falls outside the valid
@@ -222,7 +227,7 @@ class UserInterface:
 
         return number
 
-    def help_command(self):
+    def help_command(self) -> None:
         """Print a list of valid commands."""
         print("User commands:")
         print("r N       - run the simulation for N cycles")
@@ -234,7 +239,7 @@ class UserInterface:
         print("h         - help (this command)")
         print("q         - quit the program")
 
-    def switch_command(self):
+    def switch_command(self) -> None:
         """Set the specified switch to the specified signal level."""
         switch_id = self.read_name()
         if switch_id is not None:
@@ -245,7 +250,7 @@ class UserInterface:
                 else:
                     print("Error! Invalid switch.")
 
-    def monitor_command(self):
+    def monitor_command(self) -> None:
         """Set the specified monitor."""
         monitor = self.read_monitor()
         if monitor is not None:
@@ -257,7 +262,7 @@ class UserInterface:
             else:
                 print("Error! Could not make monitor.")
 
-    def zap_command(self):
+    def zap_command(self) -> None:
         """Remove the specified monitor."""
         monitor = self.read_signal_name()
         if monitor is not None:
@@ -267,7 +272,7 @@ class UserInterface:
             else:
                 print("Error! Could not zap monitor.")
 
-    def run_network(self, cycles):
+    def run_network(self, cycles) -> bool:
         """Run the network for the specified number of simulation cycles.
 
         Return True if successful.
@@ -281,7 +286,7 @@ class UserInterface:
         self.monitors.display_signals()
         return True
 
-    def run_command(self):
+    def run_command(self) -> None:
         """Run the simulation from scratch."""
         self.cycles_completed = 0
         cycles = self.read_number(0, None)
@@ -293,7 +298,7 @@ class UserInterface:
             if self.run_network(cycles):
                 self.cycles_completed += cycles
 
-    def continue_command(self):
+    def continue_command(self) -> None:
         """Continue a previously run simulation."""
         cycles = self.read_number(0, None)
         if cycles is not None:  # if the number of cycles provided is valid

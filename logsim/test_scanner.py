@@ -4,7 +4,7 @@ import pytest
 from scanner import Scanner
 from names import Names
 
-path = "logsim/test_scanner_text"
+path = "logsim/test_text/test_scanner_text"
 
 
 class NameTest:
@@ -83,8 +83,7 @@ test_list = [
 @pytest.fixture
 def new_scanner():
     """Return a new instance of the Scanner class."""
-    new_scanner = Scanner(path=path, names=Names())
-    return new_scanner
+    return Scanner(path=path, names=Names())
 
 
 def test_get_symbol(new_scanner):

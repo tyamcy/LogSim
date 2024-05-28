@@ -1,0 +1,12 @@
+/ Combinational logic /
+DEVICE {
+D1: DTYPE;
+D2: DTYPE;
+G1: NOR, 3;
+}
+
+/ Initial monitoring points /
+MONITOR {
+S1: D1.QBAR;
+f: G1;
+}

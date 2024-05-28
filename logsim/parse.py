@@ -84,13 +84,11 @@ class Parser:
                     self.error_handler.line_error(self.error_handler.DUPLICATE_KEYWORD, self.symbol)
                     self.skip_to_close_bracket()
                     self.advance()
-                    continue
-                if self.block_order_flags[keyword]:
+                elif self.block_order_flags[keyword]:
                     self.error_handler.line_error(self.error_handler.WRONG_BLOCK_ORDER, self.symbol)
                     self.skip_to_close_bracket()
                     self.advance()
-                    continue
-                if keyword == "DEVICE":
+                elif keyword == "DEVICE":
                     self.device_list()
                     self.advance()
                 elif keyword == "SWITCH":
@@ -103,8 +101,14 @@ class Parser:
                     self.monitor_list()
                     self.advance()
                 elif keyword == "CONNECTION":
-                    self.connect_list()
-                    self.advance()
+                    if self.block_parse_flags["MONITOR"]:
+                        self.connect_list()
+                        self.advance()
+                    else:
+                        self.error_handler.line_error(self.error_handler.WRONG_BLOCK_ORDER, self.symbol)
+                        self.skip_to_close_bracket()
+                        self.advance()
+                self.set_flag(keyword)
             else:
                 self.error_handler.line_error(self.error_handler.EXPECT_KEYWORD, self.symbol)
                 self.skip_to_close_bracket()
@@ -144,18 +148,19 @@ class Parser:
                 if not sub_rule():
                     self.skip_after_semicolon_or_to_close_bracket()
 
-            #  set the flags
-            self.block_parse_flags[keyword] = True
-            for key in self.block_order_flags:
-                if key == keyword:
-                    break
-                else:
-                    self.block_order_flags[key] = True
-
         else:
             # expect open curly bracket
             self.error_handler.line_error(self.error_handler.EXPECT_OPEN_CURLY_BRACKET, self.symbol)
             self.skip_to_close_bracket()
+
+    def set_flag(self, keyword: str) -> None:
+        # set block parse flag
+        self.block_parse_flags[keyword] = True
+        # set block order flag
+        for key in self.block_order_flags:
+            if key == keyword:
+                break
+            self.block_order_flags[key] = True
 
     def device_list(self):
         self.parse_list(keyword="DEVICE", sub_rule=self.device)
@@ -406,17 +411,19 @@ class Parser:
             self.error_handler.line_error(self.error_handler.EXPECT_INITIAL_STATE, self.symbol)
             return False
 
+    def pin_in_variable_input_number(self, input_number: str) -> bool:
+        if input_number.isnumeric() and 1 <= int(input_number) <= 16:
+            return True
+        else:
+            return False
+
     def pin_in(self) -> bool:
         if self.symbol.type == Scanner.NAME and self.symbol_string()[0] == "I":
             # expect variable input number
-            try:
-                variable_number = int(self.symbol_string()[1:])
-                if 1 <= variable_number <= 16:
-                    return True
-                else:
-                    self.error_handler.line_error(self.error_handler.EXPECT_VARIABLE_INPUT_NUMBER, self.symbol)
-                    return False
-            except ValueError:
+            remaining_symbol_string = self.symbol_string()[1:]
+            if self.pin_in_variable_input_number(remaining_symbol_string):
+                return True
+            else:
                 self.error_handler.line_error(self.error_handler.EXPECT_PIN_IN, self.symbol)
                 return False
         elif self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_IN:
@@ -435,10 +442,14 @@ class Parser:
             return False
 
     def pin_in_or_out(self) -> bool:
-        if self.symbol.type == Scanner.NAME and self.symbol_string() == "I":
-            self.advance()
+        if self.symbol.type == Scanner.NAME and self.symbol_string()[0] == "I":
             # expect variable input number
-            return self.variable_input_number()
+            remaining_symbol_string = self.symbol_string()[1:]
+            if self.pin_in_variable_input_number(remaining_symbol_string):
+                return True
+            else:
+                self.error_handler.line_error(self.error_handler.EXPECT_PIN_IN_OR_OUT, self.symbol)
+                return False
         elif self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_IN:
             return True
         elif self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_OUT:
@@ -509,7 +520,7 @@ class Parser:
             if error_type == self.monitors.NO_ERROR:
                 pass
             elif error_type == self.monitors.MONITOR_PORT_ABSENT:
-                self.error_handler.line_error(self.monitors.MONITOR_PORT_ABSENT, identifier_symbol)
+                self.error_handler.line_error(self.monitors.MONITOR_PORT_ABSENT, port_symbol)
             elif error_type == self.monitors.MONITOR_IDENTIFIER_PRESENT:
                 self.error_handler.line_error(self.monitors.MONITOR_IDENTIFIER_PRESENT, identifier_symbol)
             elif error_type == self.monitors.MONITOR_DEVICE_ABSENT:

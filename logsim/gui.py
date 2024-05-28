@@ -14,6 +14,9 @@ from OpenGL import GL, GLUT
 import os
 
 from gui_widgets import CustomDialogBox
+import os
+
+from gui_widgets import CustomDialogBox
 
 from names import Names
 from devices import Devices
@@ -50,7 +53,9 @@ class MyGLCanvas(wxcanvas.GLCanvas):
     render_text(self, text, x_pos, y_pos): Handles text drawing
                                            operations.
 
-    update_theme(self, theme): Updates the colour palette. 
+    update_theme(self, theme): Updates the colour palette.
+
+    update_theme(self, theme): Updates the colour palette.
     """
 
     def __init__(self, parent, devices, monitors):
@@ -63,6 +68,12 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.init = False
         self.context = wxcanvas.GLContext(self)
 
+        self.devices = devices
+        self.monitors = monitors
+
+        self.signals = {}
+        self.signals_dictionary = {}
+
         # Colour themes
         self.light_color_background = (0.98, 0.98, 0.98, 1)
         self.light_color_text = (0, 0, 0)
@@ -70,7 +81,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.dark_color_background = (0.267, 0.267, 0.267, 1)
         self.dark_color_text = (1, 1, 1)
         self.dark_color_trace = (1, 1, 1)
-        
+
         # Initialise colours
         self.color_background = self.light_color_background
         self.color_text = self.light_color_text
@@ -84,6 +95,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
         # Initialise variables for zooming
         self.zoom = 1
+        self.zoom_current = 1
 
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
@@ -96,6 +108,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.SetCurrent(self.context)
         GL.glDrawBuffer(GL.GL_BACK)
         GL.glClearColor(*self.color_background)
+        GL.glClearColor(*self.color_background)
         GL.glViewport(0, 0, size.width, size.height)
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
@@ -105,7 +118,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glTranslated(self.pan_x, self.pan_y, 0.0)
         GL.glScaled(self.zoom, self.zoom, self.zoom)
 
-    def render(self, text):
+    def render(self, text, signals={}):
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
         if not self.init:
@@ -116,22 +129,55 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         # Clear everything
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
 
-        # Draw specified text at position (10, 10)
-        self.render_text(text, 10, 10)
+        if signals:
+            self.signals = signals  # updating the dictionary of signal values
 
-        # Draw a sample signal trace
-        GL.glColor3f(*self.color_trace) 
-        GL.glBegin(GL.GL_LINE_STRIP)
-        for i in range(10):
-            x = (i * 20) + 10
-            x_next = (i * 20) + 30
-            if i % 2 == 0:
-                y = 75
-            else:
-                y = 100
-            GL.glVertex2f(x, y)
-            GL.glVertex2f(x_next, y)
-        GL.glEnd()
+        if self.signals:
+            x_start = 60
+            y_start = 50
+            width = 30  # width of a cycle
+            height = 30  # height of a pulse
+            y_diff = 75  # distance between different plots
+
+            # Annotate y-axis (no. of cycles)
+            self.render_text("0", x_start, y_start - 20)
+            no_cycles = len(list(self.signals.values())[0])
+            self.render_text(str(no_cycles), x_start + no_cycles * width, y_start - 20)
+
+            for index, (key, trace) in enumerate(self.signals.items()):
+                trace_label = str(key[0])
+
+                # Update y
+                y = y_start + index * y_diff
+
+                # Rendering the identifier name
+                self.render_text(trace_label, 20, y + int(y_diff / 5))
+
+                # Adding 0 and 1
+                self.render_text("0", 40, y)
+                self.render_text("1", 40, y + height)
+
+                # Update x
+                x = x_start
+                x_next = x_start + width
+
+                GL.glColor3f(*self.color_trace)
+                GL.glBegin(GL.GL_LINE_STRIP)
+
+                for value in trace:
+                    if value == 0:
+                        y_curr = y
+                    elif value == 1:
+                        y_curr = y + height
+                        # x = 10 + i * x_spacing
+                    GL.glVertex2f(x, y_curr)
+                    GL.glVertex2f(x_next, y_curr)
+
+                    # Update x
+                    x = x_next
+                    x_next += width
+
+                GL.glEnd()
 
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
@@ -147,7 +193,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.init = True
 
         size = self.GetClientSize()
-        #text = "".join(["Canvas redrawn on paint event, size is ",
+        # text = "".join(["Canvas redrawn on paint event, size is ",
+        #                str(size.width), ", ", str(size.height)])
+        self.render("")
+        # text = "".join(["Canvas redrawn on paint event, size is ",
         #                str(size.width), ", ", str(size.height)])
         self.render("")
 
@@ -168,41 +217,26 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         if event.ButtonDown():
             self.last_mouse_x = event.GetX()
             self.last_mouse_y = event.GetY()
-            #text = "".join(["Mouse button pressed at: ", str(event.GetX()),
-            #                ", ", str(event.GetY())])
-        #if event.ButtonUp():
-            #text = "".join(["Mouse button released at: ", str(event.GetX()),
-            #                ", ", str(event.GetY())])
-        #if event.Leaving():
-            #text = "".join(["Mouse left canvas at: ", str(event.GetX()),
-            #                ", ", str(event.GetY())])
         if event.Dragging():
             self.pan_x += event.GetX() - self.last_mouse_x
             self.pan_y -= event.GetY() - self.last_mouse_y
             self.last_mouse_x = event.GetX()
             self.last_mouse_y = event.GetY()
             self.init = False
-            #text = "".join(["Mouse dragged to: ", str(event.GetX()),
-            #                ", ", str(event.GetY()), ". Pan is now: ",
-            #                str(self.pan_x), ", ", str(self.pan_y)])
         if event.GetWheelRotation() < 0:
             self.zoom *= (1.0 + (
-                event.GetWheelRotation() / (20 * event.GetWheelDelta())))
+                    event.GetWheelRotation() / (20 * event.GetWheelDelta())))
             # Adjust pan so as to zoom around the mouse position
             self.pan_x -= (self.zoom - old_zoom) * ox
             self.pan_y -= (self.zoom - old_zoom) * oy
             self.init = False
-            #text = "".join(["Negative mouse wheel rotation. Zoom is now: ",
-            #                str(self.zoom)])
         if event.GetWheelRotation() > 0:
             self.zoom /= (1.0 - (
-                event.GetWheelRotation() / (20 * event.GetWheelDelta())))
+                    event.GetWheelRotation() / (20 * event.GetWheelDelta())))
             # Adjust pan so as to zoom around the mouse position
             self.pan_x -= (self.zoom - old_zoom) * ox
             self.pan_y -= (self.zoom - old_zoom) * oy
             self.init = False
-            #text = "".join(["Positive mouse wheel rotation. Zoom is now: ",
-            #                str(self.zoom)])
         if text:
             self.render(text)
         else:
@@ -210,7 +244,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
     def render_text(self, text, x_pos, y_pos):
         """Handle text drawing operations."""
-        GL.glColor3f(*self.color_text)  
+        GL.glColor3f(*self.color_text)
         GL.glRasterPos2f(x_pos, y_pos)
         font = GLUT.GLUT_BITMAP_HELVETICA_12
 
@@ -220,7 +254,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
                 GL.glRasterPos2f(x_pos, y_pos)
             else:
                 GLUT.glutBitmapCharacter(font, ord(character))
-    
+
     def update_theme(self, theme):
         """Handle background colour update."""
         self.SetCurrent(self.context)
@@ -245,9 +279,11 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.pan_x = 0
         self.pan_y = 0
         self.zoom = 1
+        self.init = False
         self.on_paint(None)
         GL.glMatrixMode(GL.GL_MODELVIEW)
         GL.glLoadIdentity()
+
 
 class Gui(wx.Frame):
     """Configure the main window and all the widgets.
@@ -270,11 +306,13 @@ class Gui(wx.Frame):
                                 button.
 
     on_text_box(self, event): Event handler for when the user enters text.
-    
+
+    toggle_theme(self, event): Event handler for when the user changes the color theme.
+
     toggle_theme(self, event): Event handler for when the user changes the color theme.
     """
 
-    def __init__(self, title, path, names, devices, network, monitors):
+    def __init__(self, title, path, names, devices, network, monitors, parser):
         """Initialise widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
@@ -283,13 +321,26 @@ class Gui(wx.Frame):
         self.devices = devices
         self.network = network
         self.monitors = monitors
+        self.parser = parser
 
-        self.monitors_active_list = [] 
-        self.monitors_inactive_list = []
-        self.switches_dict = dict() 
         self.num_cycles = 10
 
-        # Colour styles 
+        # Getting the list of active monitors
+        self.monitors_active_list = self.monitors.get_signal_names()[0]
+        self.monitors_inactive_list = self.monitors.get_signal_names()[1]
+
+        # Creating a dictionary of switches
+        self.id_switches = self.devices.find_devices(self.devices.SWITCH)
+        self.switches_dict = dict()  # {switch name: switch state}
+        self.toggle_button_switch_name = dict()  # {toggle button: switch name}
+
+        # A dictionary for the signals and simulated output
+        # {(device_id, port_id): [signal_list]}
+        self.signals_dictionary = dict()
+        # {device_string: [signal_list]}
+        self.signals_plot_dictionary = dict()
+
+        # Colour styles
         self.color_primary = "#4DA2B4"
         self.color_primary_shade = "#397E8D"
         self.color_disabled = "#CBBBBB"
@@ -317,7 +368,6 @@ class Gui(wx.Frame):
         self.theme = "light"
         self.SetBackgroundColour(self.light_background_color)
         self.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Roboto'))
-
 
         # Menu bar
         # Configure the menu bar
@@ -354,23 +404,23 @@ class Gui(wx.Frame):
         # Bind event to menuBar
         self.Bind(wx.EVT_MENU, self.on_menu)
 
-
         # Main UI layout
         # Canvas for drawing / plotting signals
         self.canvas = MyGLCanvas(self, devices, monitors)
 
         # Defining sizers for layout
-        self.main_sizer = wx.BoxSizer(wx.HORIZONTAL) # main sizer with everything
-        self.left_sizer = wx.BoxSizer(wx.VERTICAL) # left sizer for the canvas and terminal
-        self.right_sizer = wx.BoxSizer(wx.VERTICAL) # right sizer for the controls
-        
+        self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)  # main sizer with everything
+        self.left_sizer = wx.BoxSizer(wx.VERTICAL)  # left sizer for the canvas and terminal
+        self.right_sizer = wx.BoxSizer(wx.VERTICAL)  # right sizer for the controls
+
         # Terminal
         self.border_panel = wx.Panel(self)
         self.border_panel.SetBackgroundColour(self.terminal_background_color)
         self.terminal_panel = wx.Panel(self.border_panel)
         self.terminal_panel.SetBackgroundColour(self.terminal_background_color)
 
-        self.terminal = wx.TextCtrl(self.terminal_panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.BORDER_NONE )
+        self.terminal = wx.TextCtrl(self.terminal_panel,
+                                    style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.BORDER_NONE)
         self.terminal.SetBackgroundColour(self.terminal_background_color)
         self.terminal.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Consolas'))
         self.terminal.SetForegroundColour(self.terminal_text_color)
@@ -407,14 +457,10 @@ class Gui(wx.Frame):
         self.cycles_sizer.Add(self.cycles_spin, 0, wx.EXPAND | wx.ALL, 5)
         self.right_sizer.Add(self.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
 
-
         # Monitors section
-        #self.monitors_active_list = ["G1", "G2","G3", "G4", "G5", "D1", "D2", "D4", "G6", "G7", "G8", "G9", "G10"]
-        #self.monitors_inactive_list = ["D3"]
-
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)
         self.monitors_text = wx.StaticText(self, wx.ID_ANY, "Monitors")
-        self.monitors_scrolled = wx.ScrolledWindow(self, style=wx.VSCROLL) 
+        self.monitors_scrolled = wx.ScrolledWindow(self, style=wx.VSCROLL)
         self.monitors_scrolled.SetScrollRate(10, 10)
         self.monitors_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -422,8 +468,8 @@ class Gui(wx.Frame):
 
         self.monitors_scrolled.SetMinSize((250, 150))
         self.monitors_scrolled.SetBackgroundColour(self.light_background_secondary)
-        self.monitors_sizer.Add(self.monitors_text, 0, wx.ALL, 5)  
-        self.monitors_sizer.Add(self.monitors_scrolled, 1, wx.EXPAND | wx.ALL, 5)  
+        self.monitors_sizer.Add(self.monitors_text, 0, wx.ALL, 5)
+        self.monitors_sizer.Add(self.monitors_scrolled, 1, wx.EXPAND | wx.ALL, 5)
         self.right_sizer.Add(self.monitors_sizer, 1, wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, 0)
 
         # Add and remove monitor buttons
@@ -433,7 +479,7 @@ class Gui(wx.Frame):
         self.add_monitor_button.SetBackgroundColour(self.light_button_color)
         self.add_monitor_button.Bind(wx.EVT_BUTTON, self.on_add_monitor_button)
         self.monitors_buttons_sizer.Add(self.add_monitor_button, 1, wx.ALL | wx.EXPAND, 0)
-        
+
         self.remove_monitor_button = wx.Button(self, wx.ID_ANY, "Remove")
         self.remove_monitor_button.SetBackgroundColour(self.light_button_color)
         self.remove_monitor_button.Bind(wx.EVT_BUTTON, self.on_remove_monitor_button)
@@ -446,40 +492,24 @@ class Gui(wx.Frame):
         self.switches_text = wx.StaticText(self, wx.ID_ANY, "Switches")
         self.switches_scrolled = wx.ScrolledWindow(self, style=wx.VSCROLL)
         self.switches_scrolled.SetScrollRate(10, 10)
-        switches_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.switches_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        # Dictionary of switches and their corresponding states
-        #self.switches_dict = {"A": 0, "B": 0,"C": 0,"D": 0,"E": 0,"F": 0,}
-        for switch, state in self.switches_dict.items():
-            switch_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.update_switches_display()
 
-            label = wx.StaticText(self.switches_scrolled, wx.ID_ANY, switch)
-            switch_sizer.Add(label, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT | wx.LEFT, 5)
-
-            initial_label = "1" if state == 1 else "0"
-            toggle = wx.ToggleButton(self.switches_scrolled, wx.ID_ANY, initial_label)
-            toggle.SetValue(state == 1)
-            toggle.SetBackgroundColour(self.light_button_color)
-            toggle.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_switch)
-            switch_sizer.Add(toggle, 0, wx.ALIGN_CENTER_VERTICAL)
-
-            switches_scrolled_sizer.Add(switch_sizer, 0, wx.EXPAND | wx.ALL, 5)
-
-        self.switches_scrolled.SetSizer(switches_scrolled_sizer)  
+        self.switches_scrolled.SetSizer(self.switches_scrolled_sizer)
         self.switches_scrolled.SetMinSize((250, 150))
         self.switches_scrolled.SetBackgroundColour(self.light_background_secondary)
 
-        self.switches_sizer.Add(self.switches_text, 0, wx.ALL, 5)  
-        self.switches_sizer.Add(self.switches_scrolled, 1, wx.EXPAND | wx.ALL, 5)  
+        self.switches_sizer.Add(self.switches_text, 0, wx.ALL, 5)
+        self.switches_sizer.Add(self.switches_scrolled, 1, wx.EXPAND | wx.ALL, 5)
 
         self.right_sizer.Add(self.switches_sizer, 1, wx.EXPAND | wx.TOP, 5)
-
 
         # Run and continue button
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
         self.run_button.SetBackgroundColour(self.color_primary)
+        self.run_button.SetBackgroundColour(self.color_primary)
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
-        #self.run_button.Disable()
         self.right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
 
         self.continue_button = wx.Button(self, wx.ID_ANY, "Continue")
@@ -488,11 +518,12 @@ class Gui(wx.Frame):
         self.continue_button.Disable()
         self.right_sizer.Add(self.continue_button, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
 
-        
+        # Checking the file supplied using <filepath>
+        self.check_errors(path, self.parser)
+
         # Set main sizer and size of GUI
         self.SetSizeHints(1080, 720)
         self.SetSizer(self.main_sizer)
-
 
     def on_menu(self, event):
         """Handle the event when the user selects a menu item."""
@@ -518,17 +549,61 @@ class Gui(wx.Frame):
                           "\nContinue: Continues the simulation with updated paramaters.",
                           "Controls", wx.ICON_INFORMATION | wx.OK)
 
+    def check_errors(self, filename, parser):
+        """Handles the error checking when a file is uploaded."""
+        if parser.parse_network():
+            # Message on terminal
+            self.canvas.reset_display()
+            self.canvas.render("")
+            self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_success_color))
+            self.terminal.AppendText(f"\nFile {filename} uploaded successfully.")
+
+            # Enable add and remove button
+            self.add_monitor_button.Enable()
+            self.remove_monitor_button.Enable()
+
+            # Enable run button and disable continue button
+            self.run_button.Enable()
+            self.run_button.SetBackgroundColour(self.color_primary)
+            self.continue_button.Disable()
+            self.continue_button.SetBackgroundColour(self.color_disabled)
+
+            return True
+        else:
+            # Message on terminal
+            self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
+            self.terminal.AppendText(f"\n\nError in the specification file {filename}.")
+
+            # Disable add and remove button
+            self.add_monitor_button.Disable()
+            self.remove_monitor_button.Disable()
+
+            # Disable run and disable button
+            self.run_button.Disable()
+            self.run_button.SetBackgroundColour(self.color_disabled)
+            self.continue_button.Disable()
+            self.continue_button.SetBackgroundColour(self.color_disabled)
+
+            # Printing the error message in the GUI terminal
+            errors = parser.error_handler.error_output_list
+            for error in errors:
+                if error:
+                    self.terminal.SetDefaultStyle(wx.TextAttr(self.dark_text_color))
+                    self.terminal.AppendText(f"\n{error}")
+
+            return False
+
     def on_upload_button(self, event):
         """Handles the event when the user clicks the upload button to select the specification file."""
         wildcard = "Text files (*.txt)|*.txt"
         with wx.FileDialog(self, "Open Specification File", wildcard=wildcard,
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
-            # Canceling the action 
+            # Canceling the action
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 return
-            
-            path = fileDialog.GetPath() # extracting the file path
-            filename = os.path.basename(path) # extracting the file name
+
+            path = fileDialog.GetPath()  # extracting the file path
+            filename = os.path.basename(path)  # extracting the file name
 
             # Check if file is a text file
             if not path.lower().endswith(".txt"):
@@ -537,62 +612,68 @@ class Gui(wx.Frame):
 
             # Processing the file
             try:
-                with open(path, "r") as file:
-                    # Initialise instances of the inner simulator classes
-                    names = Names()
-                    devices = Devices(names)
-                    network = Network(names, devices)
-                    monitors = Monitors(names, devices, network)
-                    scanner = Scanner(path, names)
-                    parser = Parser(names, devices, network, monitors, scanner)
-                    
-                    if parser.parse_network():
-                        # Instantiate the circuit for the newly uploaded file
-                        self.names = names
-                        self.devices = devices
-                        self.network = network
-                        self.monitors = monitors
-                        self.scanner = scanner
-                        self.parser = parser
+                # Initialise instances of the inner simulator classes
+                names = Names()
+                devices = Devices(names)
+                network = Network(names, devices)
+                monitors = Monitors(names, devices, network)
+                scanner = Scanner(path, names)
+                parser = Parser(names, devices, network, monitors, scanner)
 
-                        self.monitors_active_list = self.monitors.get_signal_names()[0]
-                        self.monitors_inactive_list = self.monitors.get_signal_names()[1]
-                        self.switches_dict = {}
-                        self.num_cycles = 10
+                if parser.parse_network():
+                    # Instantiate the circuit for the newly uploaded file
+                    self.names = names
+                    self.devices = devices
+                    self.network = network
+                    self.monitors = monitors
+                    self.scanner = scanner
+                    self.parser = parser
 
-                        # Message on terminal
-                        self.canvas.reset_display()
-                        self.canvas.render("")
-                        self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_success_color))
-                        self.terminal.AppendText(f"\nFile {filename} uploaded successfully.")
+                    self.monitors_active_list = self.monitors.get_signal_names()[0]
+                    self.monitors_inactive_list = self.monitors.get_signal_names()[1]
+                else:
+                    # Clearing the GUI display as the file is invalid
+                    self.monitors_scrolled_sizer.Clear(True)
+                    self.switches_scrolled_sizer.Clear(True)
 
-                        # Enable run button and disable continue button
-                        self.run_button.Enable()
-                        self.run_button.SetBackgroundColour(self.color_primary)
-                        self.continue_button.Disable()
-                        self.continue_button.SetBackgroundColour(self.color_disabled)
-                    else:
-                        self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
-                        self.terminal.AppendText("\nError in the specification file.")
+                if self.check_errors(filename, parser):
+                    print("GOOD")
 
-                        # Printing the error message in the GUI terminal
-                        errors = parser.error_handler.error_output_list
-                        for error in errors:
-                            if error:
-                                self.terminal.SetDefaultStyle(wx.TextAttr(self.dark_text_color))
-                                self.terminal.AppendText(f"\n{error}")
+                    # Update the GUI with new monitors and switches
+                    self.update_monitors_display()
+                    self.update_switches_display()
 
             except IOError:
                 self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
                 self.terminal.AppendText(f"File {filename} upload failed.")
 
-    def run_simulation(self, names, devices):
-        self.canvas.render("")
-        return
-    
+    def run_simulation(self):
+        """Runs the simulation and plot the monitored traces."""
+        self.signals_dictionary = {}
+        self.signals_plot_dictionary = {}
+        self.monitors.reset_monitors()
+
+        # Modifying the monitors list
+
+        # Running the simulation
+        for _ in range(self.num_cycles):
+            if self.network.execute_network():
+                self.monitors.record_signals()
+            else:
+                print("Error! Network oscillating.")
+                return False
+
+        self.signals_dictionary = self.monitors.signals_dictionary
+        # self.signals_plot_dictionary =
+
+        self.canvas.render("", self.signals_dictionary)
+
+        return True
+
     def on_cycles_spin(self, event):
         """Handle the event when the user changes the spin control value."""
         spin_value = self.cycles_spin.GetValue()
+        self.num_cycles = spin_value
 
     def update_monitors_display(self):
         """Handle the event of updating the list of monitors upon change."""
@@ -603,7 +684,7 @@ class Gui(wx.Frame):
             color = self.light_text_color
         else:
             color = self.dark_text_color
-        
+
         self.monitors_active_list.sort()
         self.monitors_inactive_list.sort()
 
@@ -618,20 +699,21 @@ class Gui(wx.Frame):
                 monitor_label = wx.StaticText(self.monitors_scrolled, wx.ID_ANY, monitor)
                 monitor_label.SetForegroundColour(color)
                 self.monitors_scrolled_sizer.Add(monitor_label, 0, wx.ALL | wx.EXPAND, 5)
-        
+
         self.monitors_scrolled.SetSizer(self.monitors_scrolled_sizer)
-        self.monitors_scrolled_sizer.Layout()
-        self.monitors_scrolled_sizer.FitInside(self.monitors_scrolled)
         self.monitors_scrolled.Layout()
-    
+        self.monitors_scrolled_sizer.FitInside(self.monitors_scrolled)
+        self.monitors_scrolled_sizer.Layout()
+
     def update_add_remove_button_states(self):
         """Updates the enabled/disabled state of the add and remove buttons."""
         self.add_monitor_button.Enable(bool(self.monitors_inactive_list))
         self.remove_monitor_button.Enable(bool(self.monitors_active_list))
-    
+
     def on_add_monitor_button(self, event):
         """Handle the click event of the add monitor button."""
-        dialog = CustomDialogBox(self, "Add Monitor", "Select a Monitor to Add:", self.monitors_inactive_list, self.theme)
+        dialog = CustomDialogBox(self, "Add Monitor", "Select a Monitor to Add:", self.monitors_inactive_list,
+                                 self.theme)
         if dialog.ShowModal() == wx.ID_OK:
             selection = dialog.getSelectedItem()
             if selection:
@@ -639,11 +721,16 @@ class Gui(wx.Frame):
                 self.monitors_inactive_list.remove(selection)
                 self.update_monitors_display()
                 self.update_add_remove_button_states()
+
+                # Updates the monitor signal list
+            # [device_id, output_id] = self.devices.get_signal_ids(selection)
+            # error = self.monitors.make_monitor(device_id, output_id)
         dialog.Destroy()
 
     def on_remove_monitor_button(self, event):
         """Handle the click event of the remove monitor button."""
-        dialog = CustomDialogBox(self, "Remove Monitor", "Select a Monitor to Remove:", self.monitors_active_list, self.theme)
+        dialog = CustomDialogBox(self, "Remove Monitor", "Select a Monitor to Remove:", self.monitors_active_list,
+                                 self.theme)
         if dialog.ShowModal() == wx.ID_OK:
             selection = dialog.getSelectedItem()
             if selection:
@@ -651,14 +738,80 @@ class Gui(wx.Frame):
                 self.monitors_inactive_list.append(selection)
                 self.update_monitors_display()
                 self.update_add_remove_button_states()
+
+                # Updates the monitor signal list
         dialog.Destroy()
 
+    def update_switches_display(self):
+        """Handle the event of updating the displayed list of switches."""
+        # Creating a dictionary of switches
+        self.id_switches = self.devices.find_devices(self.devices.SWITCH)
+        self.switches_dict = dict()  # {switch name string: switch state}
+
+        for switch_id in self.id_switches:
+            switch_name = self.names.get_name_string(switch_id)
+            switch_state = self.network.get_output_signal(switch_id, None)
+            self.switches_dict[switch_name] = switch_state
+
+        self.switches_scrolled_sizer.Clear(True)
+
+        for switch, state in self.switches_dict.items():
+            switch_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
+            label = wx.StaticText(self.switches_scrolled, wx.ID_ANY, switch)
+            switch_sizer.Add(label, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT | wx.LEFT, 5)
+
+            initial_label = "1" if state == 1 else "0"
+            toggle = wx.ToggleButton(self.switches_scrolled, wx.ID_ANY, initial_label)
+            toggle.SetValue(state == 1)
+            toggle.SetBackgroundColour(self.light_button_color)
+            toggle.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_switch)
+
+            if self.theme == "light":
+                label.SetForegroundColour(self.light_text_color)
+                toggle.SetForegroundColour(self.light_text_color)
+                toggle.SetBackgroundColour(self.light_button_color)
+            elif self.theme == "dark":
+                label.SetForegroundColour(self.dark_text_color)
+                toggle.SetForegroundColour(self.dark_text_color)
+                toggle.SetBackgroundColour(self.dark_button_color)
+
+            self.toggle_button_switch_name[toggle.GetId()] = switch
+
+            switch_sizer.Add(toggle, 0, wx.ALIGN_CENTER_VERTICAL)
+
+            self.switches_scrolled_sizer.Add(switch_sizer, 0, wx.EXPAND | wx.ALL, 5)
+
+        self.switches_scrolled.SetSizer(self.switches_scrolled_sizer)
+        self.switches_scrolled.Layout()
+        self.switches_scrolled_sizer.FitInside(self.switches_scrolled)
+        self.switches_scrolled_sizer.Layout()
+
+    def on_toggle_switch(self, event):
+        """Handle the event when the user toggles a switch."""
+        button = event.GetEventObject()
+        is_on = button.GetValue()  # toggle button is on when clicked (value 1)
+        switch_name = self.toggle_button_switch_name[button.GetId()]
+        switch_id = self.names.query(switch_name)
+
+        if is_on:
+            button.SetLabel("1")
+            self.switches_dict[switch_name] = 1
+            self.devices.set_switch(switch_id, 1)
+        else:
+            button.SetLabel("0")
+            self.switches_dict[switch_name] = 0
+            self.devices.set_switch(switch_id, 0)
+        self.Refresh()
+
     def on_run_button(self, event):
-        """Handle the event when the user clicks the run button."""        
+        """Handle the event when the user clicks the run button."""
         self.canvas.reset_display()
-        self.canvas.render("")
+
+        self.run_simulation()
+
         self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
-        self.terminal.AppendText("\nRunning simulation...")
+        self.terminal.AppendText("\n\nRunning simulation...")
         self.run_button.SetBackgroundColour(self.color_disabled)
         self.run_button.Disable()
         self.continue_button.Enable()
@@ -667,28 +820,19 @@ class Gui(wx.Frame):
     def on_continue_button(self, event):
         """Handle the event when the user continue button."""
         self.canvas.reset_display()
-        self.canvas.render("")
+
+        self.run_simulation()
+
         self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
-        self.terminal.AppendText("\nUpdated parameters, continuing simulation...")
+        self.terminal.AppendText("\n\nUpdated parameters, continuing simulation...")
 
     def on_text_box(self, event):
         """Handle the event when the user enters text."""
         text_box_value = self.text_box.GetValue()
-    
-    def on_toggle_switch(self, event):
-        """Handle the event when the user toggles a switch."""
-        button = event.GetEventObject()
-        is_on = button.GetValue() # toggle button is on when clicked (value 1)
-        if is_on:
-            button.SetLabel("1")
-        else:
-            button.SetLabel("0")
-
-        self.Refresh()
 
     def toggle_theme(self, event):
         """Handle the event when the user presses the toggle switch menu item to switch between colour themes."""
-        if self.theme == "light":  
+        if self.theme == "light":
             self.canvas.update_theme(self.theme)
             self.SetBackgroundColour(self.dark_background_color)
             self.cycles_text.SetForegroundColour(self.dark_text_color)
@@ -704,11 +848,11 @@ class Gui(wx.Frame):
             self.switches_text.SetForegroundColour(self.dark_text_color)
             self.switches_scrolled.SetBackgroundColour(self.dark_background_secondary)
             self.switches_scrolled.SetForegroundColour(self.dark_background_secondary)
-            
+
             for child in self.monitors_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
                     child.SetForegroundColour(self.dark_text_color)
-            self.monitors_scrolled.Layout() 
+            self.monitors_scrolled.Layout()
 
             for child in self.switches_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
@@ -717,7 +861,7 @@ class Gui(wx.Frame):
                     child.SetBackgroundColour(self.dark_button_color)
                     child.SetForegroundColour(self.dark_text_color)
 
-            self.theme = "dark" # update theme
+            self.theme = "dark"  # update theme
 
         elif self.theme == "dark":
             self.canvas.update_theme(self.theme)
@@ -739,7 +883,7 @@ class Gui(wx.Frame):
             for child in self.monitors_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
                     child.SetForegroundColour(self.light_text_color)
-            self.monitors_scrolled.Layout() 
+            self.monitors_scrolled.Layout()
 
             for child in self.switches_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
@@ -748,6 +892,6 @@ class Gui(wx.Frame):
                     child.SetBackgroundColour(self.light_button_color)
                     child.SetForegroundColour(self.light_text_color)
 
-            self.theme = "light" # update theme
+            self.theme = "light"  # update theme
 
         self.Refresh()

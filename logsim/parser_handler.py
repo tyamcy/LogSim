@@ -45,7 +45,7 @@ class ParserErrorHandler:
         # semantic error
         [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.MISSING_INPUT_TO_PIN, self.WRONG_BLOCK_ORDER,
          self.MISSING_MONITOR] = names.unique_error_codes(5)
-        self.error_limit = 100
+        self.error_limit = 25
 
     def line_error(self, error_code: int, symbol: Symbol) -> None:
         if len(self.error_output_list) <= self.error_limit:

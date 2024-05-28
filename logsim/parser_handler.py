@@ -1,3 +1,15 @@
+"""Handler functions used by the parser.
+
+Used in the Logic Simulator project to handle the syntactic and semantic
+errors reported by the parser.
+
+Classes
+-------
+LimeTerminalOutput - stores terminal outputs for line errors reported by parser.
+FileTerminalOutput - stores terminal outputs for file errors reported by parser.
+ParserErrorHandler - generates terminal outputs from errors reported by the parser.
+"""
+
 from names import Names
 from devices import Devices
 from network import Network
@@ -6,7 +18,24 @@ from scanner import Scanner, Symbol
 
 
 class LineTerminalOutput:
+
+    """Encapsulate a line error and store the error output to display on the terminal.
+
+    Parameters
+    ----------
+    line_location: string. Contains string with format "Line NUMBER:"
+    line_with_issue: string. Contains a (truncated) copy of the line with issue.
+    arrow: string. Contains the string with "^" symbol at the right location.
+    message: string. Contains the error message.
+    error_code: integer.
+
+    Public methods
+    --------------
+     __str__(self): Returns the terminal output representation of the instance.
+    """
+
     def __init__(self, line_location: str, line_with_issue: str, arrow: str, message: str, error_code: int):
+        """Initialise line terminal output content."""
         self.line_location = line_location
         self.line_with_issue = line_with_issue
         self.arrow = arrow
@@ -14,20 +43,59 @@ class LineTerminalOutput:
         self.error_code = error_code
 
     def __str__(self):
+        """Return the terminal output representation of the instance."""
         return f"\n{self.line_location}\n{self.line_with_issue}\n{self.arrow}\n{self.message}\n"
 
 
 class FileTerminalOutput:
+
+    """Encapsulate a file error and store the error output to display on the terminal.
+
+    Parameters
+    ----------
+    message: string. Contains the error message.
+    error_code: integer.
+
+    Public methods
+    --------------
+     __str__(self): Returns the terminal output representation of the instance.
+    """
+
     def __init__(self, message: str, error_code: int):
+        """Initialise file terminal output content."""
         self.message = message
         self.error_code = error_code
 
     def __str__(self):
+        """Return the terminal output representation of the instance."""
         return f"\nFile error: {self.message}\n"
 
 
 class ParserErrorHandler:
+
+    """Handle the syntactic and semantic errors reported by the parser.
+
+    The parser error handler facilitates the parser for error handling. If the parser detects error
+    in the definition file, the parser calls the error handler to create the respective terminal outputs.
+
+    Parameters
+    ----------
+    names: instance of the names.Names() class.
+    devices: instance of the devices.Devices() class.
+    network: instance of the network.Network() class.
+    monitors: instance of the monitors.Monitors() class.
+    scanner: instance of the scanner.Scanner() class.
+
+    Public methods
+    --------------
+    line_error(self, error_code, symbol): Create terminal outputs for errors appearing in a specific line.
+    file_error(self, error_code, name): Create terminal outputs for errors related to the whole file,
+                                rather than a specific line.
+
+    """
+
     def __init__(self, names: Names, devices: Devices, network: Network, monitors: Monitors, scanner: Scanner):
+        """Initialise constants."""
         self.names = names
         self.devices = devices
         self.network = network
@@ -49,6 +117,7 @@ class ParserErrorHandler:
         self.error_limit = 25
 
     def symbol_to_name(self, symbol: Symbol) -> str:
+        """Return the string representation of the given symbol."""
         if symbol.id:  # symbol id is not None, i.e. symbol.type is KEYWORD, NUMBER, NAME or INVALID
             if symbol.type == Scanner.NUMBER or symbol.type == Scanner.INVALID:
                 return symbol.id
@@ -74,11 +143,13 @@ class ParserErrorHandler:
             raise ValueError("Invalid symbol type")
 
     def error_limit_exceeded(self) -> None:
+        """Add terminal output to indicate the number of error exceeds the display limit"""
         self.error_output_list.append("\n--------------------------------------------------------"
                                       f"\nOver {self.error_limit} errors, further errors will not be reported!!"
                                       "\n--------------------------------------------------------")
 
     def line_error(self, error_code: int, symbol: Symbol) -> None:
+        """Add terminal output to indicate error occurring in a line."""
         if len(self.error_output_list) <= self.error_limit:
             error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,
                                                          error_code=error_code, name=self.symbol_to_name(symbol))
@@ -88,6 +159,7 @@ class ParserErrorHandler:
             self.error_limit_exceeded()
 
     def file_error(self, error_code: int, name: str = "") -> None:
+        """Add terminal output to indicate error occurring in the scope of the whole file."""
         if len(self.error_output_list) <= self.error_limit:
             error_output = FileTerminalOutput(
                 message=self.get_error_message(error_code=error_code, name=name),
@@ -99,6 +171,7 @@ class ParserErrorHandler:
 
     def get_line_terminal_output(self, line: int, character_in_line: int, error_code: int, name: str) -> (
             LineTerminalOutput):
+        """Return terminal output based on information of the line error encountered."""
         left_char_limit = 25
         right_char_limit = 25
         line_str = self.scanner.file_lines[line]
@@ -117,6 +190,7 @@ class ParserErrorHandler:
         )
 
     def get_error_message(self, error_code: int, name: str = "") -> str:
+        """Return the error message based on the error encountered."""
         name = "\'" + name + "\'"
         if not (error_code == self.MISSING_CLOCK_OR_SWITCH or error_code == self.MISSING_MONITOR) and not name:
             raise TypeError(f"error_code = {error_code} has 1 required positional argument: 'name'")

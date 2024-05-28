@@ -1,13 +1,13 @@
-"""Test the scanner module with 'test_scanner_text'."""
+"""Test the scanner module with 'test_scanner_text.txt'."""
 import pytest
 from contextlib import contextmanager
 
 from scanner import Scanner
 from names import Names
 
-path = "logsim/test_text/test_scanner/test_scanner_text"
+path = "logsim/test_text/test_scanner/test_scanner_text.txt"
 path_non_existent = "logsim/test_text/test_scanner/test_parse_non_existent"
-path_chinese = "logsim/test_text/test_scanner/test_scanner_chinese"
+path_chinese = "logsim/test_text/test_scanner/test_scanner_chinese.txt"
 path_not_text = "logsim/test_text/test_scanner/test_scanner_not_text.whl"
 
 

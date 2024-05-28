@@ -34,6 +34,7 @@ path_semantic_error_output_port_absent = "logsim/test_text/test_semantic_errors/
 path_semantic_error_monitor_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_monitor_port_absent"
 path_semantic_error_wrong_block_order = "logsim/test_text/test_semantic_errors/semantic_error_wrong_block_order"
 
+
 @pytest.fixture
 def new_parser(path):
     """Return a new instance of the Parser class."""
@@ -87,6 +88,7 @@ def all_error_3_expected_content(parser: Parser):
         ("Line 37:", parser.error_handler.EXPECT_FULL_STOP),
         ("Line 42:", parser.error_handler.EXPECT_PIN_OUT),
         ("Line 43:", parser.error_handler.EXPECT_ARROW),
+        ("Line 44:", parser.error_handler.EXPECT_PIN_IN),
         parser.error_handler.MISSING_MONITOR
     ]
 

@@ -14,7 +14,7 @@ class LineTerminalOutput:
         self.error_code = error_code
 
     def __str__(self):
-        return f"\n{self.line_location}\n{self.line_with_issue}{self.arrow}\n{self.message}\n"
+        return f"\n{self.line_location}\n{self.line_with_issue}\n{self.arrow}\n{self.message}\n"
 
 
 class FileTerminalOutput:
@@ -97,9 +97,18 @@ class ParserErrorHandler:
 
     def get_line_terminal_output(self, line: int, character_in_line: int, error_code: int, name: str) -> (
             LineTerminalOutput):
+        left_char_limit = 25
+        right_char_limit = 25
+        line_str = self.scanner.file_lines[line]
+        line_length = len(line_str)
+        if character_in_line > left_char_limit:
+            line_str = "..." + line_str[character_in_line-left_char_limit:]
+            character_in_line = left_char_limit
+        if line_length - character_in_line - 1 > right_char_limit:
+            line_str = line_str[:character_in_line+right_char_limit + 1] + "..."
         return LineTerminalOutput(
             line_location=f"Line {line + 1}:",
-            line_with_issue=self.scanner.file_lines[line],
+            line_with_issue=line_str,
             arrow=" " * character_in_line + "^",
             message=self.get_error_message(error_code=error_code, name=name),
             error_code=error_code

@@ -49,8 +49,6 @@ class Names:
 
     def unique_error_codes(self, num_error_codes: int) -> range:
         """Return a list of unique integer error codes."""
-        if not isinstance(num_error_codes, int):
-            raise TypeError("Expected num_error_codes to be an integer.")
         if num_error_codes <= 0:
             raise ValueError("Expected num_error_codes to be a positive integer.")
         self.error_code_count += num_error_codes
@@ -62,8 +60,6 @@ class Names:
 
         If the name string is not present in the names list, return None.
         """
-        if not isinstance(name_string, str):
-            raise TypeError("Expected name_string to be a string.")
         return self.name_to_id.get(name_string)
 
     def lookup(self, name_string_list: List[str]) -> List[int]:
@@ -71,8 +67,6 @@ class Names:
 
         If the name string is not present in the names list, add it.
         """
-        if not isinstance(name_string_list, list):
-            raise TypeError("Expected name_string_list to be a list.")
         id_list = []  # initialises an empty name IDs list for the lookup results
         for name in name_string_list:
             if not isinstance(name, str):

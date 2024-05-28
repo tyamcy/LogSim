@@ -9,6 +9,8 @@ Classes
 Parser - parses the definition file and builds the logic network.
 """
 
+from typing import List
+
 from names import Names
 from devices import Devices
 from network import Network
@@ -516,7 +518,7 @@ class Parser:
         """Return the current symbol's string representation."""
         return self.names.get_name_string(self.symbol.id)
 
-    def fetch_error_output(self) -> list[str]:
+    def fetch_error_output(self) -> List[str]:
         """Return the error list from error_handler."""
         return self.error_handler.error_output_list
 

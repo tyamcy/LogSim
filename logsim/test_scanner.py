@@ -5,6 +5,9 @@ from scanner import Scanner
 from names import Names
 
 path = "logsim/test_text/test_scanner_text"
+path_non_existent = "logsim/test_text/test_scanner/test_parse_non_existent"
+path_chinese = "logsim/test_text/test_scanner/test_scanner_chinese"
+path_not_text = "logsim/test_text/test_scanner/test_scanner_not_text.whl"
 
 
 class NameTest:
@@ -100,4 +103,8 @@ def test_scanner_raise_exception():
     with pytest.raises(TypeError):
         Scanner(path=path, names="name")
     with pytest.raises(FileNotFoundError):
-        Scanner(path="a_non_existent_file", names=Names())
+        Scanner(path=path_non_existent, names=Names())
+    with pytest.raises(UnicodeDecodeError):
+        Scanner(path=path_chinese, names=Names())
+    with pytest.raises(UnicodeDecodeError):
+        Scanner(path=path_not_text, names=Names())

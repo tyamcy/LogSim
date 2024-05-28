@@ -6,6 +6,10 @@ Classes
 --------
 Network - builds and executes the network.
 """
+from typing import Union, Tuple
+
+from devices import Devices
+from names import Names
 
 
 class Network:
@@ -61,7 +65,7 @@ class Network:
                            simulation cycle.
     """
 
-    def __init__(self, names, devices):
+    def __init__(self, names: Names, devices: Devices):
         """Initialise network errors and the steady_state variable."""
         self.names = names
         self.devices = devices
@@ -71,7 +75,7 @@ class Network:
             self.names.unique_error_codes(6))
         self.steady_state = True  # for checking if signals have settled
 
-    def get_connected_output(self, device_id, input_id):
+    def get_connected_output(self, device_id: int, input_id: int) -> Union[None, Tuple[int, Union[None, int]]]:
         """Return the output connected to the given input.
 
         Return None if either of the specified IDs is invalid or the input is
@@ -84,7 +88,7 @@ class Network:
                 return connected_output
         return None
 
-    def get_input_signal(self, device_id, input_id):
+    def get_input_signal(self, device_id: int, input_id: int) -> Union[None, int]:
         """Return the signal level at the output connected to the given input.
 
         Return None if the input is unconnected or the specified IDs are
@@ -97,7 +101,7 @@ class Network:
             (output_device_id, output_port_id) = connected_output
             return self.get_output_signal(output_device_id, output_port_id)
 
-    def get_output_signal(self, device_id, output_id):
+    def get_output_signal(self, device_id: int, output_id: Union[None, int]) -> Union[None, int]:
         """Return the signal level at the given output.
 
         Return None if either of the specified IDs is invalid.
@@ -108,8 +112,8 @@ class Network:
                 return device.outputs[output_id]
         return None
 
-    def make_connection(self, output_device_id, output_port_id, input_device_id,
-                        input_port_id):
+    def make_connection(self, output_device_id: int, output_port_id: Union[None, int], input_device_id: int,
+                        input_port_id: int) -> int:
         """Connect the output device to the input device.
 
         Return self.NO_ERROR if successful, or the corresponding error if not.
@@ -136,7 +140,7 @@ class Network:
 
         return error_type
 
-    def check_network(self):
+    def check_network(self) -> bool:
         """Return True if all inputs in the network are connected."""
         for device_id in self.devices.find_devices():
             device = self.devices.get_device(device_id)
@@ -145,7 +149,7 @@ class Network:
                     return False
         return True
 
-    def update_signal(self, signal, target):
+    def update_signal(self, signal: int, target: int) -> Union[None, bool, int]:
         """Update the signal in the direction of the target.
 
         Return updated signal, and set steady_state to false if the new signal
@@ -167,7 +171,7 @@ class Network:
             self.steady_state = False
         return new_signal
 
-    def invert_signal(self, signal):
+    def invert_signal(self, signal: int) -> Union[None, int]:
         """Return the inverse of the signal if the signal is HIGH or LOW.
 
         Return None if the signal is not HIGH or LOW.
@@ -179,7 +183,7 @@ class Network:
         else:
             return None
 
-    def execute_switch(self, device_id):
+    def execute_switch(self, device_id: int) -> bool:
         """Simulate a switch.
 
         The output signal is updated to the switch_state target. Return True
@@ -196,7 +200,7 @@ class Network:
             device.outputs[None] = updated_signal
             return True
 
-    def execute_gate(self, device_id, x=None, y=None):
+    def execute_gate(self, device_id: int, x: Union[None, int] = None, y: Union[None, int] = None) -> Union[bool, int]:
         """Simulate a logic gate and update its output signal value.
 
         The rule is: if all its inputs are x, then its output is y, else its
@@ -237,7 +241,7 @@ class Network:
         device.outputs[None] = updated_signal
         return True
 
-    def execute_d_type(self, device_id):
+    def execute_d_type(self, device_id: int) -> bool:
         """Simulate a D-type device and update its output signal value.
 
         Return True if successful.
@@ -285,7 +289,7 @@ class Network:
 
         return True
 
-    def execute_clock(self, device_id):
+    def execute_clock(self, device_id: int) -> bool:
         """Simulate a clock and update its output signal value.
 
         Return True if successful.
@@ -313,7 +317,7 @@ class Network:
         else:
             return False
 
-    def update_clocks(self):
+    def update_clocks(self) -> None:
         """If it is time to do so, set clock signals to RISING or FALLING."""
         clock_devices = self.devices.find_devices(self.devices.CLOCK)
         for device_id in clock_devices:
@@ -328,7 +332,7 @@ class Network:
                     device.outputs[None] = self.devices.RISING
             device.clock_counter += 1
 
-    def execute_network(self):
+    def execute_network(self) -> bool:
         """Execute all the devices in the network for one simulation cycle.
 
         Return True if successful and the network does not oscillate.

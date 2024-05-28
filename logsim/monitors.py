@@ -10,7 +10,7 @@ Monitors - records and displays specified output signals.
 """
 import collections
 
-from typing import List
+from typing import List, Union
 from names import Names
 from devices import Devices
 from network import Network
@@ -76,7 +76,8 @@ class Monitors:
         [self.NO_ERROR, self.MONITOR_IDENTIFIER_PRESENT, self.MONITOR_DEVICE_ABSENT, self.MONITOR_PORT_ABSENT] = (
             self.names.unique_error_codes(4))
 
-    def make_monitor(self, device_id: int, port_id: int, identifier: str, cycles_completed: int = 0) -> int:
+    def make_monitor(self, device_id: int, port_id: Union[int, None],
+                     identifier: str, cycles_completed: int = 0) -> int:
         """Add the specified signal to the monitors dictionary.
 
         Return NO_ERROR if successful, or the corresponding error if not.
@@ -101,7 +102,7 @@ class Monitors:
             self.identifier_to_port[identifier] = (device_id, port_id)
             return self.NO_ERROR
 
-    def remove_monitor_by_port(self, device_id: int, port_id: int) -> bool:
+    def remove_monitor_by_port(self, device_id: int, port_id: Union[int, None]) -> bool:
         """Remove the specified signal from the signals, identifier_to_port and port_to_identifier dictionary by port.
 
         Return True if successful.
@@ -136,7 +137,7 @@ class Monitors:
                         self.port_to_identifier[port].remove(identifier)
             return True
 
-    def get_monitor_signal(self, device_id: int, port_id: int) -> int or None:
+    def get_monitor_signal(self, device_id: int, port_id: int) -> Union[int, None]:
         """Return the signal level of the specified monitor.
 
         If the monitor does not exist, return None.
@@ -186,7 +187,7 @@ class Monitors:
         for device_id, port_id in self.signals_dictionary:
             self.signals_dictionary[(device_id, port_id)] = []
 
-    def get_margin(self) -> int or None:
+    def get_margin(self) -> Union[int, None]:
         """Return the length of the longest monitor's name.
 
         Return None if no signals are being monitored. This is useful for

@@ -7,7 +7,7 @@ from network import Network
 
 
 @pytest.fixture
-def new_network():
+def new_network() -> Network:
     """Return a new instance of the Network class."""
     new_names = Names()
     new_devices = Devices(new_names)
@@ -15,7 +15,7 @@ def new_network():
 
 
 @pytest.fixture
-def network_with_devices():
+def network_with_devices() -> Network:
     """Return a Network class instance with three devices in the network."""
     new_names = Names()
     new_devices = Devices(new_names)
@@ -31,7 +31,7 @@ def network_with_devices():
     return new_network
 
 
-def test_get_connected_output(network_with_devices):
+def test_get_connected_output(network_with_devices: Network) -> None:
     """Test if the output connected to a given input port is correct."""
     network = network_with_devices
     devices = network.devices
@@ -54,7 +54,7 @@ def test_get_connected_output(network_with_devices):
     assert network.get_connected_output(SW1_ID, I2) is None
 
 
-def test_get_input_signal(network_with_devices):
+def test_get_input_signal(network_with_devices: Network) -> None:
     """Test if the signal at a given input port is correct"""
     network = network_with_devices
     devices = network.devices
@@ -78,7 +78,7 @@ def test_get_input_signal(network_with_devices):
     assert network.get_input_signal(OR1_ID, I2) == devices.HIGH
 
 
-def test_get_output_signal(network_with_devices):
+def test_get_output_signal(network_with_devices: Network) -> None:
     """Test if the signal level at the given output is correct."""
     network = network_with_devices
     devices = network.devices
@@ -95,7 +95,7 @@ def test_get_output_signal(network_with_devices):
     assert network.get_output_signal(OR1_ID, None) == devices.HIGH
 
 
-def test_check_network(network_with_devices):
+def test_check_network(network_with_devices: Network) -> None:
     """Test if the signal at a given input port is correct."""
     network = network_with_devices
     devices = network.devices
@@ -115,7 +115,7 @@ def test_check_network(network_with_devices):
     assert network.check_network()
 
 
-def test_make_connection(network_with_devices):
+def test_make_connection(network_with_devices: Network) -> None:
     """Test if the make_connection function correctly connects devices."""
     network = network_with_devices
     devices = network.devices
@@ -152,8 +152,8 @@ def test_make_connection(network_with_devices):
     # Note: Or1.I1 will have been connected earlier in the function
     ("(SW1_ID, None, OR1_ID, I1)", "network.INPUT_CONNECTED"),
 ])
-def test_make_connection_gives_error(network_with_devices,
-                                     function_args, error):
+def test_make_connection_gives_error(network_with_devices: Network,
+                                     function_args: str, error: str) -> None:
     """Test if the make_connection function returns the correct errors."""
     network = network_with_devices
     devices = network.devices
@@ -171,7 +171,7 @@ def test_make_connection_gives_error(network_with_devices,
     assert left_expression == right_expression
 
 
-def test_execute_xor(new_network):
+def test_execute_xor(new_network: Network) -> None:
     """Test if execute_network returns the correct output for XOR gates."""
     network = new_network
     devices = network.devices
@@ -213,8 +213,8 @@ def test_execute_xor(new_network):
     ("NOR1_ID", ["HIGH", "LOW", "HIGH"], "LOW", "devices.NOR"),
     ("NOR1_ID", ["LOW", "LOW", "LOW"], "HIGH", "devices.NOR"),
 ])
-def test_execute_non_xor_gates(new_network, gate_id, switch_outputs,
-                               gate_output, gate_kind):
+def test_execute_non_xor_gates(new_network: Network, gate_id: str, switch_outputs: str,
+                               gate_output: str, gate_kind: str) -> None:
     """Test if execute_network returns the correct output for non-XOR gates."""
     network = new_network
     devices = network.devices
@@ -249,7 +249,7 @@ def test_execute_non_xor_gates(new_network, gate_id, switch_outputs,
     assert network.get_output_signal(gate_id, None) == eval(gate_output)
 
 
-def test_execute_non_gates(new_network):
+def test_execute_non_gates(new_network: Network) -> None:
     """Test if execute_network returns the correct output for non-gate devices.
 
     Tests switches, D-types and clocks.
@@ -327,7 +327,7 @@ def test_execute_non_gates(new_network):
                 HIGH, LOW, HIGH, HIGH, LOW, HIGH]
 
 
-def test_oscillating_network(new_network):
+def test_oscillating_network(new_network: Network) -> None:
     """Test if the execute_network returns False for oscillating networks."""
     network = new_network
     devices = network.devices

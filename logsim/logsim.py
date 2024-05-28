@@ -25,7 +25,7 @@ from userint import UserInterface
 from gui import Gui
 
 
-def main(arg_list):
+def main(arg_list) -> None:
     """Parse the command line options and arguments specified in arg_list.
 
     Run either the command line user interface, the graphical user interface,

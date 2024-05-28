@@ -1,6 +1,5 @@
-"""Test the monitors module."""
+"""Test the monitor module."""
 import pytest
-
 from names import Names
 from network import Network
 from devices import Devices
@@ -8,7 +7,7 @@ from monitors import Monitors
 
 
 @pytest.fixture
-def new_monitors():
+def new_monitors() -> Monitors:
     """Return a Monitors class instance with monitors set on three outputs."""
     new_names = Names()
     new_devices = Devices(new_names)
@@ -16,7 +15,7 @@ def new_monitors():
     new_monitors = Monitors(new_names, new_devices, new_network)
 
     [SW1_ID, SW2_ID, OR1_ID, I1, I2] = new_names.lookup(["Sw1", "Sw2", "Or1",
-                                                        "I1", "I2"])
+                                                         "I1", "I2"])
     # Add 2 switches and an OR gate
     new_devices.make_device(OR1_ID, new_devices.OR, 2)
     new_devices.make_device(SW1_ID, new_devices.SWITCH, 0)
@@ -37,11 +36,11 @@ def new_monitors():
     return new_monitors
 
 
-def test_make_monitor(new_monitors):
+def test_make_monitor(new_monitors: Monitors) -> None:
     """Test if make_monitor correctly updates the signals dictionary."""
     names = new_monitors.names
     [SW1_ID, SW2_ID, OR1_ID, I1, I2] = names.lookup(["Sw1", "Sw2", "Or1",
-                                                         "I1", "I2"])
+                                                     "I1", "I2"])
 
     assert new_monitors.signals_dictionary == {(SW1_ID, None): [],
                                                (SW2_ID, None): [],
@@ -50,7 +49,7 @@ def test_make_monitor(new_monitors):
                                                (OR1_ID, I2): []}
 
 
-def test_identify_monitor(new_monitors):
+def test_identify_monitor(new_monitors: Monitors) -> None:
     """Test if make_monitor correctly updates the identifiers dictionary."""
     names = new_monitors.names
     [SW1_ID, SW2_ID, OR1_ID, I1, I2] = names.lookup(["Sw1", "Sw2", "Or1",
@@ -63,14 +62,14 @@ def test_identify_monitor(new_monitors):
                                                (OR1_ID, I2): {"Input2"}}
 
 
-def test_make_monitor_gives_errors(new_monitors):
+def test_make_monitor_gives_errors(new_monitors: Monitors) -> None:
     """Test if make_monitor returns the correct errors."""
     names = new_monitors.names
     network = new_monitors.network
     devices = new_monitors.devices
     [SW1_ID, SW3_ID, OR1_ID, I1, SWITCH_ID, I3] = names.lookup(["Sw1", "Sw3",
-                                                            "Or1", "I1",
-                                                            "SWITCH", "I3"])
+                                                                "Or1", "I1",
+                                                                "SWITCH", "I3"])
 
     # input is allowed
     assert new_monitors.make_monitor(OR1_ID, I1, "E") == new_monitors.NO_ERROR
@@ -90,8 +89,10 @@ def test_make_monitor_gives_errors(new_monitors):
 
     assert new_monitors.make_monitor(SW3_ID, None, "H") == new_monitors.NO_ERROR
 
-    assert new_monitors.make_monitor(OR1_ID, I3, "Input3" ) == new_monitors.MONITOR_PORT_ABSENT
-def test_remove_monitor_by_port(new_monitors):
+    assert new_monitors.make_monitor(OR1_ID, I3, "Input3") == new_monitors.MONITOR_PORT_ABSENT
+
+
+def test_remove_monitor_by_port(new_monitors: Monitors) -> None:
     """Test if remove_monitor_ correctly updates the signals and identifiers dictionary."""
     names = new_monitors.names
     [SW1_ID, SW2_ID, OR1_ID, I1, I2] = names.lookup(["Sw1", "Sw2", "Or1",
@@ -109,7 +110,7 @@ def test_remove_monitor_by_port(new_monitors):
                                                (OR1_ID, I2): {"Input2"}}
 
 
-def test_remove_monitor_by_identifier(new_monitors):
+def test_remove_monitor_by_identifier(new_monitors: Monitors) -> None:
     """Test if remove_monitor correctly updates the signals and identifiers dictionary."""
     names = new_monitors.names
     [SW1_ID, SW2_ID, OR1_ID, I1, I2] = names.lookup(["Sw1", "Sw2", "Or1",
@@ -128,7 +129,7 @@ def test_remove_monitor_by_identifier(new_monitors):
                                                (OR1_ID, I2): {"Input2"}}
 
 
-def test_get_signal_names(new_monitors):
+def test_get_signal_names(new_monitors: Monitors) -> None:
     """Test if get_signal_names returns the correct signal name lists."""
     names = new_monitors.names
     devices = new_monitors.devices
@@ -141,7 +142,7 @@ def test_get_signal_names(new_monitors):
                                                ["D1.Q", "D1.QBAR"]]
 
 
-def test_record_signals(new_monitors):
+def test_record_signals(new_monitors: Monitors) -> None:
     """Test if record_signals records the correct signals."""
     names = new_monitors.names
     devices = new_monitors.devices
@@ -175,7 +176,7 @@ def test_record_signals(new_monitors):
         (OR1_ID, I2): [LOW, LOW, HIGH]}
 
 
-def test_get_margin(new_monitors):
+def test_get_margin(new_monitors: Monitors) -> None:
     """Test if get_margin returns the length of the longest monitor name."""
     names = new_monitors.names
     devices = new_monitors.devices
@@ -191,7 +192,7 @@ def test_get_margin(new_monitors):
     assert new_monitors.get_margin() == 7
 
 
-def test_reset_monitors(new_monitors):
+def test_reset_monitors(new_monitors: Monitors) -> None:
     """Test if reset_monitors clears the signal lists of all the monitors."""
     names = new_monitors.names
     devices = new_monitors.devices
@@ -214,7 +215,7 @@ def test_reset_monitors(new_monitors):
                                                (OR1_ID, I2): []}
 
 
-def test_display_signals(capsys, new_monitors):
+def test_display_signals(capsys, new_monitors: Monitors) -> None:
     """Test if signal traces are displayed correctly on the console."""
     names = new_monitors.names
     devices = new_monitors.devices

@@ -17,6 +17,7 @@ from scanner import Scanner
 from parser_handler import ParserErrorHandler
 from collections import OrderedDict
 from copy import copy
+from scanner import Symbol
 
 
 class Parser:
@@ -122,7 +123,7 @@ class Parser:
         if not self.block_parse_flags["CLOCK"] and not self.block_parse_flags["SWITCH"]:
             self.error_handler.file_error(self.error_handler.MISSING_CLOCK_OR_SWITCH)
         # missing input to pin
-        if not len(self.fetch_error_output()):
+        if not self.error_count():
             for device in self.devices.devices_list:
                 device_id = device.device_id
                 for input_id in device.inputs:
@@ -133,7 +134,10 @@ class Parser:
 
         return False if self.fetch_error_output() else True
 
-    def parse_list(self, keyword: str, sub_rule: bool()):
+    def parse_list(self, keyword: str, sub_rule: bool()) -> None:
+        """A generic function to parse all the list rules, with keyword specifying which list,
+
+        and sub_rule specifying which sub-rule to follow."""
         self.advance()
         if self.symbol.type == Scanner.OPEN_CURLY_BRACKET:
             self.advance()
@@ -162,22 +166,28 @@ class Parser:
                 break
             self.block_order_flags[key] = True
 
-    def device_list(self):
+    def device_list(self) -> None:
+        """Calls parse_list() to parse device list."""
         self.parse_list(keyword="DEVICE", sub_rule=self.device)
 
-    def clock_list(self):
+    def clock_list(self) -> None:
+        """Calls parse_list() to parse clock list."""
         self.parse_list(keyword="CLOCK", sub_rule=self.clock)
 
-    def switch_list(self):
+    def switch_list(self) -> None:
+        """Calls parse_list() to parse switch list."""
         self.parse_list(keyword="SWITCH", sub_rule=self.switch)
 
-    def monitor_list(self):
+    def monitor_list(self) -> None:
+        """Calls parse_list() to parse monitor list."""
         self.parse_list(keyword="MONITOR", sub_rule=self.monitor)
 
-    def connect_list(self):
+    def connect_list(self) -> None:
+        """Calls parse_list() to parse connection list."""
         self.parse_list(keyword="CONNECTION", sub_rule=self.connect)
 
     def device(self) -> bool:
+        """Parse each device rule, if total error is zero at the end of the rule, call make_device() to make device."""
         # expect identifier
         if not self.identifier():
             return False
@@ -202,6 +212,7 @@ class Parser:
             return True
 
     def clock(self) -> bool:
+        """Parse each clock rule, if total error is zero at the end of the rule, call make_device() to make clock."""
         # expect identifier
         if not self.identifier():
             return False
@@ -227,6 +238,7 @@ class Parser:
             return True
 
     def switch(self) -> bool:
+        """Parse each switch rule, if total error is zero at the end of the rule, call make_device() to make switch."""
         # expect identifier
         if not self.identifier():
             return False
@@ -252,6 +264,8 @@ class Parser:
             return True
 
     def monitor(self) -> bool:
+        """Parse each monitor rule, if total error is zero at the end of the rule,
+         call make_monitor() to make monitor."""
         # expect identifier
         if not self.identifier():
             return False
@@ -291,6 +305,8 @@ class Parser:
             return True
 
     def connect(self) -> bool:
+        """Parse each connection rule, if total error is zero at the end of the rule,
+        call make_monitor() to make connection."""
         # expect identifier
         if not self.identifier():
             return False
@@ -341,6 +357,7 @@ class Parser:
             return True
 
     def colon(self) -> bool:
+        """Check if the current symbol is a colon."""
         if not self.symbol.type == Scanner.COLON:
             self.error_handler.line_error(self.error_handler.EXPECT_COLON, self.symbol)
             return False
@@ -348,6 +365,7 @@ class Parser:
             return True
 
     def semicolon(self) -> bool:
+        """Check if the current symbol is a semicolon."""
         if not self.symbol.type == Scanner.SEMICOLON:
             self.error_handler.line_error(self.error_handler.EXPECT_SEMICOLON, self.symbol)
             return False
@@ -356,6 +374,7 @@ class Parser:
             return True
 
     def full_stop(self) -> bool:
+        """Check if the current symbol is a full stop."""
         if not self.symbol.type == Scanner.FULL_STOP:
             self.error_handler.line_error(self.error_handler.EXPECT_FULL_STOP, self.symbol)
             return False
@@ -363,6 +382,7 @@ class Parser:
             return True
 
     def identifier(self) -> bool:
+        """Check if the current symbol is an identifier."""
         # Note: EBNF technically allows keywords to be used as identifier, but here the software will not allow
         if self.symbol.type == Scanner.NAME:
             self.current_identifier = copy(self.symbol)
@@ -372,6 +392,7 @@ class Parser:
             return False
 
     def input_device(self) -> bool:
+        """Check if the following symbols follow the rule of an input device."""
         if self.symbol.type == Scanner.NAME:
             if self.symbol_string() in self.VARIABLE_INPUT_DEVICE:
                 self.current_device_kind = self.symbol.id
@@ -394,6 +415,7 @@ class Parser:
         return False
 
     def variable_input_number(self) -> bool:
+        """Check if the current symbol is a valid variable input number (1-16)."""
         if (self.symbol.type == Scanner.NUMBER and self.symbol.id[0] != "0"
                 and 1 <= int(self.symbol.id) <= 16):
             self.current_qualifier = copy(self.symbol)
@@ -404,6 +426,7 @@ class Parser:
             return False
 
     def initial_state(self) -> bool:
+        """Check if the initial state of the switch is 0(LOW) or 1(HIGH)."""
         if self.symbol.type == Scanner.NUMBER and self.symbol.id in self.INITIAL_STATE:
             return True
         else:
@@ -418,6 +441,7 @@ class Parser:
             return False
 
     def pin_in(self) -> bool:
+        """Check if the pin name is a valid input pin name."""
         if self.symbol.type == Scanner.NAME and self.symbol_string()[0] == "I":
             # expect variable input number
             remaining_symbol_string = self.symbol_string()[1:]
@@ -434,6 +458,7 @@ class Parser:
             return False
 
     def pin_out(self) -> bool:
+        """Check if the pin name is a valid output pin name"""
         if self.symbol.type == Scanner.NAME and self.symbol_string() in self.DTYPE_PIN_OUT:
             return True
         else:
@@ -442,6 +467,7 @@ class Parser:
             return False
 
     def pin_in_or_out(self) -> bool:
+        """Check if the pin name is either input pin name or output pin name"""
         if self.symbol.type == Scanner.NAME and self.symbol_string()[0] == "I":
             # expect variable input number
             remaining_symbol_string = self.symbol_string()[1:]
@@ -460,6 +486,7 @@ class Parser:
             return False
 
     def clock_cycle(self) -> bool:
+        """Check if the qualifier is a valid clock cycle number."""
         if self.symbol.type == Scanner.NUMBER and self.symbol.id[0] != "0":
             return True
         else:
@@ -468,6 +495,7 @@ class Parser:
             return False
 
     def skip_after_semicolon_or_to_close_bracket(self) -> None:
+        """Skip to the symbol after the next semicolon or to the next close curly bracket, whichever comes first."""
         while (self.symbol.type != Scanner.SEMICOLON and
                self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and
                self.symbol.type != Scanner.EOF):
@@ -476,27 +504,28 @@ class Parser:
             self.advance()
 
     def skip_to_close_bracket(self) -> None:
+        """Skip to the next close curly bracket."""
         while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and self.symbol.type != Scanner.EOF:
             self.advance()
 
-    def skip_to_keyword(self) -> None:
-        self.advance()
-        while self.symbol.type != Scanner.KEYWORD and self.symbol.type != Scanner.EOF:
-            self.advance()
-
     def advance(self) -> None:
+        """Advance to the next symbol."""
         self.symbol = self.scanner.get_symbol()
 
     def symbol_string(self) -> str:
+        """Return the current symbol's string representation."""
         return self.names.get_name_string(self.symbol.id)
 
-    def fetch_error_output(self):
+    def fetch_error_output(self) -> list[str]:
+        """Return the error list from error_handler."""
         return self.error_handler.error_output_list
 
-    def error_count(self):
+    def error_count(self) -> int:
+        """Return the number of total errors."""
         return len(self.error_handler.error_output_list)
 
-    def make_device(self):
+    def make_device(self) -> None:
+        """Make device (gates, switch or clock), calls error handler to report error if necessary."""
         if not self.error_count():
             device_kind = self.current_device_kind
             device_id = self.current_identifier.id
@@ -511,7 +540,8 @@ class Parser:
             else:
                 print(f"Error type: {error_type}, should not be encountered")
 
-    def make_monitor(self, identifier_symbol, port_symbol, device_symbol):
+    def make_monitor(self, identifier_symbol: Symbol, port_symbol: Symbol, device_symbol: Symbol) -> None:
+        """Make monitor, calls error handler to report error if necessary."""
         if not self.error_count():
             identifier = self.names.get_name_string(identifier_symbol.id)
             port_id = port_symbol.id if port_symbol else None
@@ -530,7 +560,9 @@ class Parser:
             else:
                 print(f"Error type: {error_type}, should not be encountered")
 
-    def make_connection(self, out_device_symbol, out_port_symbol, in_device_symbol, in_port_symbol):
+    def make_connection(self, out_device_symbol: Symbol, out_port_symbol: Symbol,
+                        in_device_symbol: Symbol, in_port_symbol: Symbol) -> None:
+        """Make connection, calls error handler to report error if necessary."""
         if not self.error_count():
             out_device_id = out_device_symbol.id
             out_port_id = out_port_symbol.id if out_port_symbol else None

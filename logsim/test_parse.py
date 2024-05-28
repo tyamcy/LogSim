@@ -1,6 +1,7 @@
 """Test the parse module."""
 import pytest
 
+from typing import List, Union, Tuple
 from parse import Parser
 from parser_handler import LineTerminalOutput
 from names import Names
@@ -42,7 +43,7 @@ path_semi_colon = "logsim/test_text/test_extreme_errors/test_parse_semi_colon"
 
 
 @pytest.fixture
-def new_parser(path):
+def new_parser(path: str) -> Parser:
     """Return a new instance of the Parser class."""
     names = Names()
     devices = Devices(names)
@@ -53,7 +54,8 @@ def new_parser(path):
     return Parser(names, devices, network, monitors, scanner)
 
 
-def all_error_1_expected_content(parser: Parser):
+def all_error_1_expected_content(parser: Parser) -> List[Tuple[str, int]]:
+    """Construct the reference error list for all_error_1 file"""
     return [
         ("Line 3:", parser.error_handler.EXPECT_IDENTIFIER),
         ("Line 4:", parser.error_handler.EXPECT_INPUT_DEVICE),
@@ -77,7 +79,8 @@ def all_error_1_expected_content(parser: Parser):
     ]
 
 
-def all_error_2_expected_content(parser: Parser):
+def all_error_2_expected_content(parser: Parser) -> Union[int, List[Tuple[str, int]]]:
+    """Construct the reference error list for all_error_2 file"""
     return [
         ("Line 1:", parser.error_handler.WRONG_BLOCK_ORDER),
         ("Line 5:", parser.error_handler.DUPLICATE_KEYWORD),
@@ -88,7 +91,8 @@ def all_error_2_expected_content(parser: Parser):
     ]
 
 
-def all_error_3_expected_content(parser: Parser):
+def all_error_3_expected_content(parser: Parser) -> Union[int, List[Tuple[str, int]]]:
+    """Construct the reference error list for all_error_3 file"""
     return [
         ("Line 21:", parser.error_handler.EXPECT_OPEN_CURLY_BRACKET),
         ("Line 37:", parser.error_handler.EXPECT_FULL_STOP),
@@ -100,84 +104,98 @@ def all_error_3_expected_content(parser: Parser):
 
 
 def semantic_error_monitor_device_absent_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_monitor_device_absent file"""
     return [
         ("Line 24:", parser.monitors.MONITOR_DEVICE_ABSENT)
     ]
 
 
 def semantic_error_input_device_absent_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_input_device_absent file"""
     return [
         ("Line 35:", parser.network.INPUT_DEVICE_ABSENT)
     ]
 
 
 def semantic_error_output_device_absent_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_output_device_absent file"""
     return [
         ("Line 35:", parser.network.OUTPUT_DEVICE_ABSENT)
     ]
 
 
 def semantic_error_device_present_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_device_present file"""
     return [
         ("Line 6:", parser.devices.DEVICE_PRESENT)
     ]
 
 
 def semantic_error_monitor_identifier_present_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_monitor_identifier_present file"""
     return [
         ("Line 31:", parser.monitors.MONITOR_IDENTIFIER_PRESENT)
     ]
 
 
 def semantic_error_duplicate_keyword_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_duplicate_keyword file"""
     return [
         ("Line 17:", parser.error_handler.DUPLICATE_KEYWORD)
     ]
 
 
 def semantic_error_input_connected_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_input_connected file"""
     return [
         ("Line 30:", parser.error_handler.network.INPUT_CONNECTED)
     ]
 
 
 def semantic_error_missing_clock_or_switch_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_missing_clock_or_switch file"""
     return [
         parser.error_handler.MISSING_CLOCK_OR_SWITCH
     ]
 
 
 def semantic_error_missing_input_to_pin_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_missing_input_to_pin file"""
     return [
         parser.error_handler.MISSING_INPUT_TO_PIN
     ]
 
 
 def semantic_error_monitor_present_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_monitor_present file"""
     return [
         ("Line 24:", parser.error_handler.monitors.MONITOR_PRESENT)
     ]
 
 
 def semantic_error_input_port_absent_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_input_port_absent file"""
     return [
         ("Line 39:", parser.error_handler.network.INPUT_PORT_ABSENT)
     ]
 
 
 def semantic_error_output_port_absent_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_output_port_absent file"""
     return [
         ("Line 54:", parser.error_handler.network.OUTPUT_PORT_ABSENT)
     ]
 
 
 def semantic_error_monitor_port_absent_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_monitor_port_absent file"""
     return [
         ("Line 27:", parser.error_handler.monitors.MONITOR_PORT_ABSENT)
     ]
 
 
 def semantic_error_wrong_block_order_expected(parser: Parser):
+    """Construct the reference error list for semantic_error_wrong_block_order file"""
     return [
         ("Line 3:", parser.error_handler.WRONG_BLOCK_ORDER),
         ("Line 18:", parser.error_handler.WRONG_BLOCK_ORDER),

@@ -66,3 +66,55 @@ class CustomDialogBox(wx.Dialog):
         if selection_index != wx.NOT_FOUND:
             return self.list_box.GetString(selection_index)
         return None
+    
+class IdentifierInputDialog(wx.Dialog):
+    """Custom dialog box to input an identifier for the monitor.
+
+    Parameters
+    ----------
+    parent : parent window.
+    title : title of the dialog box.
+    message : message to display on the dialog box.
+    theme : color theme of the GUI.
+    """
+
+    def __init__(self, parent, title, message, theme):
+        super().__init__(parent, title=title)
+        
+        self.theme = theme
+
+        # UI Theme Colours - Light Mode
+        self.light_background_color = "#DDDDDD"
+        self.light_text_color = "#000000"
+
+        # UI Theme Colours - Dark Mode
+        self.dark_background_color = "#333333"
+        self.dark_text_color = "#FFFFFF"
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        label = wx.StaticText(self, label=message)
+        sizer.Add(label, flag=wx.ALL, border=10)
+
+        self.text_ctrl = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
+        sizer.Add(self.text_ctrl, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
+
+        # Apply theme settings
+        if self.theme == "light":
+            self.SetBackgroundColour(self.light_background_color)
+            self.text_ctrl.SetForegroundColour(self.light_text_color)
+            label.SetForegroundColour(self.light_text_color)
+        elif self.theme == "dark":
+            self.SetBackgroundColour(self.dark_background_color)
+            self.text_ctrl.SetForegroundColour(self.dark_text_color)
+            label.SetForegroundColour(self.dark_text_color)
+
+        button_sizer = self.CreateButtonSizer(wx.OK | wx.CANCEL)
+        sizer.Add(button_sizer, flag=wx.EXPAND | wx.ALL, border=10)
+
+        self.SetSizer(sizer)
+        self.Fit()
+
+    def getIdentifier(self):
+        """Return the entered identifier from the text control."""
+        return self.text_ctrl.GetValue()

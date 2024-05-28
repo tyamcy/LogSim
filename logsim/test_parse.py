@@ -10,36 +10,39 @@ from network import Network
 from monitors import Monitors
 from scanner import Scanner
 
-path_correct = "logsim/test_text/test_parse_correct_text"
-path_wrong_order = "logsim/test_text/test_parse_wrong_order_text"
-path_wrong_content = "logsim/test_text/test_parse_wrong_content_text"
+path_correct = "logsim/test_text/test_parse_correct_text.txt"
+path_wrong_order = "logsim/test_text/test_parse_wrong_order_text.txt"
+path_wrong_content = "logsim/test_text/test_parse_wrong_content_text.txt"
 
-path_all_error_1 = "logsim/test_text/test_parse_all_error_1"
-path_all_error_2 = "logsim/test_text/test_parse_all_error_2"
-path_all_error_3 = "logsim/test_text/test_parse_all_error_3"
+path_all_error_1 = "logsim/test_text/test_parse_all_error_1.txt"
+path_all_error_2 = "logsim/test_text/test_parse_all_error_2.txt"
+path_all_error_3 = "logsim/test_text/test_parse_all_error_3.txt"
 
-path_semantic_error_monitor_device_absent = "logsim/test_text/test_semantic_errors/semantic_error_monitor_device_absent"
-path_semantic_error_input_device_absent = "logsim/test_text/test_semantic_errors/semantic_error_input_device_absent"
-path_semantic_error_output_device_absent = "logsim/test_text/test_semantic_errors/semantic_error_output_device_absent"
-path_semantic_error_device_present = "logsim/test_text/test_semantic_errors/semantic_error_device_present"
+path_semantic_error_monitor_device_absent = \
+    "logsim/test_text/test_semantic_errors/semantic_error_monitor_device_absent.txt"
+path_semantic_error_input_device_absent = "logsim/test_text/test_semantic_errors/semantic_error_input_device_absent.txt"
+path_semantic_error_output_device_absent = \
+    "logsim/test_text/test_semantic_errors/semantic_error_output_device_absent.txt"
+path_semantic_error_device_present = "logsim/test_text/test_semantic_errors/semantic_error_device_present.txt"
 path_semantic_error_monitor_identifier_present = \
-    "logsim/test_text/test_semantic_errors/semantic_error_monitor_identifier_present"
-path_semantic_error_duplicate_keyword = "logsim/test_text/test_semantic_errors/semantic_error_duplicate_keyword"
-path_semantic_error_input_connected = "logsim/test_text/test_semantic_errors/semantic_error_input_connected"
+    "logsim/test_text/test_semantic_errors/semantic_error_monitor_identifier_present.txt"
+path_semantic_error_duplicate_keyword = "logsim/test_text/test_semantic_errors/semantic_error_duplicate_keyword.txt"
+path_semantic_error_input_connected = "logsim/test_text/test_semantic_errors/semantic_error_input_connected.txt"
 path_semantic_error_missing_clock_or_switch = \
-    "logsim/test_text/test_semantic_errors/semantic_error_missing_clock_or_switch"
-path_semantic_error_missing_input_to_pin = "logsim/test_text/test_semantic_errors/semantic_error_missing_input_to_pin"
-path_semantic_error_monitor_present = "logsim/test_text/test_semantic_errors/semantic_error_monitor_present"
-path_semantic_error_input_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_input_port_absent"
-path_semantic_error_output_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_output_port_absent"
-path_semantic_error_monitor_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_monitor_port_absent"
-path_semantic_error_wrong_block_order = "logsim/test_text/test_semantic_errors/semantic_error_wrong_block_order"
+    "logsim/test_text/test_semantic_errors/semantic_error_missing_clock_or_switch.txt"
+path_semantic_error_missing_input_to_pin = \
+    "logsim/test_text/test_semantic_errors/semantic_error_missing_input_to_pin.txt"
+path_semantic_error_monitor_present = "logsim/test_text/test_semantic_errors/semantic_error_monitor_present.txt"
+path_semantic_error_input_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_input_port_absent.txt"
+path_semantic_error_output_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_output_port_absent.txt"
+path_semantic_error_monitor_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_monitor_port_absent.txt"
+path_semantic_error_wrong_block_order = "logsim/test_text/test_semantic_errors/semantic_error_wrong_block_order.txt"
 
-path_bible = "logsim/test_text/test_extreme_errors/test_parse_bible"
-path_curly_brackets = "logsim/test_text/test_extreme_errors/test_parse_curly_brackets"
-path_empty = "logsim/test_text/test_extreme_errors/test_parse_empty"
-path_lorem_ipsum = "logsim/test_text/test_extreme_errors/test_parse_lorem_ipsum"
-path_semi_colon = "logsim/test_text/test_extreme_errors/test_parse_semi_colon"
+path_bible = "logsim/test_text/test_extreme_errors/test_parse_bible.txt"
+path_curly_brackets = "logsim/test_text/test_extreme_errors/test_parse_curly_brackets.txt"
+path_empty = "logsim/test_text/test_extreme_errors/test_parse_empty.txt"
+path_lorem_ipsum = "logsim/test_text/test_extreme_errors/test_parse_lorem_ipsum.txt"
+path_semi_colon = "logsim/test_text/test_extreme_errors/test_parse_semi_colon.txt"
 
 
 @pytest.fixture
@@ -104,98 +107,98 @@ def all_error_3_expected_content(parser: Parser) -> Union[int, List[Tuple[str, i
 
 
 def semantic_error_monitor_device_absent_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_monitor_device_absent file"""
+    """Construct the reference error list for semantic_error_monitor_device_absent.txt file"""
     return [
         ("Line 24:", parser.monitors.MONITOR_DEVICE_ABSENT)
     ]
 
 
 def semantic_error_input_device_absent_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_input_device_absent file"""
+    """Construct the reference error list for semantic_error_input_device_absent.txt file"""
     return [
         ("Line 35:", parser.network.INPUT_DEVICE_ABSENT)
     ]
 
 
 def semantic_error_output_device_absent_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_output_device_absent file"""
+    """Construct the reference error list for semantic_error_output_device_absent.txt file"""
     return [
         ("Line 35:", parser.network.OUTPUT_DEVICE_ABSENT)
     ]
 
 
 def semantic_error_device_present_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_device_present file"""
+    """Construct the reference error list for semantic_error_device_present.txt file"""
     return [
         ("Line 6:", parser.devices.DEVICE_PRESENT)
     ]
 
 
 def semantic_error_monitor_identifier_present_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_monitor_identifier_present file"""
+    """Construct the reference error list for semantic_error_monitor_identifier_present.txt file"""
     return [
         ("Line 31:", parser.monitors.MONITOR_IDENTIFIER_PRESENT)
     ]
 
 
 def semantic_error_duplicate_keyword_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_duplicate_keyword file"""
+    """Construct the reference error list for semantic_error_duplicate_keyword.txt file"""
     return [
         ("Line 17:", parser.error_handler.DUPLICATE_KEYWORD)
     ]
 
 
 def semantic_error_input_connected_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_input_connected file"""
+    """Construct the reference error list for semantic_error_input_connected.txt file"""
     return [
         ("Line 30:", parser.error_handler.network.INPUT_CONNECTED)
     ]
 
 
 def semantic_error_missing_clock_or_switch_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_missing_clock_or_switch file"""
+    """Construct the reference error list for semantic_error_missing_clock_or_switch.txt file"""
     return [
         parser.error_handler.MISSING_CLOCK_OR_SWITCH
     ]
 
 
 def semantic_error_missing_input_to_pin_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_missing_input_to_pin file"""
+    """Construct the reference error list for semantic_error_missing_input_to_pin.txt file"""
     return [
         parser.error_handler.MISSING_INPUT_TO_PIN
     ]
 
 
 def semantic_error_monitor_present_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_monitor_present file"""
+    """Construct the reference error list for semantic_error_monitor_present.txt file"""
     return [
         ("Line 24:", parser.error_handler.monitors.MONITOR_PRESENT)
     ]
 
 
 def semantic_error_input_port_absent_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_input_port_absent file"""
+    """Construct the reference error list for semantic_error_input_port_absent.txt file"""
     return [
         ("Line 39:", parser.error_handler.network.INPUT_PORT_ABSENT)
     ]
 
 
 def semantic_error_output_port_absent_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_output_port_absent file"""
+    """Construct the reference error list for semantic_error_output_port_absent.txt file"""
     return [
         ("Line 54:", parser.error_handler.network.OUTPUT_PORT_ABSENT)
     ]
 
 
 def semantic_error_monitor_port_absent_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_monitor_port_absent file"""
+    """Construct the reference error list for semantic_error_monitor_port_absent.txt file"""
     return [
         ("Line 27:", parser.error_handler.monitors.MONITOR_PORT_ABSENT)
     ]
 
 
 def semantic_error_wrong_block_order_expected(parser: Parser):
-    """Construct the reference error list for semantic_error_wrong_block_order file"""
+    """Construct the reference error list for semantic_error_wrong_block_order.txt file"""
     return [
         ("Line 3:", parser.error_handler.WRONG_BLOCK_ORDER),
         ("Line 18:", parser.error_handler.WRONG_BLOCK_ORDER),

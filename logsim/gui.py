@@ -13,10 +13,7 @@ import wx.glcanvas as wxcanvas
 from OpenGL import GL, GLUT
 import os
 
-from gui_widgets import CustomDialogBox
-import os
-
-from gui_widgets import CustomDialogBox
+from gui_widgets import CustomDialogBox, IdentifierInputDialog
 
 from names import Names
 from devices import Devices
@@ -711,6 +708,10 @@ class Gui(wx.Frame):
                 self.update_monitors_display()
                 self.update_add_remove_button_states()
 
+                identifier_dialog = IdentifierInputDialog(self, "Enter Identifier", "Please enter an identifier for the monitor:", self.theme)
+                if identifier_dialog.ShowModal() == wx.ID_OK:
+                    identifier = identifier_dialog.getAlias()
+
                 if "." in selection:
                     device_name, port_name = selection.split(".")
                 else:
@@ -719,9 +720,7 @@ class Gui(wx.Frame):
                 device_id = self.names.query(device_name)
                 port_id = self.names.query(port_name) if port_name else None
 
-                error = self.monitors.make_monitor(device_id, port_id, selection)
-                print(self.monitors.get_all_monitor_signal(), error)
-                print(self.monitors.NO_ERROR)
+                self.monitors.make_monitor(device_id, port_id, identifier)
 
         dialog.Destroy()
 
@@ -737,9 +736,7 @@ class Gui(wx.Frame):
                 self.update_monitors_display()
                 self.update_add_remove_button_states()
 
-            
-
-                # Updates the monitor signal list
+                
         dialog.Destroy()
 
     def update_switches_display(self):
@@ -849,8 +846,8 @@ class Gui(wx.Frame):
 
         self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
         self.terminal.AppendText("\n\nRunning simulation...")
-        self.run_button.SetBackgroundColour(self.color_disabled)
-        self.run_button.Disable()
+        #self.run_button.SetBackgroundColour(self.color_disabled)
+        #self.run_button.Disable()
         self.continue_button.Enable()
         self.continue_button.SetBackgroundColour(self.color_primary)
 

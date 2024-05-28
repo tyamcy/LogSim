@@ -35,16 +35,16 @@ class ParserErrorHandler:
         self.scanner = scanner
         self.error_output_list = []
 
-        # syntax error
+        # line error
         [self.EXPECT_IDENTIFIER, self.EXPECT_INPUT_DEVICE, self.EXPECT_VARIABLE_INPUT_NUMBER,
          self.EXPECT_CLOCK_CYCLE, self.EXPECT_INITIAL_STATE, self.EXPECT_PIN_IN, self.EXPECT_PIN_OUT,
          self.EXPECT_PIN_IN_OR_OUT, self.EXPECT_KEYWORD, self.EXPECT_OPEN_CURLY_BRACKET, self.EXPECT_COMMA,
          self.EXPECT_SEMICOLON, self.EXPECT_COLON, self.EXPECT_FULL_STOP_OR_SEMICOLON, self.EXPECT_FULL_STOP,
-         self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW] = names.unique_error_codes(17)
+         self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW, self.DUPLICATE_KEYWORD, self.WRONG_BLOCK_ORDER] \
+            = names.unique_error_codes(19)
 
-        # semantic error
-        [self.MISSING_CLOCK_OR_SWITCH, self.DUPLICATE_KEYWORD, self.MISSING_INPUT_TO_PIN, self.WRONG_BLOCK_ORDER,
-         self.MISSING_MONITOR] = names.unique_error_codes(5)
+        # file error
+        [self.MISSING_INPUT_TO_PIN, self.MISSING_MONITOR, self.MISSING_CLOCK_OR_SWITCH] = names.unique_error_codes(3)
 
     def line_error(self, error_code: int, symbol: Symbol) -> None:
         error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,

@@ -5,7 +5,7 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 
-PATH = "logsim/test_text/test_semantic_errors/semantic_error_monitor_port_absent"
+PATH = "logsim/test_text/test_parse_all_error_3"
 
 names = Names()
 devices = Devices(names=names)

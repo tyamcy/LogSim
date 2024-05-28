@@ -14,6 +14,7 @@ path_wrong_order = "logsim/test_text/test_parse_wrong_order_text"
 path_wrong_content = "logsim/test_text/test_parse_wrong_content_text"
 path_all_error_1 = "logsim/test_text/test_parse_all_error_1"
 path_all_error_2 = "logsim/test_text/test_parse_all_error_2"
+path_all_error_3 = "logsim/test_text/test_parse_all_error_3"
 
 path_semantic_error_monitor_device_absent = "logsim/test_text/test_semantic_errors/semantic_error_monitor_device_absent"
 path_semantic_error_input_device_absent = "logsim/test_text/test_semantic_errors/semantic_error_input_device_absent"
@@ -77,6 +78,16 @@ def all_error_2_expected_content(parser: Parser):
         ("Line 16:", parser.error_handler.WRONG_BLOCK_ORDER),
         parser.error_handler.MISSING_MONITOR,
         parser.error_handler.MISSING_CLOCK_OR_SWITCH
+    ]
+
+
+def all_error_3_expected_content(parser: Parser):
+    return [
+        ("Line 21:", parser.error_handler.EXPECT_OPEN_CURLY_BRACKET),
+        ("Line 37:", parser.error_handler.EXPECT_FULL_STOP),
+        ("Line 42:", parser.error_handler.EXPECT_PIN_OUT),
+        ("Line 43:", parser.error_handler.EXPECT_ARROW),
+        parser.error_handler.MISSING_MONITOR
     ]
 
 
@@ -168,20 +179,21 @@ def semantic_error_wrong_block_order_expected(parser: Parser):
     ]
 
 
-# @pytest.mark.parametrize("path, expected_result", [
-#     (path_correct, True),
-#     (path_wrong_order, False),
-#     (path_wrong_content, False)
-# ])
-# def test_parse_network(new_parser, path, expected_result):
-#     """Test if network parses correctly."""
-#
-#     assert new_parser.parse_network() == expected_result
+@pytest.mark.parametrize("path, expected_result", [
+    (path_correct, True),
+    (path_wrong_order, False),
+    (path_wrong_content, False)
+])
+def test_parse_network(new_parser, path, expected_result):
+    """Test if network parses correctly."""
+
+    assert new_parser.parse_network() == expected_result
 
 
 @pytest.mark.parametrize("path, expected_content", [
     (path_all_error_1, all_error_1_expected_content),
     (path_all_error_2, all_error_2_expected_content),
+    (path_all_error_3, all_error_3_expected_content),
     (path_semantic_error_monitor_device_absent, semantic_error_monitor_device_absent_expected),
     (path_semantic_error_input_device_absent, semantic_error_input_device_absent_expected),
     (path_semantic_error_output_device_absent, semantic_error_output_device_absent_expected),

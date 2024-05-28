@@ -239,3 +239,11 @@ class Monitors:
     def get_all_monitor_signal(self) -> dict:
         """Fetch all the signal levels from all monitors."""
         return self.signals_dictionary
+
+    def get_identifier(self, device_id: int, port_id: Union[int, None]) -> str:
+        """Get identifier string from device id and port id"""
+        return self.port_to_identifier[(device_id, port_id)]
+    
+    def get_all_identifiers(self) -> List[str]:
+        """Fetch all identifiers"""
+        return self.identifier_to_port.keys()

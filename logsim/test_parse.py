@@ -34,6 +34,12 @@ path_semantic_error_output_port_absent = "logsim/test_text/test_semantic_errors/
 path_semantic_error_monitor_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_monitor_port_absent"
 path_semantic_error_wrong_block_order = "logsim/test_text/test_semantic_errors/semantic_error_wrong_block_order"
 
+path_bible = "logsim/test_text/test_extreme_errors/test_parse_bible"
+path_curly_brackets = "logsim/test_text/test_extreme_errors/test_parse_curly_brackets"
+path_empty = "logsim/test_text/test_extreme_errors/test_parse_empty"
+path_lorem_ipsum = "logsim/test_text/test_extreme_errors/test_parse_lorem_ipsum"
+path_semi_colon = "logsim/test_text/test_extreme_errors/test_parse_semi_colon"
+
 
 @pytest.fixture
 def new_parser(path):
@@ -223,3 +229,11 @@ def test_parse_error(new_parser, path, expected_content):
         else:
             assert error_output[i].error_code == expected_content(new_parser)[i]
 
+
+@pytest.mark.parametrize("path", [
+    path_bible, path_curly_brackets, path_empty, path_lorem_ipsum, path_semi_colon
+])
+def test_parse_extreme_error(new_parser, path):
+    """Test if network could be parsed without crashing the parser."""
+
+    assert not new_parser.parse_network()

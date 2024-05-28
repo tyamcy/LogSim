@@ -46,7 +46,7 @@ class ParserErrorHandler:
         # file error
         [self.MISSING_INPUT_TO_PIN, self.MISSING_MONITOR, self.MISSING_CLOCK_OR_SWITCH] = names.unique_error_codes(3)
 
-        self.error_limit = 100
+        self.error_limit = 25
 
     def line_error(self, error_code: int, symbol: Symbol) -> None:
         if len(self.error_output_list) <= self.error_limit:

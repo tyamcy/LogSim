@@ -412,7 +412,7 @@ class Parser:
             return False
 
     def pin_in_variable_input_number(self, input_number: str) -> bool:
-        if input_number.isnumeric() and 1 <= int(input_number) <= 16:
+        if input_number.isnumeric() and input_number[0] != "0" and 1 <= int(input_number) <= 16:
             return True
         else:
             return False

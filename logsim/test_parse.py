@@ -2,7 +2,7 @@
 import pytest
 
 from parse import Parser
-from parser_handler import LineTerminalOutput, FileTerminalOutput
+from parser_handler import LineTerminalOutput
 from names import Names
 from devices import Devices
 from network import Network
@@ -12,6 +12,7 @@ from scanner import Scanner
 path_correct = "logsim/test_text/test_parse_correct_text"
 path_wrong_order = "logsim/test_text/test_parse_wrong_order_text"
 path_wrong_content = "logsim/test_text/test_parse_wrong_content_text"
+
 path_all_error_1 = "logsim/test_text/test_parse_all_error_1"
 path_all_error_2 = "logsim/test_text/test_parse_all_error_2"
 path_all_error_3 = "logsim/test_text/test_parse_all_error_3"
@@ -32,6 +33,12 @@ path_semantic_error_input_port_absent = "logsim/test_text/test_semantic_errors/s
 path_semantic_error_output_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_output_port_absent"
 path_semantic_error_monitor_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_monitor_port_absent"
 path_semantic_error_wrong_block_order = "logsim/test_text/test_semantic_errors/semantic_error_wrong_block_order"
+
+path_bible = "logsim/test_text/test_extreme_errors/test_parse_bible"
+path_curly_brackets = "logsim/test_text/test_extreme_errors/test_parse_curly_brackets"
+path_empty = "logsim/test_text/test_extreme_errors/test_parse_empty"
+path_lorem_ipsum = "logsim/test_text/test_extreme_errors/test_parse_lorem_ipsum"
+path_semi_colon = "logsim/test_text/test_extreme_errors/test_parse_semi_colon"
 
 
 @pytest.fixture
@@ -87,6 +94,7 @@ def all_error_3_expected_content(parser: Parser):
         ("Line 37:", parser.error_handler.EXPECT_FULL_STOP),
         ("Line 42:", parser.error_handler.EXPECT_PIN_OUT),
         ("Line 43:", parser.error_handler.EXPECT_ARROW),
+        ("Line 44:", parser.error_handler.EXPECT_PIN_IN),
         parser.error_handler.MISSING_MONITOR
     ]
 
@@ -210,7 +218,7 @@ def test_parse_network(new_parser, path, expected_result):
     (path_semantic_error_wrong_block_order, semantic_error_wrong_block_order_expected)
 ])
 def test_parse_error(new_parser, path, expected_content):
-    """Test if network error output is correct"""
+    """Test if network error output is correct."""
 
     new_parser.parse_network()
     error_output = new_parser.fetch_error_output()
@@ -221,3 +229,11 @@ def test_parse_error(new_parser, path, expected_content):
         else:
             assert error_output[i].error_code == expected_content(new_parser)[i]
 
+
+@pytest.mark.parametrize("path", [
+    path_bible, path_curly_brackets, path_empty, path_lorem_ipsum, path_semi_colon
+])
+def test_parse_extreme_error(new_parser, path):
+    """Test if network could be parsed without crashing the parser."""
+
+    assert not new_parser.parse_network()

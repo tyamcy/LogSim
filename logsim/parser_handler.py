@@ -14,7 +14,7 @@ class LineTerminalOutput:
         self.error_code = error_code
 
     def __str__(self):
-        return f"\n{self.line_location}\n{self.line_with_issue}{self.arrow}\n{self.message}\n"
+        return f"\n{self.line_location}\n{self.line_with_issue}\n{self.arrow}\n{self.message}\n"
 
 
 class FileTerminalOutput:
@@ -46,10 +46,18 @@ class ParserErrorHandler:
         # file error
         [self.MISSING_INPUT_TO_PIN, self.MISSING_MONITOR, self.MISSING_CLOCK_OR_SWITCH] = names.unique_error_codes(3)
 
+        self.error_limit = 25
+
     def line_error(self, error_code: int, symbol: Symbol) -> None:
-        error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,
-                                                     error_code=error_code, name=self.symbol_to_name(symbol))
-        self.error_output_list.append(error_output)
+        if len(self.error_output_list) <= self.error_limit:
+            error_output = self.get_line_terminal_output(line=symbol.line, character_in_line=symbol.character_in_line,
+                                                         error_code=error_code, name=self.symbol_to_name(symbol))
+
+            self.error_output_list.append(error_output)
+        elif len(self.error_output_list) == (self.error_limit + 1):
+            self.error_output_list.append("\n--------------------------------------------------------"
+                                          f"\nOver {self.error_limit} errors, further errors will not be reported!!"
+                                          "\n--------------------------------------------------------")
 
     def symbol_to_name(self, symbol: Symbol) -> str:
         if symbol.id:  # symbol id is not None, i.e. symbol.type is KEYWORD, NUMBER, NAME or INVALID
@@ -77,17 +85,31 @@ class ParserErrorHandler:
             raise ValueError("Invalid symbol type")
 
     def file_error(self, error_code: int, name: str = "") -> None:
-        error_output = FileTerminalOutput(
-            message=self.get_error_message(error_code=error_code, name=name),
-            error_code=error_code
-        )
-        self.error_output_list.append(error_output)
+        if len(self.error_output_list) <= self.error_limit:
+            error_output = FileTerminalOutput(
+                message=self.get_error_message(error_code=error_code, name=name),
+                error_code=error_code
+            )
+            self.error_output_list.append(error_output)
+        elif len(self.error_output_list) == (self.error_limit + 1):
+            self.error_output_list.append("\n--------------------------------------------------------"
+                                          f"\nOver {self.error_limit} errors, further errors will not be reported!!"
+                                          "\n--------------------------------------------------------")
 
     def get_line_terminal_output(self, line: int, character_in_line: int, error_code: int, name: str) -> (
             LineTerminalOutput):
+        left_char_limit = 25
+        right_char_limit = 25
+        line_str = self.scanner.file_lines[line]
+        line_length = len(line_str)
+        if character_in_line > left_char_limit:
+            line_str = "..." + line_str[character_in_line-left_char_limit:]
+            character_in_line = left_char_limit
+        if line_length - character_in_line - 1 > right_char_limit:
+            line_str = line_str[:character_in_line+right_char_limit + 1] + "..."
         return LineTerminalOutput(
             line_location=f"Line {line + 1}:",
-            line_with_issue=self.scanner.file_lines[line],
+            line_with_issue=line_str,
             arrow=" " * character_in_line + "^",
             message=self.get_error_message(error_code=error_code, name=name),
             error_code=error_code

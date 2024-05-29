@@ -1,6 +1,7 @@
 """Test the devices module."""
 import pytest
 
+from typing import Tuple
 from names import Names
 from devices import Devices
 
@@ -27,7 +28,7 @@ def devices_with_items():
     return new_devices
 
 
-def test_get_device(devices_with_items):
+def test_get_device(devices_with_items: Devices) -> None:
     """Test if get_device returns the correct device."""
     names = devices_with_items.names
     for device in devices_with_items.devices_list:
@@ -38,7 +39,7 @@ def test_get_device(devices_with_items):
         assert devices_with_items.get_device(X_ID) is None
 
 
-def test_find_devices(devices_with_items):
+def test_find_devices(devices_with_items: Devices) -> None:
     """Test if find_devices returns the correct devices of the given kind."""
     devices = devices_with_items
     names = devices.names
@@ -52,7 +53,7 @@ def test_find_devices(devices_with_items):
     assert devices.find_devices(devices.XOR) == []
 
 
-def test_make_device(new_devices):
+def test_make_device(new_devices: Devices) -> None:
     """Test if make_device correctly makes devices with their properties."""
     names = new_devices.names
 
@@ -100,7 +101,7 @@ def test_make_device(new_devices):
     # Note: XOR device X2_ID will have been made earlier in the function
     ("(X2_ID, new_devices.XOR)", "new_devices.DEVICE_PRESENT"),
 ])
-def test_make_device_gives_errors(new_devices, function_args, error):
+def test_make_device_gives_errors(new_devices: Devices, function_args: str, error: str) -> None:
     """Test if make_device returns the appropriate errors."""
     names = new_devices.names
     [AND1_ID, SW1_ID, CL_ID, D_ID, X1_ID,
@@ -115,7 +116,7 @@ def test_make_device_gives_errors(new_devices, function_args, error):
     assert left_expression == right_expression
 
 
-def test_get_signal_name(devices_with_items):
+def test_get_signal_name(devices_with_items: Devices) -> None:
     """Test if get_signal_name returns the correct signal name."""
     devices = devices_with_items
     names = devices.names
@@ -125,7 +126,7 @@ def test_get_signal_name(devices_with_items):
     assert devices.get_signal_name(AND1, None) == "And1"
 
 
-def test_get_signal_ids(devices_with_items):
+def test_get_signal_ids(devices_with_items: Devices) -> None:
     """Test if get_signal_ids returns the correct signal IDs."""
     devices = devices_with_items
     names = devices.names
@@ -135,7 +136,7 @@ def test_get_signal_ids(devices_with_items):
     assert devices.get_signal_ids("And1") == [AND1, None]
 
 
-def test_set_switch(new_devices):
+def test_set_switch(new_devices: Devices) -> None:
     """Test if set_switch changes the switch state correctly."""
     names = new_devices.names
     # Make a switch

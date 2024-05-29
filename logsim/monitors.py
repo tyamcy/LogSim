@@ -10,7 +10,7 @@ Monitors - records and displays specified output signals.
 """
 import collections
 
-from typing import List, Union
+from typing import List, Optional, Union
 from names import Names
 from devices import Devices
 from network import Network
@@ -76,7 +76,7 @@ class Monitors:
         [self.NO_ERROR, self.MONITOR_IDENTIFIER_PRESENT, self.MONITOR_DEVICE_ABSENT, self.MONITOR_PORT_ABSENT] = (
             self.names.unique_error_codes(4))
 
-    def make_monitor(self, device_id: int, port_id: Union[int, None],
+    def make_monitor(self, device_id: int, port_id: Optional[int],
                      identifier: str, cycles_completed: int = 0) -> int:
         """Add the specified signal to the monitors dictionary.
 
@@ -102,7 +102,7 @@ class Monitors:
             self.identifier_to_port[identifier] = (device_id, port_id)
             return self.NO_ERROR
 
-    def remove_monitor_by_port(self, device_id: int, port_id: Union[int, None]) -> bool:
+    def remove_monitor_by_port(self, device_id: int, port_id: Optional[int]) -> bool:
         """Remove the specified signal from the signals, identifier_to_port and port_to_identifier dictionary by port.
 
         Return True if successful.
@@ -137,7 +137,7 @@ class Monitors:
                         self.port_to_identifier[port].remove(identifier)
             return True
 
-    def get_monitor_signal(self, device_id: int, port_id: int) -> Union[int, None]:
+    def get_monitor_signal(self, device_id: int, port_id: int) -> Optional[int]:
         """Return the signal level of the specified monitor.
 
         If the monitor does not exist, return None.
@@ -161,7 +161,7 @@ class Monitors:
             self.signals_dictionary[(device_id,
                                      port_id)].append(signal_level)
 
-    def get_signal_names(self) -> List[List[int]]:
+    def get_signal_names(self) -> List[List[Optional[str]]]:
         """Return two signal name lists: monitored and not monitored."""
         non_monitored_signal_list = []
         monitored_signal_list = []
@@ -187,7 +187,7 @@ class Monitors:
         for device_id, port_id in self.signals_dictionary:
             self.signals_dictionary[(device_id, port_id)] = []
 
-    def get_margin(self) -> Union[int, None]:
+    def get_margin(self) -> Optional[int]:
         """Return the length of the longest monitor's name.
 
         Return None if no signals are being monitored. This is useful for

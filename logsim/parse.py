@@ -9,14 +9,14 @@ Classes
 Parser - parses the definition file and builds the logic network.
 """
 
-from typing import List
+from typing import List, Union
 
 from names import Names
 from devices import Devices
 from network import Network
 from monitors import Monitors
 from scanner import Scanner
-from parser_handler import ParserErrorHandler
+from parser_handler import ParserErrorHandler, LineTerminalOutput, FileTerminalOutput
 from collections import OrderedDict
 from copy import copy
 from scanner import Symbol
@@ -516,7 +516,7 @@ class Parser:
         """Return the current symbol's string representation."""
         return self.names.get_name_string(self.symbol.id)
 
-    def fetch_error_output(self) -> List[str]:
+    def fetch_error_output(self) -> List[Union[LineTerminalOutput, FileTerminalOutput]]:
         """Return the error list from error_handler."""
         return self.error_handler.error_output_list
 

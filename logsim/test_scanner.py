@@ -100,7 +100,7 @@ def new_scanner():
     return Scanner(path=path, names=Names())
 
 
-def test_get_symbol(new_scanner):
+def test_get_symbol(new_scanner: Scanner) -> None:
     """Test if get_symbol returns the expected symbol type and ID."""
     for i in range(len(test_list)):
         symbol = new_scanner.get_symbol()

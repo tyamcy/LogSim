@@ -10,6 +10,10 @@ Devices - makes and stores all the devices in the logic network.
 """
 import random
 
+from typing import List, Optional
+from names import Names
+
+
 class Device:
 
     """Store device properties.
@@ -23,7 +27,7 @@ class Device:
     No public methods.
     """
 
-    def __init__(self, device_id):
+    def __init__(self, device_id: int):
         """Initialise device properties."""
 
         self.device_id = device_id
@@ -96,7 +100,7 @@ class Devices:
                        the specified device and returns errors if unsuccessful.
     """
 
-    def __init__(self, names):
+    def __init__(self, names: Names):
         """Initialise devices list and constants."""
 
         self.names = names
@@ -125,14 +129,14 @@ class Devices:
 
         self.max_gate_inputs = 16
 
-    def get_device(self, device_id):
+    def get_device(self, device_id: int) -> Device or None:
         """Return the Device object corresponding to device_id."""
         for device in self.devices_list:
             if device.device_id == device_id:
                 return device
         return None
 
-    def find_devices(self, device_kind=None):
+    def find_devices(self, device_kind: int = None) -> List[int]:
         """Return a list of device IDs of the specified device_kind.
 
         Return a list of all device IDs in the network if no device_kind is
@@ -146,13 +150,13 @@ class Devices:
                 device_id_list.append(device.device_id)
         return device_id_list
 
-    def add_device(self, device_id, device_kind):
+    def add_device(self, device_id: int, device_kind: int) -> None:
         """Add the specified device to the network."""
         new_device = Device(device_id)
         new_device.device_kind = device_kind
         self.devices_list.append(new_device)
 
-    def add_input(self, device_id, input_id):
+    def add_input(self, device_id: int, input_id: int) -> bool:
         """Add the specified input to the specified device.
 
         Return True if successful.
@@ -164,7 +168,7 @@ class Devices:
         else:
             return False
 
-    def add_output(self, device_id, output_id, signal=0):
+    def add_output(self, device_id: int, output_id: int or None, signal: int = 0) -> bool:
         """Add the specified output to the specified device.
 
         Return True if successful. The default output signal is LOW (0).
@@ -176,7 +180,7 @@ class Devices:
         else:
             return False
 
-    def get_signal_name(self, device_id, port_id):
+    def get_signal_name(self, device_id: int, port_id: int) -> Optional[str]:
         """Return the name string of the specified signal.
 
         The signal is specified by its device_id and port_id. Return None if
@@ -197,7 +201,7 @@ class Devices:
         else:
             return None
 
-    def get_signal_ids(self, signal_name):
+    def get_signal_ids(self, signal_name: str) -> List[int]:
         """Return the device and output IDs of the specified signal."""
         name_string_list = signal_name.split(".")
         name_id_list = self.names.lookup(name_string_list)
@@ -209,7 +213,7 @@ class Devices:
 
         return [device_id, output_id]
 
-    def set_switch(self, device_id, signal):
+    def set_switch(self, device_id: int, signal: int) -> bool:
         """Set the switch state of the specified device to signal.
 
         Return True if successful.
@@ -223,13 +227,13 @@ class Devices:
             device.switch_state = signal
             return True
 
-    def make_switch(self, device_id, initial_state):
+    def make_switch(self, device_id: int, initial_state: int) -> None:
         """Make a switch device and set its initial state."""
         self.add_device(device_id, self.SWITCH)
         self.add_output(device_id, output_id=None)
         self.set_switch(device_id, initial_state)
 
-    def make_clock(self, device_id, clock_half_period):
+    def make_clock(self, device_id: int, clock_half_period: int) -> None:
         """Make a clock device with the specified half period.
 
         clock_half_period is an integer > 0. It is the number of simulation
@@ -240,7 +244,7 @@ class Devices:
         device.clock_half_period = clock_half_period
         self.cold_startup()  # clock initialised to a random point in its cycle
 
-    def make_gate(self, device_id, device_kind, no_of_inputs):
+    def make_gate(self, device_id: int, device_kind: int, no_of_inputs: int) -> None:
         """Make logic gates with the specified number of inputs."""
         self.add_device(device_id, device_kind)
         self.add_output(device_id, output_id=None)
@@ -250,7 +254,7 @@ class Devices:
             [input_id] = self.names.lookup([input_name])
             self.add_input(device_id, input_id)
 
-    def make_d_type(self, device_id):
+    def make_d_type(self, device_id: int) -> None:
         """Make a D-type device."""
         self.add_device(device_id, self.D_TYPE)
         for input_id in self.dtype_input_ids:
@@ -277,7 +281,7 @@ class Devices:
                 device.clock_counter = \
                     random.randrange(device.clock_half_period)
 
-    def make_device(self, device_id, device_kind, device_property=None):
+    def make_device(self, device_id: int, device_kind: int, device_property: int = None) -> None:
         """Create the specified device.
 
         Return self.NO_ERROR if successful. Return corresponding error if not.

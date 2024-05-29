@@ -6,7 +6,7 @@ Classes
 --------
 Network - builds and executes the network.
 """
-from typing import Union, Tuple
+from typing import Optional, Tuple
 
 from devices import Devices
 from names import Names
@@ -75,7 +75,7 @@ class Network:
             self.names.unique_error_codes(6))
         self.steady_state = True  # for checking if signals have settled
 
-    def get_connected_output(self, device_id: int, input_id: int) -> Union[None, Tuple[int, Union[None, int]]]:
+    def get_connected_output(self, device_id: int, input_id: int) -> Optional[Tuple[int, Optional[int]]]:
         """Return the output connected to the given input.
 
         Return None if either of the specified IDs is invalid or the input is
@@ -88,7 +88,7 @@ class Network:
                 return connected_output
         return None
 
-    def get_input_signal(self, device_id: int, input_id: int) -> Union[None, int]:
+    def get_input_signal(self, device_id: int, input_id: int) -> Optional[int]:
         """Return the signal level at the output connected to the given input.
 
         Return None if the input is unconnected or the specified IDs are
@@ -101,7 +101,7 @@ class Network:
             (output_device_id, output_port_id) = connected_output
             return self.get_output_signal(output_device_id, output_port_id)
 
-    def get_output_signal(self, device_id: int, output_id: Union[None, int]) -> Union[None, int]:
+    def get_output_signal(self, device_id: int, output_id: Optional[int]) -> Optional[int]:
         """Return the signal level at the given output.
 
         Return None if either of the specified IDs is invalid.
@@ -112,7 +112,7 @@ class Network:
                 return device.outputs[output_id]
         return None
 
-    def make_connection(self, output_device_id: int, output_port_id: Union[None, int], input_device_id: int,
+    def make_connection(self, output_device_id: int, output_port_id: Optional[int], input_device_id: int,
                         input_port_id: int) -> int:
         """Connect the output device to the input device.
 
@@ -149,7 +149,7 @@ class Network:
                     return False
         return True
 
-    def update_signal(self, signal: int, target: int) -> Union[None, bool, int]:
+    def update_signal(self, signal: int, target: int) -> Optional[int]:
         """Update the signal in the direction of the target.
 
         Return updated signal, and set steady_state to false if the new signal
@@ -171,7 +171,7 @@ class Network:
             self.steady_state = False
         return new_signal
 
-    def invert_signal(self, signal: int) -> Union[None, int]:
+    def invert_signal(self, signal: int) -> Optional[int]:
         """Return the inverse of the signal if the signal is HIGH or LOW.
 
         Return None if the signal is not HIGH or LOW.
@@ -200,7 +200,7 @@ class Network:
             device.outputs[None] = updated_signal
             return True
 
-    def execute_gate(self, device_id: int, x: Union[None, int] = None, y: Union[None, int] = None) -> Union[bool, int]:
+    def execute_gate(self, device_id: int, x: Optional[int] = None, y: Optional[int] = None) -> bool:
         """Simulate a logic gate and update its output signal value.
 
         The rule is: if all its inputs are x, then its output is y, else its

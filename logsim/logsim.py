@@ -97,7 +97,6 @@ def main(arg_list: List[str]) -> None:
         # It is possible to provide a file that is wrong initially
         # An error will be given in the GUI terminal
         print(parsing_message)
-        parser.parse_network()
         # Initialise an instance of the gui.Gui() class
         app = wx.App()
         gui = Gui("Logic Simulator", path, names, devices, network,

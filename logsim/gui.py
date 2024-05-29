@@ -649,10 +649,10 @@ class Gui(wx.Frame):
 
             # Printing the error message in the GUI terminal
             errors = parser.error_handler.error_output_list
+            print(errors)
             for error in errors:
-                if error:
-                    self.terminal.SetDefaultStyle(wx.TextAttr(self.dark_text_color))
-                    self.terminal.AppendText(f"\n{error}")
+                self.terminal.SetDefaultStyle(wx.TextAttr(self.dark_text_color))
+                self.terminal.AppendText(f"\n{error}")
 
             return False
 
@@ -693,7 +693,7 @@ class Gui(wx.Frame):
                     return
                 parser = Parser(names, devices, network, monitors, scanner)
 
-                if parser.parse_network():
+                if self.check_errors(filename, parser):
                     # Instantiate the circuit for the newly uploaded file
                     self.names = names
                     self.devices = devices
@@ -704,7 +704,6 @@ class Gui(wx.Frame):
                     self.canvas.signals = {}
                     self.canvas.signals_dictionary = {}
 
-                if self.check_errors(filename, parser):
                     # Update the GUI with new monitors and switches
                     self.update_monitors_display()
                     self.update_switches_display()

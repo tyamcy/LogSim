@@ -1,4 +1,5 @@
 import wx
+from typing import Optional
 
 class CustomDialogBox(wx.Dialog):
     """Custom dialog box for the add and remove buttons.
@@ -13,10 +14,10 @@ class CustomDialogBox(wx.Dialog):
 
     Public methods
     --------------
-    getSelectedItem(self): 
+    get_selected_item(self): Return the selected item.
     """
 
-    def __init__(self, parent, title, message, choices, theme):
+    def __init__(self, parent, title: str, message: str, choices: list, theme: str):
         super().__init__(parent, title=title)
         self.selection = None
 
@@ -61,7 +62,8 @@ class CustomDialogBox(wx.Dialog):
         self.SetSizer(sizer)
         self.Fit()
 
-    def getSelectedItem(self):
+    def get_selected_item(self) -> Optional[str]:
+        """Return the selected item."""
         selection_index = self.list_box.GetSelection()
         if selection_index != wx.NOT_FOUND:
             return self.list_box.GetString(selection_index)
@@ -76,9 +78,13 @@ class IdentifierInputDialog(wx.Dialog):
     title : title of the dialog box.
     message : message to display on the dialog box.
     theme : color theme of the GUI.
+
+    Public methods
+    --------------
+    get_identifier(self): Return the entered identifier from the text control.
     """
 
-    def __init__(self, parent, title, message, theme):
+    def __init__(self, parent, title: str, message: str, theme: str):
         super().__init__(parent, title=title)
         
         self.theme = theme
@@ -115,6 +121,6 @@ class IdentifierInputDialog(wx.Dialog):
         self.SetSizer(sizer)
         self.Fit()
 
-    def getIdentifier(self):
+    def get_identifier(self) -> str:
         """Return the entered identifier from the text control."""
         return self.text_ctrl.GetValue()

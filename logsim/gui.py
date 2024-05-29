@@ -689,6 +689,8 @@ class Gui(wx.Frame):
                     self.monitors = monitors
                     self.scanner = scanner
                     self.parser = parser
+                    self.canvas.signals = {}
+                    self.canvas.signals_dictionary = {}
 
                 if self.check_errors(filename, parser):
                     # Update the GUI with new monitors and switches

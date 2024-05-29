@@ -12,6 +12,7 @@ Graphical user interface: logsim.py <file path>
 """
 import getopt
 import sys
+from contextlib import contextmanager
 
 import wx
 
@@ -23,6 +24,19 @@ from scanner import Scanner
 from parse import Parser
 from userint import UserInterface
 from gui import Gui
+
+
+@contextmanager
+def scanner_init_error_handler(path):
+    """Context manager to handle initialization errors for scanner"""
+    try:
+        yield
+    except FileNotFoundError:
+        print(f"Error: no such file '{path}'")
+        sys.exit()
+    except UnicodeDecodeError:
+        print(f"Error: file '{path}' is not a unicode text file")
+        sys.exit()
 
 
 def main(arg_list) -> None:
@@ -54,14 +68,8 @@ def main(arg_list) -> None:
             print(usage_message)
             sys.exit()
         elif option == "-c":  # use the command line user interface
-            try:
+            with scanner_init_error_handler(path):
                 scanner = Scanner(path, names)
-            except FileNotFoundError:
-                print(f"Error: no such file '{path}'")
-                sys.exit()
-            except UnicodeDecodeError:
-                print(f"Error: file '{path}' is not a unicode text file")
-                sys.exit()
             parser = Parser(names, devices, network, monitors, scanner)
             print(parsing_message)
             if parser.parse_network():
@@ -81,7 +89,8 @@ def main(arg_list) -> None:
             sys.exit()
 
         [path] = arguments
-        scanner = Scanner(path, names)
+        with scanner_init_error_handler(path):
+            scanner = Scanner(path, names)
         parser = Parser(names, devices, network, monitors, scanner)
 
         # It is possible to provide a file that is wrong initially

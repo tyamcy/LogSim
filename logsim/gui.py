@@ -321,7 +321,7 @@ class Gui(wx.Frame):
     update_add_remove_button_states(self): Updates the enabled/disabled state of the add and remove buttons.
 
     on_add_monitor_button(self, event): Event handler for when the users click the add monitor button.
-    
+
     on_remove_monitor_button(self, event): Event handler for when the user clicks the remove monitor button.
 
     update_switches_display(self): Event handler for updating the displayed list of switches.
@@ -335,12 +335,14 @@ class Gui(wx.Frame):
     on_run_button(self, event): Event handler for when the user clicks the run
                                 button.
 
-    on_continue_button(self, event): Event handler for when the user clicks the continue button.                      
+    on_continue_button(self, event): Event handler for when the user clicks the continue button.
 
     toggle_theme(self, event): Event handler for when the user changes the color theme.
 
     fetch_cycle(self): Tracks the total number of simulation cycles.
     """
+
+    welcoming_text = "Welcome to Logic Simulator\n=========================="
 
     def __init__(self, title: str, path: str, names: Names, devices: Devices, network: Network, monitors: Monitors, parser: Parser):
         """Initialise widgets and layout."""
@@ -452,7 +454,7 @@ class Gui(wx.Frame):
         self.terminal.SetBackgroundColour(self.terminal_background_color)
         self.terminal.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Consolas'))
         self.terminal.SetForegroundColour(self.terminal_text_color)
-        self.terminal.AppendText("Welcome to Logic Simulator\n==========================")
+        self.terminal.AppendText(self.welcoming_text)
 
         self.terminal_sizer = wx.BoxSizer(wx.VERTICAL)
         self.terminal_sizer.Add(self.terminal, 1, wx.EXPAND | wx.ALL, 0)
@@ -577,12 +579,40 @@ class Gui(wx.Frame):
                           "\nContinue: Continues the simulation with updated paramaters.",
                           "Controls", wx.ICON_INFORMATION | wx.OK)
 
+    def disable_monitor_and_simulation_buttons(self):
+        """Disable buttons controlling monitor and simulation when file uploaded is invalid"""
+        # Disable add and remove button (monitor)
+        self.add_monitor_button.Disable()
+        self.remove_monitor_button.Disable()
+
+        # Disable run and continue button (simulation)
+        self.run_button.Disable()
+        self.run_button.SetBackgroundColour(self.color_disabled)
+        self.continue_button.Disable()
+        self.continue_button.SetBackgroundColour(self.color_disabled)
+
+    def reset_terminal(self):
+        """Reset terminal when new file is uploaded"""
+        self.terminal.Clear()
+        self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
+        self.terminal.AppendText(self.welcoming_text)
+
+    def reset_canvas(self):
+        """Reset canvas when new file is uploaded"""
+        self.canvas.reset_display()
+        self.canvas.render("")
+
+    def reset_gui_display(self):
+        """Reset gui display when new file is uploaded."""
+        self.monitors_scrolled_sizer.Clear(True)
+        self.switches_scrolled_sizer.Clear(True)
+
     def check_errors(self, filename: str, parser: Parser) -> bool:
         """Handles the error checking when a file is uploaded."""
         if parser.parse_network():
+            self.reset_canvas()
+
             # Message on terminal
-            self.canvas.reset_display()
-            self.canvas.render("")
             self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_success_color))
             self.terminal.AppendText(f"\nFile {filename} uploaded successfully.")
 
@@ -600,17 +630,10 @@ class Gui(wx.Frame):
         else:
             # Message on terminal
             self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
-            self.terminal.AppendText(f"\n\nError in the specification file {filename}.")
+            self.terminal.AppendText(f"\nError in the specification file {filename}.")
 
-            # Disable add and remove button
-            self.add_monitor_button.Disable()
-            self.remove_monitor_button.Disable()
-
-            # Disable run and disable button
-            self.run_button.Disable()
-            self.run_button.SetBackgroundColour(self.color_disabled)
-            self.continue_button.Disable()
-            self.continue_button.SetBackgroundColour(self.color_disabled)
+            # Disable monitor and simulation buttons
+            self.disable_monitor_and_simulation_buttons()
 
             # Printing the error message in the GUI terminal
             errors = parser.error_handler.error_output_list
@@ -638,6 +661,10 @@ class Gui(wx.Frame):
                 wx.MessageBox("Please select a valid .txt file", "Error", wx.OK | wx.ICON_ERROR)
                 return
 
+            self.reset_terminal()
+            self.reset_canvas()
+            self.reset_gui_display()
+
             # Processing the file
             try:
                 # Initialise instances of the inner simulator classes
@@ -649,7 +676,8 @@ class Gui(wx.Frame):
                     scanner = Scanner(path, names)
                 except UnicodeDecodeError:
                     self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
-                    self.terminal.AppendText(f"Error: file '{path}' is not a unicode text file")
+                    self.terminal.AppendText(f"\nError: file '{path}' is not a unicode text file")
+                    self.disable_monitor_and_simulation_buttons()
                     return
                 parser = Parser(names, devices, network, monitors, scanner)
 
@@ -661,10 +689,6 @@ class Gui(wx.Frame):
                     self.monitors = monitors
                     self.scanner = scanner
                     self.parser = parser
-                else:
-                    # Clearing the GUI display as the file is invalid
-                    self.monitors_scrolled_sizer.Clear(True)
-                    self.switches_scrolled_sizer.Clear(True)
 
                 if self.check_errors(filename, parser):
                     # Update the GUI with new monitors and switches
@@ -844,8 +868,8 @@ class Gui(wx.Frame):
             if self.network.execute_network():
                 self.monitors.record_signals()
             else:
-                self.terminal.SetDefaultStyle(wx.TextAttr(self.dark_text_color))
-                self.terminal.AppendText(f"\nERROR: NETWORK OSCILLATING!!")
+                self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
+                self.terminal.AppendText(f"\n\nError: network oscillating!!")
                 return False
 
         self.signals_dictionary = self.monitors.get_all_monitor_signal()

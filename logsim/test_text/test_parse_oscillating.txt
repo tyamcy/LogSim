@@ -1,0 +1,15 @@
+DEVICE {
+NOR1: NOR, 1;
+}
+
+SWITCH {
+SW1: 1;
+}
+
+MONITOR {
+A: NOR1;
+}
+
+CONNECTION {
+NOR1 > NOR1.I1;
+}

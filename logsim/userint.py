@@ -11,7 +11,7 @@ from names import Names
 from devices import Devices
 from monitors import Monitors
 from network import Network
-from typing import Optional, List
+from typing import Optional, Union, List
 
 
 class UserInterface:
@@ -176,7 +176,7 @@ class UserInterface:
             port_id = None
         return [device_id, port_id]
 
-    def read_monitor(self) -> Optional[List[Optional[int, str]]]:
+    def read_monitor(self) -> Optional[List[Union[int, str, None]]]:
         """Return the device, port IDs and identifier (alias) of the monitor point.
 
         Return None if either is invalid.

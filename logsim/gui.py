@@ -608,6 +608,10 @@ class Gui(wx.Frame):
 
     def reset_canvas(self):
         """Reset canvas when new file is uploaded"""
+        self.canvas.devices = self.devices
+        self.canvas.monitors = self.monitors
+        self.canvas.names = self.names
+
         self.canvas.reset_display()
         self.canvas.clear_display()
 

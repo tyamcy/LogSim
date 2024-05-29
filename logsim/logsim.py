@@ -12,6 +12,7 @@ Graphical user interface: logsim.py <file path>
 """
 import getopt
 import sys
+from contextlib import contextmanager
 
 import wx
 
@@ -25,6 +26,19 @@ from userint import UserInterface
 from gui import Gui
 
 
+@contextmanager
+def scanner_init_error_handler(path):
+    """Context manager to handle initialization errors for scanner"""
+    try:
+        yield
+    except FileNotFoundError:
+        print(f"Error: no such file '{path}'")
+        sys.exit()
+    except UnicodeDecodeError:
+        print(f"Error: file '{path}' is not a unicode text file")
+        sys.exit()
+
+
 def main(arg_list) -> None:
     """Parse the command line options and arguments specified in arg_list.
 
@@ -35,6 +49,7 @@ def main(arg_list) -> None:
                      "Show help: logsim.py -h\n"
                      "Command line user interface: logsim.py -c <file path>\n"
                      "Graphical user interface: logsim.py <file path>")
+    parsing_message = "Assembling logic circuit..."
     try:
         options, arguments = getopt.getopt(arg_list, "hc:")
     except getopt.GetoptError:
@@ -53,19 +68,18 @@ def main(arg_list) -> None:
             print(usage_message)
             sys.exit()
         elif option == "-c":  # use the command line user interface
-            try:
+            with scanner_init_error_handler(path):
                 scanner = Scanner(path, names)
-            except FileNotFoundError:
-                print(f"Error: no such file '{path}'")
-                sys.exit()
-            except UnicodeDecodeError:
-                print(f"Error: file '{path}' is not a unicode text file")
-                sys.exit()
             parser = Parser(names, devices, network, monitors, scanner)
+            print(parsing_message)
             if parser.parse_network():
                 # Initialise an instance of the userint.UserInterface() class
                 userint = UserInterface(names, devices, network, monitors)
                 userint.command_interface()
+            else:
+                print(f"\u001b[31m\nError in the specification file\n{path}.\u001b[0m")
+                for error in parser.fetch_error_output():
+                    print(error)
 
     if not options:  # no option given, use the graphical user interface
 
@@ -75,11 +89,13 @@ def main(arg_list) -> None:
             sys.exit()
 
         [path] = arguments
-        scanner = Scanner(path, names)
+        with scanner_init_error_handler(path):
+            scanner = Scanner(path, names)
         parser = Parser(names, devices, network, monitors, scanner)
 
         # It is possible to provide a file that is wrong initially
         # An error will be given in the GUI terminal
+        print(parsing_message)
         parser.parse_network()
         # Initialise an instance of the gui.Gui() class
         app = wx.App()

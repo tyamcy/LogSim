@@ -228,6 +228,7 @@ class Monitors:
 
     def fetch_identifier_to_device_port_name(self) -> dict:
         """Fetch device name and port name from a given identifier."""
+        """Fetch device name and port name from a given identifier."""
         # {identifier: (device_name, port_name)}
         identifier_to_device_port_name = {}
         for identifier, (device_id, port_id) in self.identifier_to_port.items():

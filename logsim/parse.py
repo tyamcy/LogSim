@@ -9,6 +9,8 @@ Classes
 Parser - parses the definition file and builds the logic network.
 """
 
+from typing import List
+
 from names import Names
 from devices import Devices
 from network import Network
@@ -21,11 +23,6 @@ from scanner import Symbol
 
 
 class Parser:
-    DTYPE_PIN_IN = ["DATA", "CLK", "SET", "CLEAR"]
-    DTYPE_PIN_OUT = ["Q", "QBAR"]
-    VARIABLE_INPUT_DEVICE = ["AND", "NAND", "OR", "NOR"]
-    FIXED_INPUT_DEVICE = ["XOR", "DTYPE"]
-    INITIAL_STATE = ["0", "1"]
 
     """Parse the definition file and build the logic network.
 
@@ -47,6 +44,12 @@ class Parser:
     --------------
     parse_network(self): Parses the circuit definition file.
     """
+
+    DTYPE_PIN_IN = ["DATA", "CLK", "SET", "CLEAR"]
+    DTYPE_PIN_OUT = ["Q", "QBAR"]
+    VARIABLE_INPUT_DEVICE = ["AND", "NAND", "OR", "NOR"]
+    FIXED_INPUT_DEVICE = ["XOR", "DTYPE"]
+    INITIAL_STATE = ["0", "1"]
 
     def __init__(self, names: Names, devices: Devices, network: Network, monitors: Monitors, scanner: Scanner):
         """Initialise constants."""
@@ -74,9 +77,6 @@ class Parser:
 
     def parse_network(self) -> bool:
         """Parse the circuit definition file."""
-        # For now just return True, so that userint and gui can run in the
-        # skeleton code. When complete, should return False when there are
-        # errors in the circuit definition file.
         self.advance()
         while self.symbol.type != Scanner.EOF:
             if self.symbol.type == Scanner.KEYWORD:
@@ -516,7 +516,7 @@ class Parser:
         """Return the current symbol's string representation."""
         return self.names.get_name_string(self.symbol.id)
 
-    def fetch_error_output(self) -> list[str]:
+    def fetch_error_output(self) -> List[str]:
         """Return the error list from error_handler."""
         return self.error_handler.error_output_list
 

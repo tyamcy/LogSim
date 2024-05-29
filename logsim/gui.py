@@ -612,7 +612,6 @@ class Gui(wx.Frame):
         self.canvas.monitors = self.monitors
         self.canvas.names = self.names
 
-        self.canvas.reset_display()
         self.canvas.clear_display()
 
     def reset_gui_display(self):
@@ -924,8 +923,6 @@ class Gui(wx.Frame):
 
     def on_continue_button(self, event) -> None:
         """Handle the event when the user continue button."""
-        self.canvas.reset_display()
-
         self.continue_simulation()
 
         self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))

@@ -338,3 +338,28 @@ class Devices:
             error_type = self.BAD_DEVICE
 
         return error_type
+
+    def fetch_all_device_names(self):
+        device_name_list = []
+        for device in self.devices_list:
+            device_name = self.names.get_name_string(device.device_id)
+            device_name_list.append(device_name)
+        return device_name_list
+
+    def fetch_device_input_names(self, device_id):
+        input_names_list = []
+        device = self.get_device(device_id)
+        for input_id in device.inputs:
+            input_names_list.append(self.names.get_name_string(input_id))
+        return input_names_list
+
+    def fetch_device_output_names(self, device_id):
+        output_names_list = []
+        device = self.get_device(device_id)
+        for output_id in device.outputs:
+            if output_id:
+                output_name = self.names.get_name_string(output_id)
+                output_names_list.append(output_name)
+            else:
+                output_names_list.append("output")
+        return output_names_list

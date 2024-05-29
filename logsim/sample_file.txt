@@ -1,0 +1,53 @@
+/ Sample file /
+DEVICE {
+D1: DTYPE;
+G1: AND, 2;
+G2: OR, 2;
+G3: NOR, 4;
+G4: NAND, 2;
+G5: XOR;
+}
+
+/ Inputs /
+SWITCH {
+A: 0;
+B: 0;
+C: 1;
+D: 1;
+E: 1;
+}
+
+CLOCK {
+CLK1: 10;
+}
+
+/ Initial monitoring points /
+MONITOR {
+S1: D1.Q;
+S2: G1;
+S3: G2;
+S4: G3;
+S5: G4;
+f: G5;
+CLK: CLK1;
+}
+
+/ Internal connections of the circuit /
+CONNECTION {
+CLK1 > D1.CLK;
+A > D1.SET;
+A > D1.CLEAR;
+B > D1.DATA;
+D1.Q > G1.I1;
+C > G1.I2;
+D1.QBAR > G2.I1;
+D > G2.I2;
+C > G3.I1;
+G1 > G3.I2;
+G2 > G3.I3;
+D > G3.I4;
+D > G4.I1;
+E > G4.I2;
+G3 > G5.I1;
+G4 > G5.I2;
+}

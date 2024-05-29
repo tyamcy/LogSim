@@ -625,7 +625,12 @@ class Gui(wx.Frame):
                 devices = Devices(names)
                 network = Network(names, devices)
                 monitors = Monitors(names, devices, network)
-                scanner = Scanner(path, names)
+                try:
+                    scanner = Scanner(path, names)
+                except UnicodeDecodeError:
+                    self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
+                    self.terminal.AppendText(f"Error: file '{path}' is not a unicode text file")
+                    return
                 parser = Parser(names, devices, network, monitors, scanner)
 
                 if parser.parse_network():

@@ -16,6 +16,7 @@ from contextlib import contextmanager
 
 import wx
 
+from typing import List
 from names import Names
 from devices import Devices
 from network import Network
@@ -27,7 +28,7 @@ from gui import Gui
 
 
 @contextmanager
-def scanner_init_error_handler(path):
+def scanner_init_error_handler(path: str) -> None:
     """Context manager to handle initialization errors for scanner"""
     try:
         yield
@@ -39,7 +40,7 @@ def scanner_init_error_handler(path):
         sys.exit()
 
 
-def main(arg_list) -> None:
+def main(arg_list: List[str]) -> None:
     """Parse the command line options and arguments specified in arg_list.
 
     Run either the command line user interface, the graphical user interface,
@@ -100,7 +101,7 @@ def main(arg_list) -> None:
         # Initialise an instance of the gui.Gui() class
         app = wx.App()
         gui = Gui("Logic Simulator", path, names, devices, network,
-                    monitors, parser)
+                  monitors, parser)
         gui.Show(True)
         app.MainLoop()
 

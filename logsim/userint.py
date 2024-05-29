@@ -11,7 +11,7 @@ from names import Names
 from devices import Devices
 from monitors import Monitors
 from network import Network
-from typing import Union, List
+from typing import Optional, Union, List
 
 
 class UserInterface:
@@ -134,7 +134,7 @@ class UserInterface:
         while self.character.isspace():
             self.get_character()
 
-    def read_string(self) -> Union[None, str]:
+    def read_string(self) -> Optional[str]:
         """Return the next alphanumeric string."""
         self.skip_spaces()
         name_string = ""
@@ -146,7 +146,7 @@ class UserInterface:
             self.get_character()
         return name_string
 
-    def read_name(self) -> Union[None, int]:
+    def read_name(self) -> Optional[int]:
         """Return the name ID of the current string if valid.
 
         Return None if the current string is not a valid name string.
@@ -160,7 +160,7 @@ class UserInterface:
             print("Error! Unknown name.")
         return name_id
 
-    def read_signal_name(self) -> Union[None, List[Union[int, str, None]]]:
+    def read_signal_name(self) -> Optional[List[Optional[int]]]:
         """Return the device and port IDs of the current signal name.
 
         Return None if either is invalid.
@@ -176,7 +176,7 @@ class UserInterface:
             port_id = None
         return [device_id, port_id]
 
-    def read_monitor(self) -> Union[None, List[Union[int, str, None]]]:
+    def read_monitor(self) -> Optional[List[Union[int, str, None]]]:
         """Return the device, port IDs and identifier (alias) of the monitor point.
 
         Return None if either is invalid.
@@ -199,7 +199,7 @@ class UserInterface:
             return None
         return [device_id, port_id, identifier]
 
-    def read_number(self, lower_bound: Union[None, int], upper_bound: Union[None, int]) -> Union[None, int]:
+    def read_number(self, lower_bound: Optional[int], upper_bound: Optional[int]) -> Optional[int]:
         """Return the current number.
 
         Return None if no number is provided or if it falls outside the valid

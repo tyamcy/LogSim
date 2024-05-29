@@ -263,7 +263,7 @@ def test_display_signals(capsys, new_monitors: Monitors) -> None:
     assert "" in traces  # additional empty line at the end
 
 
-def test_fetch_identifier_to_device_name(new_monitors):
+def test_fetch_identifier_to_device_name(new_monitors: Monitors) -> None:
     assert new_monitors.fetch_identifier_to_device_port_name()["A1"] == ("Or1", None)
     assert new_monitors.fetch_identifier_to_device_port_name()["A2"] == ("Or1", None)
     assert new_monitors.fetch_identifier_to_device_port_name()["B"] == ("Sw1", None)

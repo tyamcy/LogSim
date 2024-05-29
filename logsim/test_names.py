@@ -70,7 +70,7 @@ def test_lookup(new_names: Names, used_names: Names, name_string_list: List[str]
     (3, ";"),
     (4, None)
 ])
-def test_get_name_string(new_names: Names, used_names: Names, name_id: int, expected_string: str):
+def test_get_name_string(new_names: Names, used_names: Names, name_id: int, expected_string: str) -> None:
     """Test if get_string returns the expected string."""
     # Name is present
     assert used_names.get_name_string(name_id) == expected_string

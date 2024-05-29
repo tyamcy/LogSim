@@ -744,7 +744,6 @@ class Gui(wx.Frame):
                 self.monitors.remove_monitor_by_identifier(identifier)
                 self.update_monitors_display()
                 self.update_add_remove_button_states()
-
                 
         dialog.Destroy()
 
@@ -756,7 +755,7 @@ class Gui(wx.Frame):
 
         for switch_id in self.id_switches:
             switch_name = self.names.get_name_string(switch_id)
-            switch_state = self.network.get_output_signal(switch_id, None)
+            switch_state = self.devices.get_device(switch_id).switch_state
             self.switches_dict[switch_name] = switch_state
 
         self.switches_scrolled_sizer.Clear(True)
@@ -820,14 +819,14 @@ class Gui(wx.Frame):
             if self.network.execute_network():
                 self.monitors.record_signals()
             else:
-                print("Error! Network oscillating.")
+                self.terminal.SetDefaultStyle(wx.TextAttr(self.dark_text_color))
+                self.terminal.AppendText(f"\nERROR: NETWORK OSCILLATING!!")
                 return False
 
         self.signals_dictionary = self.monitors.get_all_monitor_signal()
         self.total_cycles = self.num_cycles
         self.canvas.update_cycle(self.total_cycles)
         self.canvas.render("", self.signals_dictionary)
-        print(self.signals_dictionary)
         return True
     
     def continue_simulation(self):
@@ -844,7 +843,6 @@ class Gui(wx.Frame):
         self.total_cycles += self.num_cycles
         self.canvas.update_cycle(self.total_cycles)
         self.canvas.render("", self.signals_dictionary)
-        print(self.signals_dictionary)
         return True
     
     def on_run_button(self, event):

@@ -719,8 +719,13 @@ class Gui(wx.Frame):
                 device_id = self.names.query(device_name)
                 port_id = self.names.query(device_port) if device_port != "output" else None
                 if identifier and isinstance(identifier, str) and identifier[0].isalpha():
-                    self.monitors.make_monitor(device_id, port_id, identifier)
-                    self.update_monitors_display()
+                    error_type = self.monitors.make_monitor(device_id, port_id, identifier)
+                    if error_type == self.monitors.NO_ERROR:
+                        self.update_monitors_display()
+                    elif error_type == self.monitors.MONITOR_IDENTIFIER_PRESENT:
+                        wx.MessageBox("Identifier already used, please think of a new one!",
+                                      "Error", wx.OK | wx.ICON_ERROR)
+
                 else:
                     wx.MessageBox("Please enter a valid identifier for the monitor! "
                                   "\n(Alphanumerics starting with an alphabet)",

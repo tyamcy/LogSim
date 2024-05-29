@@ -337,9 +337,6 @@ class Gui(wx.Frame):
         self.total_cycles = self.num_cycles
 
         # Getting the list of active monitors
-        self.monitors_active_list = self.monitors.get_signal_names()[0]
-        self.monitors_inactive_list = self.monitors.get_signal_names()[1]
-
         # Creating a dictionary of switches
         self.id_switches = self.devices.find_devices(self.devices.SWITCH)
         self.switches_dict = dict()  # {switch name: switch state}
@@ -639,9 +636,6 @@ class Gui(wx.Frame):
                     self.monitors = monitors
                     self.scanner = scanner
                     self.parser = parser
-
-                    self.monitors_active_list = self.monitors.get_signal_names()[0]
-                    self.monitors_inactive_list = self.monitors.get_signal_names()[1]
                 else:
                     # Clearing the GUI display as the file is invalid
                     self.monitors_scrolled_sizer.Clear(True)
@@ -671,18 +665,18 @@ class Gui(wx.Frame):
         else:
             color = self.dark_text_color
 
-        self.monitors_active_list.sort()
-        self.monitors_inactive_list.sort()
-
-        if not self.monitors_active_list:
+        if not self.monitors.get_all_identifiers():
             # Empty list, displays a message saying "No active monitors"
             no_monitor_text = wx.StaticText(self.monitors_scrolled, wx.ID_ANY, "No active monitors")
             no_monitor_text.SetForegroundColour(color)
             self.monitors_scrolled_sizer.Add(no_monitor_text, 0, wx.ALL | wx.CENTER, 5)
         else:
             # Populate the display if there are active monitors
-            for monitor in self.monitors_active_list:
-                monitor_label = wx.StaticText(self.monitors_scrolled, wx.ID_ANY, monitor)
+            for identifier, (device_name, port_name) in self.monitors.fetch_identifier_to_device_port_name().items():
+                output = identifier + ": " + device_name
+                if port_name:
+                    output += "." + port_name
+                monitor_label = wx.StaticText(self.monitors_scrolled, wx.ID_ANY, output)
                 monitor_label.SetForegroundColour(color)
                 self.monitors_scrolled_sizer.Add(monitor_label, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -693,46 +687,56 @@ class Gui(wx.Frame):
 
     def update_add_remove_button_states(self):
         """Updates the enabled/disabled state of the add and remove buttons."""
-        self.add_monitor_button.Enable(bool(self.monitors_inactive_list))
-        self.remove_monitor_button.Enable(bool(self.monitors_active_list))
+        self.remove_monitor_button.Enable(bool(self.monitors.get_all_identifiers()))
 
     def on_add_monitor_button(self, event):
         """Handle the click event of the add monitor button."""
-        dialog = CustomDialogBox(self, "Add Monitor", "Select a Monitor to Add:", self.monitors_inactive_list,
+        dialog = CustomDialogBox(self, "Add Monitor", "Select a device to monitor:",
+                                 self.devices.fetch_all_device_names(),
                                  self.theme)
+        device_name = None
+        device_port = None
         if dialog.ShowModal() == wx.ID_OK:
-            selection = dialog.getSelectedItem()
-            if selection:
-                self.monitors_active_list.append(selection)
-                self.monitors_inactive_list.remove(selection)
-                self.update_monitors_display()
-                self.update_add_remove_button_states()
-
-                identifier_dialog = IdentifierInputDialog(self, "Enter Identifier", "Please enter an identifier for the monitor:", self.theme)
+            device_name = dialog.getSelectedItem()
+        if device_name:
+            device_id = self.names.query(device_name)
+            output_input_names = self.devices.fetch_device_output_names(device_id)
+            output_input_names += self.devices.fetch_device_input_names(device_id)
+            dialog = CustomDialogBox(self, "Add Monitor", "Select a port from the device to monitor:",
+                                     output_input_names,
+                                     self.theme)
+            if dialog.ShowModal() == wx.ID_OK:
+                device_port = dialog.getSelectedItem()
+            if device_port:
+                identifier_dialog = IdentifierInputDialog(self, "Enter Identifier",
+                                                          "Please enter an identifier for the monitor:", self.theme)
                 if identifier_dialog.ShowModal() == wx.ID_OK:
-                    identifier = identifier_dialog.getAlias()
+                    identifier = identifier_dialog.getIdentifier()
 
-                if "." in selection:
-                    device_name, port_name = selection.split(".")
                 else:
-                    device_name = selection
-                    port_name = None
+                    identifier = None
+
                 device_id = self.names.query(device_name)
-                port_id = self.names.query(port_name) if port_name else None
-
-                self.monitors.make_monitor(device_id, port_id, identifier)
-
+                port_id = self.names.query(device_port) if device_port != "output" else None
+                if identifier and isinstance(identifier, str) and identifier[0].isalpha():
+                    self.monitors.make_monitor(device_id, port_id, identifier)
+                    self.update_monitors_display()
+                else:
+                    wx.MessageBox("Please enter a valid identifier for the monitor! "
+                                  "\n(Alphanumerics starting with an alphabet)",
+                                  "Error", wx.OK | wx.ICON_ERROR)
+                self.update_add_remove_button_states()
         dialog.Destroy()
 
     def on_remove_monitor_button(self, event):
         """Handle the click event of the remove monitor button."""
-        dialog = CustomDialogBox(self, "Remove Monitor", "Select a Monitor to Remove:", self.monitors_active_list,
+        dialog = CustomDialogBox(self, "Remove Monitor", "Select a Monitor to Remove:",
+                                 list(self.monitors.get_all_identifiers()),
                                  self.theme)
         if dialog.ShowModal() == wx.ID_OK:
-            selection = dialog.getSelectedItem()
-            if selection:
-                self.monitors_active_list.remove(selection)
-                self.monitors_inactive_list.append(selection)
+            identifier = dialog.getSelectedItem()
+            if identifier:
+                self.monitors.remove_monitor_by_identifier(identifier)
                 self.update_monitors_display()
                 self.update_add_remove_button_states()
 

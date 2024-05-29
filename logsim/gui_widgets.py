@@ -22,13 +22,11 @@ class CustomDialogBox(wx.Dialog):
         self.selection = None
 
         # UI Theme Colours - Light Mode
-        self.light_button_color = "#EAEAEA"
         self.light_background_color = "#DDDDDD"
         self.light_background_secondary = "#FAFAFA"
         self.light_text_color = "#000000"
 
         # UI Theme Colours - Dark Mode
-        self.dark_button_color = "#555555"
         self.dark_background_color = "#333333"
         self.dark_background_secondary = "#444444"
         self.dark_text_color = "#FFFFFF"
@@ -91,10 +89,12 @@ class IdentifierInputDialog(wx.Dialog):
 
         # UI Theme Colours - Light Mode
         self.light_background_color = "#DDDDDD"
+        self.light_background_secondary = "#FAFAFA"
         self.light_text_color = "#000000"
 
         # UI Theme Colours - Dark Mode
         self.dark_background_color = "#333333"
+        self.dark_background_secondary = "#444444"
         self.dark_text_color = "#FFFFFF"
 
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -109,10 +109,12 @@ class IdentifierInputDialog(wx.Dialog):
         if self.theme == "light":
             self.SetBackgroundColour(self.light_background_color)
             self.text_ctrl.SetForegroundColour(self.light_text_color)
+            self.text_ctrl.SetBackgroundColour(self.light_background_secondary)
             label.SetForegroundColour(self.light_text_color)
         elif self.theme == "dark":
             self.SetBackgroundColour(self.dark_background_color)
             self.text_ctrl.SetForegroundColour(self.dark_text_color)
+            self.text_ctrl.SetBackgroundColour(self.dark_background_secondary)
             label.SetForegroundColour(self.dark_text_color)
 
         button_sizer = self.CreateButtonSizer(wx.OK | wx.CANCEL)

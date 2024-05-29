@@ -55,7 +55,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
     update_theme(self, theme): Updates the colour palette.
     """
 
-    def __init__(self, parent, devices, monitors, names: Names):
+    def __init__(self, parent, devices: Devices, monitors: Monitors, names: Names):
         """Initialise canvas properties and useful variables."""
         super().__init__(parent, -1,
                          attribList=[wxcanvas.WX_GL_RGBA,
@@ -116,7 +116,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glTranslated(self.pan_x, self.pan_y, 0.0)
         GL.glScaled(self.zoom, self.zoom, self.zoom)
 
-    def render(self, text, signals={}):
+    def render(self, text: str, signals={}) -> None:
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
         if not self.init:
@@ -191,7 +191,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glFlush()
         self.SwapBuffers()
 
-    def on_paint(self, event):
+    def on_paint(self, event) -> None:
         """Handle the paint event."""
         self.SetCurrent(self.context)
         if not self.init:
@@ -207,13 +207,13 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         #                str(size.width), ", ", str(size.height)])
         self.render("")
 
-    def on_size(self, event):
+    def on_size(self, event) -> None:
         """Handle the canvas resize event."""
         # Forces reconfiguration of the viewport, modelview and projection
         # matrices on the next paint event
         self.init = False
 
-    def on_mouse(self, event):
+    def on_mouse(self, event) -> None:
         """Handle mouse events."""
         text = ""
         # Calculate object coordinates of the mouse position
@@ -249,7 +249,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         else:
             self.Refresh()  # triggers the paint event
 
-    def render_text(self, text, x_pos, y_pos):
+    def render_text(self, text: str, x_pos: int, y_pos: int) -> None:
         """Handle text drawing operations."""
         GL.glColor3f(*self.color_text)
         GL.glRasterPos2f(x_pos, y_pos)
@@ -262,7 +262,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             else:
                 GLUT.glutBitmapCharacter(font, ord(character))
 
-    def update_theme(self, theme):
+    def update_theme(self, theme: str) -> None:
         """Handle background colour update."""
         self.SetCurrent(self.context)
         if theme == "dark":
@@ -280,7 +280,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         self.SwapBuffers()
 
-    def reset_display(self):
+    def reset_display(self) -> None:
         """Return to the initial viewpoint at the origin."""
         # Reset location parameters
         self.pan_x = 0
@@ -291,7 +291,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GL.glMatrixMode(GL.GL_MODELVIEW)
         GL.glLoadIdentity()
 
-    def update_cycle(self, cycle):
+    def update_cycle(self, cycle: int) -> None:
         """Keeps track of the total number of simulation cycles."""
         self.total_cycles = cycle
 
@@ -309,20 +309,40 @@ class Gui(wx.Frame):
     --------------
     on_menu(self, event): Event handler for the file menu.
 
-    on_spin(self, event): Event handler for when the user changes the spin
+    check_errors(self, filename, parser): Handles the error checking when a file is uploaded.
+
+    on_upload_button(self, event): Event handler for when user clicks the upload button to upload a specification file (.txt file).
+
+    on_cycles_spin(self, event): Event handler for when the user changes the spin
                            control value.
+
+    update_monitors_display(self): Handle the event of updating the laist of monitors upon change.
+
+    update_add_remove_button_states(self): Updates the enabled/disabled state of the add and remove buttons.
+
+    on_add_monitor_button(self, event): Event handler for when the users click the add monitor button.
+    
+    on_remove_monitor_button(self, event): Event handler for when the user clicks the remove monitor button.
+
+    update_switches_display(self): Event handler for updating the displayed list of switches.
+
+    on_toggle_switch(self, event): Event handler for when the user toggles a switch.
+
+    run_simulation(self): Runs the simulation and plot the monitored traces.
+
+    continue_simulation(self): Continues the simulation and plot the monitored traces.
 
     on_run_button(self, event): Event handler for when the user clicks the run
                                 button.
 
-    on_text_box(self, event): Event handler for when the user enters text.
+    on_continue_button(self, event): Event handler for when the user clicks the continue button.                      
 
     toggle_theme(self, event): Event handler for when the user changes the color theme.
 
-    toggle_theme(self, event): Event handler for when the user changes the color theme.
+    fetch_cycle(self): Tracks the total number of simulation cycles.
     """
 
-    def __init__(self, title, path, names, devices, network, monitors, parser):
+    def __init__(self, title: str, path: str, names: Names, devices: Devices, network: Network, monitors: Monitors, parser: Parser):
         """Initialise widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
@@ -557,7 +577,7 @@ class Gui(wx.Frame):
                           "\nContinue: Continues the simulation with updated paramaters.",
                           "Controls", wx.ICON_INFORMATION | wx.OK)
 
-    def check_errors(self, filename, parser):
+    def check_errors(self, filename: str, parser: Parser) -> bool:
         """Handles the error checking when a file is uploaded."""
         if parser.parse_network():
             # Message on terminal
@@ -601,7 +621,7 @@ class Gui(wx.Frame):
 
             return False
 
-    def on_upload_button(self, event):
+    def on_upload_button(self, event) -> None:
         """Handles the event when the user clicks the upload button to select the specification file."""
         wildcard = "Text files (*.txt)|*.txt"
         with wx.FileDialog(self, "Open Specification File", wildcard=wildcard,
@@ -655,12 +675,12 @@ class Gui(wx.Frame):
                 self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
                 self.terminal.AppendText(f"File {filename} upload failed.")
 
-    def on_cycles_spin(self, event):
+    def on_cycles_spin(self, event) -> None:
         """Handle the event when the user changes the spin control value."""
         spin_value = self.cycles_spin.GetValue()
         self.num_cycles = spin_value
 
-    def update_monitors_display(self):
+    def update_monitors_display(self) -> None:
         """Handle the event of updating the list of monitors upon change."""
         self.monitors_scrolled_sizer.Clear(True)
 
@@ -690,11 +710,11 @@ class Gui(wx.Frame):
         self.monitors_scrolled_sizer.FitInside(self.monitors_scrolled)
         self.monitors_scrolled_sizer.Layout()
 
-    def update_add_remove_button_states(self):
+    def update_add_remove_button_states(self) -> None:
         """Updates the enabled/disabled state of the add and remove buttons."""
         self.remove_monitor_button.Enable(bool(self.monitors.get_all_identifiers()))
 
-    def on_add_monitor_button(self, event):
+    def on_add_monitor_button(self, event) -> None:
         """Handle the click event of the add monitor button."""
         dialog = CustomDialogBox(self, "Add Monitor", "Select a device to monitor:",
                                  self.devices.fetch_all_device_names(),
@@ -702,7 +722,7 @@ class Gui(wx.Frame):
         device_name = None
         device_port = None
         if dialog.ShowModal() == wx.ID_OK:
-            device_name = dialog.getSelectedItem()
+            device_name = dialog.get_selected_item()
         if device_name:
             device_id = self.names.query(device_name)
             output_input_names = self.devices.fetch_device_output_names(device_id)
@@ -711,12 +731,12 @@ class Gui(wx.Frame):
                                      output_input_names,
                                      self.theme)
             if dialog.ShowModal() == wx.ID_OK:
-                device_port = dialog.getSelectedItem()
+                device_port = dialog.get_selected_item()
             if device_port:
                 identifier_dialog = IdentifierInputDialog(self, "Enter Identifier",
                                                           "Please enter an identifier for the monitor:", self.theme)
                 if identifier_dialog.ShowModal() == wx.ID_OK:
-                    identifier = identifier_dialog.getIdentifier()
+                    identifier = identifier_dialog.get_identifier()
 
                 else:
                     identifier = None
@@ -738,13 +758,13 @@ class Gui(wx.Frame):
                 self.update_add_remove_button_states()
         dialog.Destroy()
 
-    def on_remove_monitor_button(self, event):
+    def on_remove_monitor_button(self, event) -> None:
         """Handle the click event of the remove monitor button."""
         dialog = CustomDialogBox(self, "Remove Monitor", "Select a Monitor to Remove:",
                                  list(self.monitors.get_all_identifiers()),
                                  self.theme)
         if dialog.ShowModal() == wx.ID_OK:
-            identifier = dialog.getSelectedItem()
+            identifier = dialog.get_selected_item()
             if identifier:
                 self.monitors.remove_monitor_by_identifier(identifier)
                 self.update_monitors_display()
@@ -752,7 +772,7 @@ class Gui(wx.Frame):
                 
         dialog.Destroy()
 
-    def update_switches_display(self):
+    def update_switches_display(self) -> None:
         """Handle the event of updating the displayed list of switches."""
         # Creating a dictionary of switches
         self.id_switches = self.devices.find_devices(self.devices.SWITCH)
@@ -797,7 +817,7 @@ class Gui(wx.Frame):
         self.switches_scrolled_sizer.FitInside(self.switches_scrolled)
         self.switches_scrolled_sizer.Layout()
 
-    def on_toggle_switch(self, event):
+    def on_toggle_switch(self, event) -> None:
         """Handle the event when the user toggles a switch."""
         button = event.GetEventObject()
         is_on = button.GetValue()  # toggle button is on when clicked (value 1)
@@ -814,7 +834,7 @@ class Gui(wx.Frame):
             self.devices.set_switch(switch_id, 0)
         self.Refresh()
 
-    def run_simulation(self):
+    def run_simulation(self) -> bool:
         """Runs the simulation and plot the monitored traces."""
         self.monitors.reset_monitors()
 
@@ -834,8 +854,8 @@ class Gui(wx.Frame):
         self.canvas.render("", self.signals_dictionary)
         return True
     
-    def continue_simulation(self):
-        """Runs the simulation and plot the monitored traces."""
+    def continue_simulation(self) -> bool:
+        """Continues the simulation and plot the monitored traces."""
         # Running the simulation
         for _ in range(self.num_cycles):
             if self.network.execute_network():
@@ -850,7 +870,7 @@ class Gui(wx.Frame):
         self.canvas.render("", self.signals_dictionary)
         return True
     
-    def on_run_button(self, event):
+    def on_run_button(self, event) -> None:
         """Handle the event when the user clicks the run button."""
         self.canvas.reset_display()
 
@@ -863,7 +883,7 @@ class Gui(wx.Frame):
         self.continue_button.Enable()
         self.continue_button.SetBackgroundColour(self.color_primary)
 
-    def on_continue_button(self, event):
+    def on_continue_button(self, event) -> None:
         """Handle the event when the user continue button."""
         self.canvas.reset_display()
 
@@ -872,11 +892,7 @@ class Gui(wx.Frame):
         self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
         self.terminal.AppendText("\n\nUpdated parameters, continuing simulation...")
 
-    def on_text_box(self, event):
-        """Handle the event when the user enters text."""
-        text_box_value = self.text_box.GetValue()
-
-    def toggle_theme(self, event):
+    def toggle_theme(self, event) -> None:
         """Handle the event when the user presses the toggle switch menu item to switch between colour themes."""
         if self.theme == "light":
             self.canvas.update_theme(self.theme)
@@ -942,6 +958,6 @@ class Gui(wx.Frame):
 
         self.Refresh()
 
-    def fetch_cycle(self):
+    def fetch_cycle(self) -> int:
         """Tracks the total number of simulation cycles."""
         return self.total_cycles

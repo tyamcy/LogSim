@@ -52,7 +52,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
 
     update_theme(self, theme): Updates the colour palette.
 
-    update_theme(self, theme): Updates the colour palette.
+    clear_display(self): Clear the canvas.
     """
 
     def __init__(self, parent, devices: Devices, monitors: Monitors, names: Names):
@@ -294,6 +294,15 @@ class MyGLCanvas(wxcanvas.GLCanvas):
     def update_cycle(self, cycle: int) -> None:
         """Keeps track of the total number of simulation cycles."""
         self.total_cycles = cycle
+
+    def clear_display(self) -> None:
+        """Clear all content from the canvas."""
+        self.SetCurrent(self.context)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+        self.signals.clear()
+        self.init = False
+        self.Refresh()
+
 
 class Gui(wx.Frame):
     """Configure the main window and all the widgets.
@@ -600,7 +609,7 @@ class Gui(wx.Frame):
     def reset_canvas(self):
         """Reset canvas when new file is uploaded"""
         self.canvas.reset_display()
-        self.canvas.render("")
+        self.canvas.clear_display()
 
     def reset_gui_display(self):
         """Reset gui display when new file is uploaded."""

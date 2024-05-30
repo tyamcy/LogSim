@@ -53,14 +53,25 @@ class Canvas(wxcanvas.GLCanvas):
         self.light_color_background = (0.98, 0.98, 0.98, 1)
         self.light_color_text = (0, 0, 0)
         self.light_color_trace = (0, 0, 0)
+        self.light_color_grid = (0.8, 0.8, 0.8)
+        self.light_color_grid_adaptive = (0.6, 0.6, 0.6)
         self.dark_color_background = (0.267, 0.267, 0.267, 1)
         self.dark_color_text = (1, 1, 1)
         self.dark_color_trace = (1, 1, 1)
+        self.dark_color_grid = (0.4, 0.4, 0.4)
+        self.dark_color_grid_adaptive = (0.6, 0.6, 0.6)
 
         # Initialise colours
         self.color_background = self.light_color_background
         self.color_text = self.light_color_text
         self.color_trace = self.light_color_trace
+        self.color_grid = self.light_color_grid
+        self.color_grid_adaptive = self.light_color_grid_adaptive
+
+        # Trace widths
+        self.width_grid = 0.5
+        self.width_grid_adaptive = 1.5
+        self.width_trace = 3
 
         # Initialise variables for panning
         self.pan_x = 0
@@ -114,13 +125,17 @@ class Canvas(wxcanvas.GLCanvas):
             height = 30  # height of a pulse
             y_diff = 75  # distance between different plots
 
-            # Annotate y-axis (no. of cycles)
+            # Annotate x-axis (no. of cycles)
             self.render_text("0", x_start, y_start - 20)
             no_cycles = len(list(self.signals.values())[0])
-            self.render_text(str(no_cycles), x_start + no_cycles * width, y_start - 20)
+            #self.render_text(str(no_cycles), x_start + no_cycles * width, y_start - 20)
 
-            """refactor later"""
             identifier_dict = self.gui.monitors.fetch_identifier_to_device_port_name()
+
+            # Plot x-axis, no of cycles
+            no_of_monitors = len(identifier_dict.keys())
+            self.plot_grid(x_start, no_of_monitors, no_cycles)
+
             for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
                 device_id = self.gui.names.query(device_name)
                 port_id = self.gui.names.query(port_name) if port_name else None
@@ -145,6 +160,7 @@ class Canvas(wxcanvas.GLCanvas):
                 x_next = x_start + width
 
                 GL.glColor3f(*self.color_trace)
+                GL.glLineWidth(self.width_trace)
                 GL.glBegin(GL.GL_LINE_STRIP)
 
                 for value in trace:
@@ -152,7 +168,7 @@ class Canvas(wxcanvas.GLCanvas):
                         y_curr = y
                     elif value == 1:
                         y_curr = y + height
-                        # x = 10 + i * x_spacing
+                        
                     GL.glVertex2f(x, y_curr)
                     GL.glVertex2f(x_next, y_curr)
 
@@ -167,6 +183,38 @@ class Canvas(wxcanvas.GLCanvas):
         # and swap the back buffer to the front
         GL.glFlush()
         self.SwapBuffers()
+
+    def plot_grid(self, x_start: int, no_of_monitors: int, cycles: int) -> None:
+        """Adds grid lines to the plot."""
+        width = 30
+        x = x_start + width
+        y_start = 40
+        y_end = y_start + no_of_monitors * 75  - 20
+
+        for i in range(1, cycles + 1):
+            # Thicker grid lines for multiples of 5 and annotate
+            if i % 5 == 0:
+                self.render_text(str(i), x, 30)
+
+                GL.glColor3f(*self.color_grid_adaptive)
+                GL.glLineWidth(self.width_grid_adaptive)
+                GL.glBegin(GL.GL_LINE_STRIP)
+
+                GL.glVertex2f(x, y_start)
+                GL.glVertex2f(x, y_end)
+
+                GL.glEnd()
+            else:
+                GL.glColor3f(*self.color_grid)
+                GL.glLineWidth(self.width_grid)
+                GL.glBegin(GL.GL_LINE_STRIP)
+
+                GL.glVertex2f(x, y_start)
+                GL.glVertex2f(x, y_end)
+
+                GL.glEnd()
+
+            x += width
 
     def on_paint(self, event) -> None:
         """Handle the paint event."""
@@ -241,12 +289,16 @@ class Canvas(wxcanvas.GLCanvas):
             self.color_background = self.light_color_background
             self.color_text = self.light_color_text
             self.color_trace = self.light_color_trace
+            self.color_grid = self.light_color_grid
+            self.color_grid_adaptive = self.light_color_grid_adaptive
             GL.glClearColor(*self.light_color_background)
             GL.glColor3f(*self.light_color_text)
         elif theme == "light":
             self.color_background = self.dark_color_background
             self.color_text = self.dark_color_text
             self.color_trace = self.dark_color_trace
+            self.color_grid = self.dark_color_grid
+            self.color_grid_adaptive = self.dark_color_grid_adaptive
             GL.glClearColor(*self.dark_color_background)
             GL.glColor3f(*self.dark_color_text)
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)

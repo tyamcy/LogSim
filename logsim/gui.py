@@ -16,6 +16,7 @@ from gui_terminal import Terminal
 from gui_buttons import UploadButton, RunButton, ContinueButton, MonitorAddButton, MonitorRemoveButton
 from gui_menu import MenuBar
 from gui_cycle_selector import CycleSelector
+from gui_switch import Switch
 
 from parse import Parser
 
@@ -149,20 +150,8 @@ class Gui(wx.Frame):
         self.right_sizer.Add(self.monitors_buttons_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 6)
 
         # Switches section
-        self.switches_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.switches_text = wx.StaticText(self, wx.ID_ANY, "Switches")
-        self.switches_scrolled = wx.ScrolledWindow(self, style=wx.VSCROLL)
-        self.switches_scrolled.SetScrollRate(10, 10)
-        self.switches_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
-
-        self.switches_scrolled.SetSizer(self.switches_scrolled_sizer)
-        self.switches_scrolled.SetMinSize((250, 150))
-        self.switches_scrolled.SetBackgroundColour(Color.light_background_secondary)
-
-        self.switches_sizer.Add(self.switches_text, 0, wx.ALL, 5)
-        self.switches_sizer.Add(self.switches_scrolled, 1, wx.EXPAND | wx.ALL, 5)
-
-        self.right_sizer.Add(self.switches_sizer, 1, wx.EXPAND | wx.TOP, 5)
+        self.switch = Switch(self)
+        self.right_sizer.Add(self.switch.switches_sizer, 1, wx.EXPAND | wx.TOP, 5)
 
         # Run button
         self.run_button = RunButton(self)
@@ -286,19 +275,19 @@ class Gui(wx.Frame):
             switch_state = self.devices.get_device(switch_id).switch_state
             self.switches_dict[switch_name] = switch_state
 
-        self.switches_scrolled_sizer.Clear(True)
+        self.switch.switches_scrolled_sizer.Clear(True)
 
         for switch, state in self.switches_dict.items():
             switch_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-            label = wx.StaticText(self.switches_scrolled, wx.ID_ANY, switch)
+            label = wx.StaticText(self.switch.switches_scrolled, wx.ID_ANY, switch)
             switch_sizer.Add(label, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT | wx.LEFT, 5)
 
             initial_label = "1" if state == 1 else "0"
-            toggle = wx.ToggleButton(self.switches_scrolled, wx.ID_ANY, initial_label)
+            toggle = wx.ToggleButton(self.switch.switches_scrolled, wx.ID_ANY, initial_label)
             toggle.SetValue(state == 1)
             toggle.SetBackgroundColour(Color.light_button_color)
-            toggle.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_switch)
+            toggle.Bind(wx.EVT_TOGGLEBUTTON, self.switch.on_toggle_switch)
 
             if self.theme == "light":
                 label.SetForegroundColour(Color.light_text_color)
@@ -313,29 +302,12 @@ class Gui(wx.Frame):
 
             switch_sizer.Add(toggle, 0, wx.ALIGN_CENTER_VERTICAL)
 
-            self.switches_scrolled_sizer.Add(switch_sizer, 0, wx.EXPAND | wx.ALL, 5)
+            self.switch.switches_scrolled_sizer.Add(switch_sizer, 0, wx.EXPAND | wx.ALL, 5)
 
-        self.switches_scrolled.SetSizer(self.switches_scrolled_sizer)
-        self.switches_scrolled.Layout()
-        self.switches_scrolled_sizer.FitInside(self.switches_scrolled)
-        self.switches_scrolled_sizer.Layout()
-
-    def on_toggle_switch(self, event) -> None:
-        """Handle the event when the user toggles a switch."""
-        button = event.GetEventObject()
-        is_on = button.GetValue()  # toggle button is on when clicked (value 1)
-        switch_name = self.toggle_button_switch_name[button.GetId()]
-        switch_id = self.names.query(switch_name)
-
-        if is_on:
-            button.SetLabel("1")
-            self.switches_dict[switch_name] = 1
-            self.devices.set_switch(switch_id, 1)
-        else:
-            button.SetLabel("0")
-            self.switches_dict[switch_name] = 0
-            self.devices.set_switch(switch_id, 0)
-        self.Refresh()
+        self.switch.switches_scrolled.SetSizer(self.switch.switches_scrolled_sizer)
+        self.switch.switches_scrolled.Layout()
+        self.switch.switches_scrolled_sizer.FitInside(self.switch.switches_scrolled)
+        self.switch.switches_scrolled_sizer.Layout()
 
     def run_simulation(self) -> bool:
         """Runs the simulation and plot the monitored traces."""

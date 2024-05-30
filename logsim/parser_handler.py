@@ -109,7 +109,7 @@ class ParserErrorHandler:
          self.EXPECT_PIN_IN_OR_OUT, self.EXPECT_KEYWORD, self.EXPECT_OPEN_CURLY_BRACKET, self.EXPECT_COMMA,
          self.EXPECT_SEMICOLON, self.EXPECT_COLON, self.EXPECT_FULL_STOP_OR_SEMICOLON, self.EXPECT_FULL_STOP,
          self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW, self.DUPLICATE_KEYWORD, self.WRONG_BLOCK_ORDER,
-         self.EXPECT_CLOSE_CURLY_BRACKET] = names.unique_error_codes(20)
+         self.EXPECT_CLOSE_CURLY_BRACKET, self.EXPECT_RC_TRIGGER_CYCLE] = names.unique_error_codes(21)
 
         # file error
         [self.MISSING_INPUT_TO_PIN, self.MISSING_MONITOR, self.MISSING_CLOCK_OR_SWITCH] = names.unique_error_codes(3)
@@ -199,7 +199,7 @@ class ParserErrorHandler:
         if error_code == self.EXPECT_IDENTIFIER:
             return f"Found {name}, expected a non-keyword identifier"
         elif error_code == self.EXPECT_INPUT_DEVICE:
-            return f"Found {name}, expected 'AND', 'NAND', 'OR', 'NOR', 'XOR' or 'DTYPE'"
+            return f"Found {name}, expected 'AND', 'NAND', 'OR', 'NOR', 'XOR', 'DTYPE' or 'RC'"
         elif error_code == self.EXPECT_VARIABLE_INPUT_NUMBER:
             return f"Found {name}, expected integer between 1 and 16"
         elif error_code == self.EXPECT_CLOCK_CYCLE:
@@ -236,6 +236,8 @@ class ParserErrorHandler:
             return f"{name} block order is wrong"
         elif error_code == self.EXPECT_CLOSE_CURLY_BRACKET:
             return f"Found {name}, expected '}}'"
+        elif error_code == self.EXPECT_RC_TRIGGER_CYCLE:
+            return f"Found {name}, expected positive integer with no leading zero"
 
         # semantic line error
         elif (error_code == self.network.INPUT_PORT_ABSENT or error_code == self.network.OUTPUT_PORT_ABSENT or

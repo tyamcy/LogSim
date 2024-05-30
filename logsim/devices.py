@@ -45,6 +45,7 @@ class Device:
         self.switch_state = None
         self.dtype_memory = None
         self.trigger_cycle = None
+        self.rc_counter = None
 
 
 class Devices:
@@ -269,13 +270,17 @@ class Devices:
         self.add_device(device_id, self.RC)
         self.add_output(device_id, output_id=None)
         device = self.get_device(device_id)
+        device.outputs[None] = self.HIGH
         device.trigger_cycle = trigger_cycle
+        print(trigger_cycle)
 
     def cold_startup(self):
-        """Simulate cold start-up of D-types and clocks.
+        """Simulate cold start-up of D-types, clocks and RCs.
 
         Set the memory of the D-types to a random state and make the clocks
         begin from a random point in their cycles.
+
+        Set RCs to high again and reset rc_counters.
         """
         for device in self.devices_list:
             if device.device_kind == self.D_TYPE:
@@ -288,6 +293,9 @@ class Devices:
                 # Initialise it to a random point in its cycle.
                 device.clock_counter = \
                     random.randrange(device.clock_half_period)
+            elif device.device_kind == self.RC:
+                device.outputs[None] = self.HIGH
+                device.rc_counter = 0
 
     def make_device(self, device_id: int, device_kind: int, device_property: int = None) -> None:
         """Create the specified device.

@@ -503,8 +503,6 @@ class Gui(wx.Frame):
         self.monitors_scrolled.SetScrollRate(10, 10)
         self.monitors_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.update_monitors_display()
-
         self.monitors_scrolled.SetMinSize((250, 150))
         self.monitors_scrolled.SetBackgroundColour(self.light_background_secondary)
         self.monitors_sizer.Add(self.monitors_text, 0, wx.ALL, 5)
@@ -533,8 +531,6 @@ class Gui(wx.Frame):
         self.switches_scrolled.SetScrollRate(10, 10)
         self.switches_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.update_switches_display()
-
         self.switches_scrolled.SetSizer(self.switches_scrolled_sizer)
         self.switches_scrolled.SetMinSize((250, 150))
         self.switches_scrolled.SetBackgroundColour(self.light_background_secondary)
@@ -559,6 +555,10 @@ class Gui(wx.Frame):
 
         # Checking the file supplied using <filepath>
         self.check_errors(path, self.parser)
+
+        # Update the GUI with new monitors and switches
+        self.update_monitors_display()
+        self.update_switches_display()
 
         # Set main sizer and size of GUI
         self.SetSizeHints(1080, 720)
@@ -588,13 +588,13 @@ class Gui(wx.Frame):
                           "\nContinue: Continues the simulation with updated paramaters.",
                           "Controls", wx.ICON_INFORMATION | wx.OK)
 
-    def disable_monitor_and_simulation_buttons(self):
-        """Disable buttons controlling monitor and simulation when file uploaded is invalid"""
-        # Disable add and remove button (monitor)
+    def disable_monitor_buttons(self):
+        """Disable buttons controlling monitor"""
         self.add_monitor_button.Disable()
         self.remove_monitor_button.Disable()
 
-        # Disable run and continue button (simulation)
+    def disable_simulation_buttons(self):
+        """Disable buttons controlling simulation"""
         self.run_button.Disable()
         self.run_button.SetBackgroundColour(self.color_disabled)
         self.continue_button.Disable()
@@ -645,14 +645,15 @@ class Gui(wx.Frame):
             self.terminal.AppendText(f"\nError in the specification file {filename}.")
 
             # Disable monitor and simulation buttons
-            self.disable_monitor_and_simulation_buttons()
+            self.disable_monitor_buttons()
+            self.disable_simulation_buttons()
 
             # Printing the error message in the GUI terminal
             errors = parser.error_handler.error_output_list
+
             for error in errors:
-                if error:
-                    self.terminal.SetDefaultStyle(wx.TextAttr(self.dark_text_color))
-                    self.terminal.AppendText(f"\n{error}")
+                self.terminal.SetDefaultStyle(wx.TextAttr(self.dark_text_color))
+                self.terminal.AppendText(f"\n{error}")
 
             return False
 
@@ -695,7 +696,8 @@ class Gui(wx.Frame):
                 except UnicodeDecodeError:
                     self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
                     self.terminal.AppendText(f"\nError: file '{path}' is not a unicode text file")
-                    self.disable_monitor_and_simulation_buttons()
+                    self.disable_monitor_buttons()
+                    self.disable_simulation_buttons()
                     return
                 parser = Parser(names, devices, network, monitors, scanner)
 
@@ -899,6 +901,7 @@ class Gui(wx.Frame):
             else:
                 self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
                 self.terminal.AppendText(f"\n\nError: network oscillating!!")
+                self.disable_simulation_buttons()
                 return False
 
         self.signals_dictionary = self.monitors.get_all_monitor_signal()
@@ -914,7 +917,7 @@ class Gui(wx.Frame):
             if self.network.execute_network():
                 self.monitors.record_signals()
             else:
-                print("Error! Network oscillating.")
+                self.disable_simulation_buttons()
                 return False
 
         self.signals_dictionary = self.monitors.get_all_monitor_signal()
@@ -927,14 +930,12 @@ class Gui(wx.Frame):
         """Handle the event when the user clicks the run button."""
         self.canvas.reset_display()
 
-        self.run_simulation()
-
         self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
         self.terminal.AppendText("\n\nRunning simulation...")
-        #self.run_button.SetBackgroundColour(self.color_disabled)
-        #self.run_button.Disable()
         self.continue_button.Enable()
         self.continue_button.SetBackgroundColour(self.color_primary)
+
+        self.run_simulation()
 
     def on_continue_button(self, event) -> None:
         """Handle the event when the user continue button."""

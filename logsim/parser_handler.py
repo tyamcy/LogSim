@@ -108,8 +108,8 @@ class ParserErrorHandler:
          self.EXPECT_CLOCK_CYCLE, self.EXPECT_INITIAL_STATE, self.EXPECT_PIN_IN, self.EXPECT_PIN_OUT,
          self.EXPECT_PIN_IN_OR_OUT, self.EXPECT_KEYWORD, self.EXPECT_OPEN_CURLY_BRACKET, self.EXPECT_COMMA,
          self.EXPECT_SEMICOLON, self.EXPECT_COLON, self.EXPECT_FULL_STOP_OR_SEMICOLON, self.EXPECT_FULL_STOP,
-         self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW, self.DUPLICATE_KEYWORD, self.WRONG_BLOCK_ORDER] \
-            = names.unique_error_codes(19)
+         self.EXPECT_ARROW, self.EXPECT_FULL_STOP_OR_ARROW, self.DUPLICATE_KEYWORD, self.WRONG_BLOCK_ORDER,
+         self.EXPECT_CLOSE_CURLY_BRACKET] = names.unique_error_codes(20)
 
         # file error
         [self.MISSING_INPUT_TO_PIN, self.MISSING_MONITOR, self.MISSING_CLOCK_OR_SWITCH] = names.unique_error_codes(3)
@@ -234,6 +234,8 @@ class ParserErrorHandler:
             return f"{name} block should not be redefined"
         elif error_code == self.WRONG_BLOCK_ORDER:
             return f"{name} block order is wrong"
+        elif error_code == self.EXPECT_CLOSE_CURLY_BRACKET:
+            return f"Found {name}, expected '}}'"
 
         # semantic line error
         elif (error_code == self.network.INPUT_PORT_ABSENT or error_code == self.network.OUTPUT_PORT_ABSENT or

@@ -147,10 +147,12 @@ class Parser:
                 self.skip_after_semicolon_or_to_close_bracket()
 
             # check for subsequent sub-rule if any
-            while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and Scanner.EOF:
+            while self.symbol.type != Scanner.CLOSE_CURLY_BRACKET and self.symbol.type != Scanner.EOF:
                 # wrong sub-rule
                 if not sub_rule():
                     self.skip_after_semicolon_or_to_close_bracket()
+            if self.symbol.type != Scanner.CLOSE_CURLY_BRACKET:
+                self.error_handler.line_error(self.error_handler.EXPECT_CLOSE_CURLY_BRACKET, self.symbol)
 
         else:
             # expect open curly bracket

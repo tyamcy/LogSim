@@ -84,66 +84,24 @@ class Gui(wx.Frame):
         self.total_cycles = self.num_cycles
 
         # A dictionary for the signals and simulated output
-        self.signals_dictionary = dict()  # {(device_id, port_id): [signal_list]}
-        self.signals_plot_dictionary = dict() # {device_string: [signal_list]}
+        self.signals_dictionary = dict()   # {(device_id, port_id): [signal_list]}
+        self.signals_plot_dictionary = dict()  # {device_string: [signal_list]}
 
-        # Initial styling (default as light mode)
-        self.theme = "light"
-        self.SetBackgroundColour(Color.light_background_color)
-        self.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Roboto'))
-
-        # Menu bar
         self.menu_bar = MenuBar(self)
-
-        # Defining sizers for layout
-        self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)  # main sizer with everything
-        self.left_sizer = wx.BoxSizer(wx.VERTICAL)  # left sizer for the canvas and terminal
-        self.right_sizer = wx.BoxSizer(wx.VERTICAL)  # right sizer for the controls
-        self.main_sizer.Add(self.left_sizer, 5, wx.EXPAND | wx.ALL, 10)
-        self.main_sizer.Add(self.right_sizer, 1, wx.ALL, 5)
-
-        # Canvas for drawing / plotting signals
         self.canvas = Canvas(self)
-        self.left_sizer.Add(self.canvas, 7, wx.EXPAND | wx.ALL, 5)
-
-        # Terminal
         self.terminal = Terminal(self)
-        self.left_sizer.Add(self.terminal.border_panel, 3, wx.EXPAND | wx.ALL, 5)
-
-        # Upload button
         self.upload_button = UploadButton(self)
-        self.right_sizer.Add(self.upload_button, 0, wx.ALL | wx.EXPAND, 8)
-
-        # No of cycles section
         self.cycle_selector = CycleSelector(self)
-        self.right_sizer.Add(self.cycle_selector.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
-
-        # Monitors section
         self.monitors_list = MonitorsList(self)
-        self.right_sizer.Add(self.monitors_list.monitors_sizer, 1, wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, 0)
-
-        # Add and remove monitor buttons
-        self.monitors_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
-
         self.add_monitor_button = MonitorAddButton(self)
-        self.monitors_buttons_sizer.Add(self.add_monitor_button, 1, wx.ALL | wx.EXPAND, 0)
-
         self.remove_monitor_button = MonitorRemoveButton(self)
-        self.monitors_buttons_sizer.Add(self.remove_monitor_button, 1, wx.ALL | wx.EXPAND, 0)
-
-        self.right_sizer.Add(self.monitors_buttons_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 6)
-
-        # Switches section
         self.switch = Switch(self)
-        self.right_sizer.Add(self.switch.switches_sizer, 1, wx.EXPAND | wx.TOP, 5)
-
-        # Run button
         self.run_button = RunButton(self)
-        self.right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
-
-        # Continue button
         self.continue_button = ContinueButton(self)
-        self.right_sizer.Add(self.continue_button, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
+
+        # Set GUI layout
+        self.theme = "light"
+        self.set_gui_layout()
 
         # Checking the file supplied using <filepath>
         self.check_errors(path, self.parser)
@@ -152,9 +110,32 @@ class Gui(wx.Frame):
         self.monitors_list.update_monitors_list()
         self.switch.update_switches_display()
 
-        # Set main sizer and size of GUI
+    def set_gui_layout(self):
+        main_sizer = wx.BoxSizer(wx.HORIZONTAL)  # main sizer with everything
+        left_sizer = wx.BoxSizer(wx.VERTICAL)  # left sizer for the canvas and terminal
+        right_sizer = wx.BoxSizer(wx.VERTICAL)  # right sizer for the controls
+        main_sizer.Add(left_sizer, 5, wx.EXPAND | wx.ALL, 10)
+        main_sizer.Add(right_sizer, 1, wx.ALL, 5)
+
+        left_sizer.Add(self.canvas, 7, wx.EXPAND | wx.ALL, 5)
+        left_sizer.Add(self.terminal.border_panel, 3, wx.EXPAND | wx.ALL, 5)
+        right_sizer.Add(self.upload_button, 0, wx.ALL | wx.EXPAND, 8)
+        right_sizer.Add(self.cycle_selector.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
+        right_sizer.Add(self.monitors_list.monitors_sizer, 1, wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, 0)
+
+        monitors_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        monitors_buttons_sizer.Add(self.add_monitor_button, 1, wx.ALL | wx.EXPAND, 0)
+        monitors_buttons_sizer.Add(self.remove_monitor_button, 1, wx.ALL | wx.EXPAND, 0)
+
+        right_sizer.Add(monitors_buttons_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 6)
+        right_sizer.Add(self.switch.switches_sizer, 1, wx.EXPAND | wx.TOP, 5)
+        right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
+        right_sizer.Add(self.continue_button, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
+
+        self.SetBackgroundColour(Color.light_background_color)
+        self.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Roboto'))
         self.SetSizeHints(1080, 720)
-        self.SetSizer(self.main_sizer)
+        self.SetSizer(main_sizer)
 
     def update_parser(self, parser: Parser):
         self.names = parser.names

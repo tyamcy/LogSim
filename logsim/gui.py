@@ -649,7 +649,7 @@ class Gui(wx.Frame):
 
             # Printing the error message in the GUI terminal
             errors = parser.error_handler.error_output_list
-            print(errors)
+
             for error in errors:
                 self.terminal.SetDefaultStyle(wx.TextAttr(self.dark_text_color))
                 self.terminal.AppendText(f"\n{error}")
@@ -678,6 +678,12 @@ class Gui(wx.Frame):
             self.reset_gui_display()
 
             # Processing the file
+            progress_dialog = wx.ProgressDialog("Processing file",
+                                            "Specification file is being processed...",
+                                            maximum=100,
+                                            parent=self,
+                                            style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE)
+            
             try:
                 # Initialise instances of the inner simulator classes
                 names = Names()
@@ -692,6 +698,11 @@ class Gui(wx.Frame):
                     self.disable_monitor_and_simulation_buttons()
                     return
                 parser = Parser(names, devices, network, monitors, scanner)
+
+                # Progress bar mock progress
+                for i in range(100):
+                    wx.MilliSleep(10) 
+                    progress_dialog.Update(i + 1)
 
                 if self.check_errors(filename, parser):
                     # Instantiate the circuit for the newly uploaded file
@@ -709,8 +720,13 @@ class Gui(wx.Frame):
                     self.update_switches_display()
 
             except IOError:
+                progress_dialog.Destroy()
                 self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
                 self.terminal.AppendText(f"File {filename} upload failed.")
+            
+            finally:
+                progress_dialog.Update(100) 
+                progress_dialog.Destroy()
 
     def on_cycles_spin(self, event) -> None:
         """Handle the event when the user changes the spin control value."""

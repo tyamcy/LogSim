@@ -5,6 +5,7 @@ from OpenGL import GL, GLUT
 from names import Names
 from devices import Devices
 from monitors import Monitors
+from parse import Parser
 
 
 class MyGLCanvas(wxcanvas.GLCanvas):
@@ -39,7 +40,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
     clear_display(self): Clear the canvas.
     """
 
-    def __init__(self, parent, devices: Devices, monitors: Monitors, names: Names):
+    def __init__(self, parent, parser: Parser):
         """Initialise canvas properties and useful variables."""
         super().__init__(parent, -1,
                          attribList=[wxcanvas.WX_GL_RGBA,
@@ -49,9 +50,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.init = False
         self.context = wxcanvas.GLContext(self)
 
-        self.devices = devices
-        self.monitors = monitors
-        self.names = names
+        self.parser = parser
         self.total_cycles = 0
         self.signals = {}
         self.signals_dictionary = {}
@@ -127,10 +126,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.render_text(str(no_cycles), x_start + no_cycles * width, y_start - 20)
 
             """refactor later"""
-            identifier_dict = self.monitors.fetch_identifier_to_device_port_name()
+            identifier_dict = self.parser.monitors.fetch_identifier_to_device_port_name()
             for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
-                device_id = self.names.query(device_name)
-                port_id = self.names.query(port_name) if port_name else None
+                device_id = self.parser.names.query(device_name)
+                port_id = self.parser.names.query(port_name) if port_name else None
                 trace = self.signals[(device_id, port_id)]
 
                 # Update y
@@ -286,3 +285,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.signals.clear()
         self.init = False
         self.Refresh()
+
+    def reset_canvas(self, parser: Parser):
+        """Reset canvas when new file is uploaded"""
+        self.parser = parser
+        self.signals = {}
+        self.signals_dictionary = {}
+        self.clear_display()

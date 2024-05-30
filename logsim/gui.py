@@ -163,7 +163,7 @@ class Gui(wx.Frame):
 
         # Main UI layout
         # Canvas for drawing / plotting signals
-        self.canvas = MyGLCanvas(self, devices, monitors, names)
+        self.canvas = MyGLCanvas(self, parser)
 
         # Defining sizers for layout
         self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)  # main sizer with everything
@@ -324,15 +324,6 @@ class Gui(wx.Frame):
         self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
         self.terminal.AppendText(self.welcoming_text)
 
-    def reset_canvas(self):
-        """Reset canvas when new file is uploaded"""
-        self.canvas.devices = self.devices
-        self.canvas.monitors = self.monitors
-        self.canvas.names = self.names
-        self.canvas.signals = {}
-        self.canvas.signals_dictionary = {}
-        self.canvas.clear_display()
-
     def reset_gui_display(self):
         """Reset gui display when new file is uploaded."""
         self.monitors_scrolled_sizer.Clear(True)
@@ -437,7 +428,7 @@ class Gui(wx.Frame):
                     self.parser = parser
 
                     # Update the GUI with new canvas, monitors and switches
-                    self.reset_canvas()
+                    self.canvas.reset_canvas(parser)
                     self.update_monitors_display()
                     self.update_switches_display()
 

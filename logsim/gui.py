@@ -15,6 +15,7 @@ from gui_dialogs import CustomDialogBox, IdentifierInputDialog
 from gui_canvas import MyGLCanvas
 from gui_color import Color
 from gui_terminal import Terminal
+from gui_buttons import UploadButton, RunButton, ContinueButton, MonitorAddButton, MonitorRemoveButton
 
 from names import Names
 from devices import Devices
@@ -149,26 +150,6 @@ class Gui(wx.Frame):
         self.right_sizer = wx.BoxSizer(wx.VERTICAL)  # right sizer for the controls
 
         # Terminal
-        # self.border_panel = wx.Panel(self)
-        # self.border_panel.SetBackgroundColour(Color.terminal_background_color)
-        # self.termina.terminal_content_panel = wx.Panel(self.border_panel)
-        # self.termina.terminal_content_panel.SetBackgroundColour(Color.terminal_background_color)
-        # 
-        # self.termina.terminal_content = wx.TextCtrl(self.termina.terminal_content_panel,
-        #                             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.BORDER_NONE)
-        # self.termina.terminal_content.SetBackgroundColour(Color.terminal_background_color)
-        # self.termina.terminal_content.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Consolas'))
-        # self.termina.terminal_content.SetForegroundColour(Color.terminal_text_color)
-        # self.termina.terminal_content.AppendText(self.welcoming_text)
-        # 
-        # self.termina.terminal_content_sizer = wx.BoxSizer(wx.VERTICAL)
-        # self.termina.terminal_content_sizer.Add(self.termina.terminal_content, 1, wx.EXPAND | wx.ALL, 0)
-        # self.termina.terminal_content_panel.SetSizer(self.termina.terminal_content_sizer)
-        # 
-        # self.border_sizer = wx.BoxSizer(wx.VERTICAL)
-        # self.border_sizer.Add(self.termina.terminal_content_panel, 1, wx.EXPAND | wx.ALL, 10)
-        # self.border_panel.SetSizer(self.border_sizer)
-        
         self.terminal = Terminal(self)
 
         self.left_sizer.Add(self.canvas, 7, wx.EXPAND | wx.ALL, 5)
@@ -177,9 +158,8 @@ class Gui(wx.Frame):
         self.main_sizer.Add(self.right_sizer, 1, wx.ALL, 5)
 
         # Upload button
-        self.upload_button = wx.Button(self, wx.ID_ANY, "Upload")
-        self.upload_button.SetBackgroundColour(Color.color_primary)
-        self.upload_button.Bind(wx.EVT_BUTTON, self.on_upload_button)
+        self.upload_button = UploadButton(self, self.on_upload_button)
+
         self.right_sizer.Add(self.upload_button, 0, wx.ALL | wx.EXPAND, 8)
 
         # No of cycles section
@@ -210,14 +190,10 @@ class Gui(wx.Frame):
         # Add and remove monitor buttons
         self.monitors_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.add_monitor_button = wx.Button(self, wx.ID_ANY, "Add")
-        self.add_monitor_button.SetBackgroundColour(Color.light_button_color)
-        self.add_monitor_button.Bind(wx.EVT_BUTTON, self.on_add_monitor_button)
+        self.add_monitor_button = MonitorAddButton(self, self.on_add_monitor_button)
         self.monitors_buttons_sizer.Add(self.add_monitor_button, 1, wx.ALL | wx.EXPAND, 0)
 
-        self.remove_monitor_button = wx.Button(self, wx.ID_ANY, "Remove")
-        self.remove_monitor_button.SetBackgroundColour(Color.light_button_color)
-        self.remove_monitor_button.Bind(wx.EVT_BUTTON, self.on_remove_monitor_button)
+        self.remove_monitor_button = MonitorRemoveButton(self, self.on_remove_monitor_button)
         self.monitors_buttons_sizer.Add(self.remove_monitor_button, 1, wx.ALL | wx.EXPAND, 0)
 
         self.right_sizer.Add(self.monitors_buttons_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 6)
@@ -239,16 +215,10 @@ class Gui(wx.Frame):
         self.right_sizer.Add(self.switches_sizer, 1, wx.EXPAND | wx.TOP, 5)
 
         # Run and continue button
-        self.run_button = wx.Button(self, wx.ID_ANY, "Run")
-        self.run_button.SetBackgroundColour(Color.color_primary)
-        self.run_button.SetBackgroundColour(Color.color_primary)
-        self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
+        self.run_button = RunButton(self, self.on_run_button)
         self.right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
 
-        self.continue_button = wx.Button(self, wx.ID_ANY, "Continue")
-        self.continue_button.SetBackgroundColour(Color.color_disabled)
-        self.continue_button.Bind(wx.EVT_BUTTON, self.on_continue_button)
-        self.continue_button.Disable()
+        self.continue_button = ContinueButton(self, self.on_continue_button)
         self.right_sizer.Add(self.continue_button, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
 
         # Checking the file supplied using <filepath>

@@ -15,6 +15,7 @@ from gui_color import Color
 from gui_terminal import Terminal
 from gui_buttons import UploadButton, RunButton, ContinueButton, MonitorAddButton, MonitorRemoveButton
 from gui_menu import MenuBar
+from gui_cycle_selector import CycleSelector
 
 from parse import Parser
 
@@ -119,20 +120,11 @@ class Gui(wx.Frame):
 
         # Upload button
         self.upload_button = UploadButton(self)
-
         self.right_sizer.Add(self.upload_button, 0, wx.ALL | wx.EXPAND, 8)
 
         # No of cycles section
-        self.cycles_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.cycles_text = wx.StaticText(self, wx.ID_ANY, "No. of Cycles")
-        self.cycles_spin = wx.SpinCtrl(self, wx.ID_ANY, str(self.num_cycles))
-        self.cycles_spin.SetRange(1, 100)
-
-        self.cycles_spin.Bind(wx.EVT_SPINCTRL, self.on_cycles_spin)
-
-        self.cycles_sizer.Add(self.cycles_text, 0, wx.EXPAND | wx.ALL, 5)
-        self.cycles_sizer.Add(self.cycles_spin, 0, wx.EXPAND | wx.ALL, 5)
-        self.right_sizer.Add(self.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
+        self.cycle_selector = CycleSelector(self)
+        self.right_sizer.Add(self.cycle_selector.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
 
         # Monitors section
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -250,10 +242,10 @@ class Gui(wx.Frame):
 
             return False
 
-    def on_cycles_spin(self, event) -> None:
-        """Handle the event when the user changes the spin control value."""
-        spin_value = self.cycles_spin.GetValue()
-        self.num_cycles = spin_value
+    # def on_cycles_spin(self, event) -> None:
+    #     """Handle the event when the user changes the spin control value."""
+    #     spin_value = self.cycles_spin.GetValue()
+    #     self.num_cycles = spin_value
 
     def update_monitors_display(self) -> None:
         """Handle the event of updating the list of monitors upon change."""
@@ -392,9 +384,9 @@ class Gui(wx.Frame):
         if self.theme == "light":
             self.canvas.update_theme(self.theme)
             self.SetBackgroundColour(Color.dark_background_color)
-            self.cycles_text.SetForegroundColour(Color.dark_text_color)
-            self.cycles_spin.SetBackgroundColour(Color.dark_background_secondary)
-            self.cycles_spin.SetForegroundColour(Color.dark_text_color)
+            self.cycle_selector.cycles_text.SetForegroundColour(Color.dark_text_color)
+            self.cycle_selector.cycles_spin.SetBackgroundColour(Color.dark_background_secondary)
+            self.cycle_selector.cycles_spin.SetForegroundColour(Color.dark_text_color)
             self.monitors_text.SetForegroundColour(Color.dark_text_color)
             self.monitors_scrolled.SetForegroundColour(Color.dark_background_secondary)
             self.monitors_scrolled.SetBackgroundColour(Color.dark_background_secondary)
@@ -423,9 +415,9 @@ class Gui(wx.Frame):
         elif self.theme == "dark":
             self.canvas.update_theme(self.theme)
             self.SetBackgroundColour(Color.light_background_color)
-            self.cycles_text.SetForegroundColour(Color.light_text_color)
-            self.cycles_spin.SetBackgroundColour(Color.light_background_secondary)
-            self.cycles_spin.SetForegroundColour(Color.light_text_color)
+            self.cycle_selector.cycles_text.SetForegroundColour(Color.light_text_color)
+            self.cycle_selector.cycles_spin.SetBackgroundColour(Color.light_background_secondary)
+            self.cycle_selector.cycles_spin.SetForegroundColour(Color.light_text_color)
             self.monitors_text.SetForegroundColour(Color.light_text_color)
             self.monitors_scrolled.SetForegroundColour(Color.light_background_secondary)
             self.monitors_scrolled.SetBackgroundColour(Color.light_background_secondary)

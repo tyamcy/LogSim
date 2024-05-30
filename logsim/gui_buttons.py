@@ -78,7 +78,7 @@ class UploadButton(wx.Button):
 
                     # Update the GUI with new canvas, monitors and switches
                     self.gui.monitors_list.update_monitors_list()
-                    self.gui.update_switches_display()
+                    self.gui.switch.update_switches_display()
 
             except IOError:
                 progress_dialog.Destroy()

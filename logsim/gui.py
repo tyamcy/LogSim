@@ -10,7 +10,7 @@ Gui - configures the main window and all the widgets.
 """
 import wx
 
-from gui_canvas import MyGLCanvas
+from gui_canvas import Canvas
 from gui_color import Color
 from gui_terminal import Terminal
 from gui_buttons import UploadButton, RunButton, ContinueButton, MonitorAddButton, MonitorRemoveButton
@@ -102,7 +102,7 @@ class Gui(wx.Frame):
 
         # Main UI layout
         # Canvas for drawing / plotting signals
-        self.canvas = MyGLCanvas(self, parser)
+        self.canvas = Canvas(self)
 
         # Defining sizers for layout
         self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)  # main sizer with everything

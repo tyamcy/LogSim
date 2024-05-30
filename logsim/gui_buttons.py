@@ -77,7 +77,6 @@ class UploadButton(wx.Button):
                     self.gui.update_parser(parser)
 
                     # Update the GUI with new canvas, monitors and switches
-                    self.gui.canvas.reset_canvas(parser)
                     self.gui.update_monitors_display()
                     self.gui.update_switches_display()
 

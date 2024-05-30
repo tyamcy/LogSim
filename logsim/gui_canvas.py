@@ -8,7 +8,7 @@ from monitors import Monitors
 from parse import Parser
 
 
-class MyGLCanvas(wxcanvas.GLCanvas):
+class Canvas(wxcanvas.GLCanvas):
     """Handle all drawing operations.
 
     This class contains functions for drawing onto the canvas. It
@@ -40,7 +40,7 @@ class MyGLCanvas(wxcanvas.GLCanvas):
     clear_display(self): Clear the canvas.
     """
 
-    def __init__(self, parent, parser: Parser):
+    def __init__(self, parent):
         """Initialise canvas properties and useful variables."""
         super().__init__(parent, -1,
                          attribList=[wxcanvas.WX_GL_RGBA,
@@ -49,11 +49,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         GLUT.glutInit()
         self.init = False
         self.context = wxcanvas.GLContext(self)
+        self.gui = parent
 
-        self.parser = parser
         self.total_cycles = 0
         self.signals = {}
-        self.signals_dictionary = {}
 
         # Colour themes
         self.light_color_background = (0.98, 0.98, 0.98, 1)
@@ -126,10 +125,10 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.render_text(str(no_cycles), x_start + no_cycles * width, y_start - 20)
 
             """refactor later"""
-            identifier_dict = self.parser.monitors.fetch_identifier_to_device_port_name()
+            identifier_dict = self.gui.monitors.fetch_identifier_to_device_port_name()
             for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
-                device_id = self.parser.names.query(device_name)
-                port_id = self.parser.names.query(port_name) if port_name else None
+                device_id = self.gui.names.query(device_name)
+                port_id = self.gui.names.query(port_name) if port_name else None
                 trace = self.signals[(device_id, port_id)]
 
                 # Update y
@@ -183,11 +182,6 @@ class MyGLCanvas(wxcanvas.GLCanvas):
             self.init = True
 
         size = self.GetClientSize()
-        # text = "".join(["Canvas redrawn on paint event, size is ",
-        #                str(size.width), ", ", str(size.height)])
-        self.render("")
-        # text = "".join(["Canvas redrawn on paint event, size is ",
-        #                str(size.width), ", ", str(size.height)])
         self.render("")
 
     def on_size(self, event) -> None:
@@ -286,9 +280,3 @@ class MyGLCanvas(wxcanvas.GLCanvas):
         self.init = False
         self.Refresh()
 
-    def reset_canvas(self, parser: Parser):
-        """Reset canvas when new file is uploaded"""
-        self.parser = parser
-        self.signals = {}
-        self.signals_dictionary = {}
-        self.clear_display()

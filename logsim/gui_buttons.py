@@ -77,7 +77,7 @@ class UploadButton(wx.Button):
                     self.gui.update_parser(parser)
 
                     # Update the GUI with new canvas, monitors and switches
-                    self.gui.update_monitors_display()
+                    self.gui.monitors_list.update_monitors_list()
                     self.gui.update_switches_display()
 
             except IOError:
@@ -164,7 +164,7 @@ class MonitorAddButton(wx.Button):
                 if identifier and isinstance(identifier, str) and identifier[0].isalpha():
                     error_type = self.gui.monitors.make_monitor(device_id, port_id, identifier)
                     if error_type == self.gui.monitors.NO_ERROR:
-                        self.gui.update_monitors_display()
+                        self.gui.monitors_list.update_monitors_list()
                     elif error_type == self.gui.monitors.MONITOR_IDENTIFIER_PRESENT:
                         wx.MessageBox("Identifier already used, please think of a new one!",
                                       "Error", wx.OK | wx.ICON_ERROR)
@@ -194,7 +194,7 @@ class MonitorRemoveButton(wx.Button):
             identifier = dialog.get_selected_item()
             if identifier:
                 self.gui.monitors.remove_monitor_by_identifier(identifier)
-                self.gui.update_monitors_display()
+                self.gui.monitors_list.update_monitors_list()
                 self.gui.update_add_remove_button_states()
 
         dialog.Destroy()

@@ -101,22 +101,20 @@ class Gui(wx.Frame):
         # Menu bar
         self.menu_bar = MenuBar(self)
 
-        # Main UI layout
-        # Canvas for drawing / plotting signals
-        self.canvas = Canvas(self)
-
         # Defining sizers for layout
         self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)  # main sizer with everything
         self.left_sizer = wx.BoxSizer(wx.VERTICAL)  # left sizer for the canvas and terminal
         self.right_sizer = wx.BoxSizer(wx.VERTICAL)  # right sizer for the controls
+        self.main_sizer.Add(self.left_sizer, 5, wx.EXPAND | wx.ALL, 10)
+        self.main_sizer.Add(self.right_sizer, 1, wx.ALL, 5)
+
+        # Canvas for drawing / plotting signals
+        self.canvas = Canvas(self)
+        self.left_sizer.Add(self.canvas, 7, wx.EXPAND | wx.ALL, 5)
 
         # Terminal
         self.terminal = Terminal(self)
-
-        self.left_sizer.Add(self.canvas, 7, wx.EXPAND | wx.ALL, 5)
         self.left_sizer.Add(self.terminal.border_panel, 3, wx.EXPAND | wx.ALL, 5)
-        self.main_sizer.Add(self.left_sizer, 5, wx.EXPAND | wx.ALL, 10)
-        self.main_sizer.Add(self.right_sizer, 1, wx.ALL, 5)
 
         # Upload button
         self.upload_button = UploadButton(self)
@@ -166,10 +164,11 @@ class Gui(wx.Frame):
 
         self.right_sizer.Add(self.switches_sizer, 1, wx.EXPAND | wx.TOP, 5)
 
-        # Run and continue button
+        # Run button
         self.run_button = RunButton(self)
         self.right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
 
+        # Continue button
         self.continue_button = ContinueButton(self)
         self.right_sizer.Add(self.continue_button, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
 
@@ -241,11 +240,6 @@ class Gui(wx.Frame):
                 self.terminal.append_text(Color.dark_text_color, f"\n{error}")
 
             return False
-
-    # def on_cycles_spin(self, event) -> None:
-    #     """Handle the event when the user changes the spin control value."""
-    #     spin_value = self.cycles_spin.GetValue()
-    #     self.num_cycles = spin_value
 
     def update_monitors_display(self) -> None:
         """Handle the event of updating the list of monitors upon change."""

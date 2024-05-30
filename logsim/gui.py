@@ -67,8 +67,6 @@ class Gui(wx.Frame):
     toggle_theme(self, event): Event handler for when the user changes the color theme.
     """
 
-    welcoming_text = "Welcome to Logic Simulator\n=========================="
-
     def __init__(self, title: str, path: str, parser: Parser):
         """Initialise widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
@@ -137,30 +135,6 @@ class Gui(wx.Frame):
         self.SetSizeHints(1080, 720)
         self.SetSizer(main_sizer)
 
-    def update_parser(self, parser: Parser):
-        self.names = parser.names
-        self.devices = parser.devices
-        self.network = parser.network
-        self.monitors = parser.monitors
-        self.parser = parser
-
-    def disable_monitor_buttons(self):
-        """Disable buttons controlling monitor"""
-        self.add_monitor_button.Disable()
-        self.remove_monitor_button.Disable()
-
-    def disable_simulation_buttons(self):
-        """Disable buttons controlling simulation"""
-        self.run_button.Disable()
-        self.run_button.SetBackgroundColour(Color.color_disabled)
-        self.continue_button.Disable()
-        self.continue_button.SetBackgroundColour(Color.color_disabled)
-
-    def reset_gui_display(self):
-        """Reset gui display when new file is uploaded."""
-        self.monitors_list.monitors_scrolled_sizer.Clear(True)
-        self.switch.switches_scrolled_sizer.Clear(True)
-
     def check_errors(self, filename: str, parser: Parser) -> bool:
         """Handles the error checking when a file is uploaded."""
         if parser.parse_network():
@@ -194,6 +168,30 @@ class Gui(wx.Frame):
                 self.terminal.append_text(Color.dark_text_color, f"\n{error}")
 
             return False
+
+    def update_parser(self, parser: Parser):
+        self.names = parser.names
+        self.devices = parser.devices
+        self.network = parser.network
+        self.monitors = parser.monitors
+        self.parser = parser
+
+    def disable_monitor_buttons(self):
+        """Disable buttons controlling monitor"""
+        self.add_monitor_button.Disable()
+        self.remove_monitor_button.Disable()
+
+    def disable_simulation_buttons(self):
+        """Disable buttons controlling simulation"""
+        self.run_button.Disable()
+        self.run_button.SetBackgroundColour(Color.color_disabled)
+        self.continue_button.Disable()
+        self.continue_button.SetBackgroundColour(Color.color_disabled)
+
+    def reset_gui_display(self):
+        """Reset gui display when new file is uploaded."""
+        self.monitors_list.monitors_scrolled_sizer.Clear(True)
+        self.switch.switches_scrolled_sizer.Clear(True)
 
     def update_add_remove_button_states(self) -> None:
         """Updates the enabled/disabled state of the add and remove buttons."""

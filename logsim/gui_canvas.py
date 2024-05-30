@@ -2,11 +2,6 @@ import wx
 import wx.glcanvas as wxcanvas
 from OpenGL import GL, GLUT
 
-from names import Names
-from devices import Devices
-from monitors import Monitors
-from parse import Parser
-
 
 class Canvas(wxcanvas.GLCanvas):
     """Handle all drawing operations.

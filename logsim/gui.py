@@ -503,8 +503,6 @@ class Gui(wx.Frame):
         self.monitors_scrolled.SetScrollRate(10, 10)
         self.monitors_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.update_monitors_display()
-
         self.monitors_scrolled.SetMinSize((250, 150))
         self.monitors_scrolled.SetBackgroundColour(self.light_background_secondary)
         self.monitors_sizer.Add(self.monitors_text, 0, wx.ALL, 5)
@@ -533,8 +531,6 @@ class Gui(wx.Frame):
         self.switches_scrolled.SetScrollRate(10, 10)
         self.switches_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.update_switches_display()
-
         self.switches_scrolled.SetSizer(self.switches_scrolled_sizer)
         self.switches_scrolled.SetMinSize((250, 150))
         self.switches_scrolled.SetBackgroundColour(self.light_background_secondary)
@@ -559,6 +555,10 @@ class Gui(wx.Frame):
 
         # Checking the file supplied using <filepath>
         self.check_errors(path, self.parser)
+
+        # Update the GUI with new monitors and switches
+        self.update_monitors_display()
+        self.update_switches_display()
 
         # Set main sizer and size of GUI
         self.SetSizeHints(1080, 720)

@@ -1,6 +1,7 @@
 import wx
 from typing import Optional
 
+
 class CustomDialogBox(wx.Dialog):
     """Custom dialog box for the add and remove buttons.
 
@@ -66,7 +67,8 @@ class CustomDialogBox(wx.Dialog):
         if selection_index != wx.NOT_FOUND:
             return self.list_box.GetString(selection_index)
         return None
-    
+
+
 class IdentifierInputDialog(wx.Dialog):
     """Custom dialog box to input an identifier for the monitor.
 

@@ -11,7 +11,7 @@ Gui - configures the main window and all the widgets.
 import wx
 import os
 
-from gui_widgets import CustomDialogBox, IdentifierInputDialog
+from gui_dialogs import CustomDialogBox, IdentifierInputDialog
 from gui_canvas import MyGLCanvas
 
 from names import Names

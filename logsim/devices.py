@@ -44,6 +44,7 @@ class Device:
         self.clock_counter = None
         self.switch_state = None
         self.dtype_memory = None
+        self.trigger_cycle = None
 
 
 class Devices:
@@ -108,7 +109,7 @@ class Devices:
         self.devices_list = []
 
         gate_strings = ["AND", "OR", "NAND", "NOR", "XOR"]
-        device_strings = ["CLOCK", "SWITCH", "DTYPE"]
+        device_strings = ["CLOCK", "SWITCH", "DTYPE", "RC"]
         dtype_inputs = ["CLK", "SET", "CLEAR", "DATA"]
         dtype_outputs = ["Q", "QBAR"]
 
@@ -121,7 +122,7 @@ class Devices:
         self.gate_types = [self.AND, self.OR, self.NAND, self.NOR,
                            self.XOR] = self.names.lookup(gate_strings)
         self.device_types = [self.CLOCK, self.SWITCH,
-                             self.D_TYPE] = self.names.lookup(device_strings)
+                             self.D_TYPE, self.RC] = self.names.lookup(device_strings)
         self.dtype_input_ids = [self.CLK_ID, self.SET_ID, self.CLEAR_ID,
                                 self.DATA_ID] = self.names.lookup(dtype_inputs)
         self.dtype_output_ids = [
@@ -263,6 +264,13 @@ class Devices:
             self.add_output(device_id, output_id)
         self.cold_startup()  # D-type initialised to a random state
 
+    def make_rc_device(self, device_id: int, trigger_cycle: int) -> None:
+        """Make an RC device."""
+        self.add_device(device_id, self.RC)
+        self.add_output(device_id, output_id=None)
+        device = self.get_device(device_id)
+        device.trigger_cycle = trigger_cycle
+
     def cold_startup(self):
         """Simulate cold start-up of D-types and clocks.
 
@@ -332,6 +340,15 @@ class Devices:
                 error_type = self.QUALIFIER_PRESENT
             else:
                 self.make_d_type(device_id)
+                error_type = self.NO_ERROR
+
+        elif device_kind == self.RC:
+            if device_property is None:
+                error_type = self.NO_QUALIFIER
+            elif device_property <= 0:
+                error_type = self.INVALID_QUALIFIER
+            else:
+                self.make_rc_device(device_id, device_property)
                 error_type = self.NO_ERROR
 
         else:

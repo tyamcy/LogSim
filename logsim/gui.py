@@ -71,15 +71,15 @@ class Gui(wx.Frame):
 
     welcoming_text = "Welcome to Logic Simulator\n=========================="
 
-    def __init__(self, title: str, path: str, names: Names, devices: Devices, network: Network, monitors: Monitors, parser: Parser):
+    def __init__(self, title: str, path: str, parser: Parser):
         """Initialise widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
 
         # Initialise variables
-        self.names = names
-        self.devices = devices
-        self.network = network
-        self.monitors = monitors
+        self.names = parser.names
+        self.devices = parser.devices
+        self.network = parser.network
+        self.monitors = parser.monitors
         self.parser = parser
 
         self.num_cycles = 10
@@ -282,6 +282,13 @@ class Gui(wx.Frame):
         self.SetSizeHints(1080, 720)
         self.SetSizer(self.main_sizer)
 
+    def update_parser(self, parser: Parser):
+        self.names = parser.names
+        self.devices = parser.devices
+        self.network = parser.network
+        self.monitors = parser.monitors
+        self.parser = parser
+
     def on_menu(self, event):
         """Handle the event when the user selects a menu item."""
         Id = event.GetId()
@@ -420,18 +427,12 @@ class Gui(wx.Frame):
 
                 if self.check_errors(filename, parser):
                     # Instantiate the circuit for the newly uploaded file
-                    self.names = names
-                    self.devices = devices
-                    self.network = network
-                    self.monitors = monitors
-                    self.scanner = scanner
-                    self.parser = parser
+                    self.update_parser(parser)
 
                     # Update the GUI with new canvas, monitors and switches
                     self.canvas.reset_canvas(parser)
                     self.update_monitors_display()
                     self.update_switches_display()
-
 
             except IOError:
                 progress_dialog.Destroy()

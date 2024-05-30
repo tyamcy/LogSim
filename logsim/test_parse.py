@@ -44,6 +44,10 @@ path_empty = "logsim/test_text/test_extreme_errors/test_parse_empty.txt"
 path_lorem_ipsum = "logsim/test_text/test_extreme_errors/test_parse_lorem_ipsum.txt"
 path_semi_colon = "logsim/test_text/test_extreme_errors/test_parse_semi_colon.txt"
 
+path_correct_2 = "logsim/test_text/test_parse_correct_text_2.txt"
+path_correct_3 = "logsim/test_text/test_parse_correct_text_3.txt"
+path_correct_4 = "logsim/test_text/test_parse_correct_text_4.txt"
+path_test_parse_oscillating = "logsim/test_text/test_parse_oscillating.txt"
 
 @pytest.fixture
 def new_parser(path: str) -> Parser:
@@ -79,6 +83,7 @@ def all_error_1_expected_content(parser: Parser) -> List[Tuple[str, int]]:
         ("Line 46:", parser.error_handler.EXPECT_PIN_IN),
         ("Line 48:", parser.error_handler.EXPECT_PIN_IN),
         ("Line 50:", parser.error_handler.EXPECT_FULL_STOP),
+        ("Line 67:", parser.error_handler.EXPECT_CLOSE_CURLY_BRACKET)
     ]
 
 
@@ -210,6 +215,10 @@ def semantic_error_wrong_block_order_expected(parser: Parser):
 
 @pytest.mark.parametrize("path, expected_result", [
     (path_correct, True),
+    (path_correct_2, True),
+    (path_correct_3, True),
+    (path_correct_4, True),
+    (path_test_parse_oscillating, True),
     (path_wrong_order, False),
     (path_wrong_content, False)
 ])

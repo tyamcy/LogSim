@@ -147,6 +147,7 @@ class Scanner:
     def get_file_lines(self) -> List[str]:
         file = self.get_file()
         file_lines = file.readlines()
+        file_lines.append("")
         file.close()
         return file_lines
 

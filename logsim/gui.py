@@ -241,23 +241,23 @@ class Gui(wx.Frame):
             self.cycle_selector.cycles_text.SetForegroundColour(Color.dark_text_color)
             self.cycle_selector.cycles_spin.SetBackgroundColour(Color.dark_background_secondary)
             self.cycle_selector.cycles_spin.SetForegroundColour(Color.dark_text_color)
-            self.monitors_text.SetForegroundColour(Color.dark_text_color)
-            self.monitors_scrolled.SetForegroundColour(Color.dark_background_secondary)
-            self.monitors_scrolled.SetBackgroundColour(Color.dark_background_secondary)
+            self.monitors_list.monitors_text.SetForegroundColour(Color.dark_text_color)
+            self.monitors_list.monitors_scrolled.SetForegroundColour(Color.dark_background_secondary)
+            self.monitors_list.monitors_scrolled.SetBackgroundColour(Color.dark_background_secondary)
             self.add_monitor_button.SetBackgroundColour(Color.dark_button_color)
             self.add_monitor_button.SetForegroundColour(Color.dark_text_color)
             self.remove_monitor_button.SetBackgroundColour(Color.dark_button_color)
             self.remove_monitor_button.SetForegroundColour(Color.dark_text_color)
-            self.switches_text.SetForegroundColour(Color.dark_text_color)
-            self.switches_scrolled.SetBackgroundColour(Color.dark_background_secondary)
-            self.switches_scrolled.SetForegroundColour(Color.dark_background_secondary)
+            self.switch.switches_text.SetForegroundColour(Color.dark_text_color)
+            self.switch.switches_scrolled.SetBackgroundColour(Color.dark_background_secondary)
+            self.switch.switches_scrolled.SetForegroundColour(Color.dark_background_secondary)
 
-            for child in self.monitors_scrolled.GetChildren():
+            for child in self.monitors_list.monitors_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
                     child.SetForegroundColour(Color.dark_text_color)
-            self.monitors_scrolled.Layout()
+            self.monitors_list.monitors_scrolled.Layout()
 
-            for child in self.switches_scrolled.GetChildren():
+            for child in self.switch.switches_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
                     child.SetForegroundColour(Color.dark_text_color)
                 elif isinstance(child, wx.ToggleButton):
@@ -272,23 +272,23 @@ class Gui(wx.Frame):
             self.cycle_selector.cycles_text.SetForegroundColour(Color.light_text_color)
             self.cycle_selector.cycles_spin.SetBackgroundColour(Color.light_background_secondary)
             self.cycle_selector.cycles_spin.SetForegroundColour(Color.light_text_color)
-            self.monitors_text.SetForegroundColour(Color.light_text_color)
-            self.monitors_scrolled.SetForegroundColour(Color.light_background_secondary)
-            self.monitors_scrolled.SetBackgroundColour(Color.light_background_secondary)
+            self.monitors_list.monitors_text.SetForegroundColour(Color.light_text_color)
+            self.monitors_list.monitors_scrolled.SetForegroundColour(Color.light_background_secondary)
+            self.monitors_list.monitors_scrolled.SetBackgroundColour(Color.light_background_secondary)
             self.add_monitor_button.SetBackgroundColour(Color.light_button_color)
             self.add_monitor_button.SetForegroundColour(Color.light_text_color)
             self.remove_monitor_button.SetBackgroundColour(Color.light_button_color)
             self.remove_monitor_button.SetForegroundColour(Color.light_text_color)
-            self.switches_text.SetForegroundColour(Color.light_text_color)
-            self.switches_scrolled.SetBackgroundColour(Color.light_background_secondary)
-            self.switches_scrolled.SetForegroundColour(Color.light_background_secondary)
+            self.switch.switches_text.SetForegroundColour(Color.light_text_color)
+            self.switch.switches_scrolled.SetBackgroundColour(Color.light_background_secondary)
+            self.switch.switches_scrolled.SetForegroundColour(Color.light_background_secondary)
 
-            for child in self.monitors_scrolled.GetChildren():
+            for child in self.monitors_list.monitors_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
                     child.SetForegroundColour(Color.light_text_color)
-            self.monitors_scrolled.Layout()
+            self.monitors_list.monitors_scrolled.Layout()
 
-            for child in self.switches_scrolled.GetChildren():
+            for child in self.switch.switches_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
                     child.SetForegroundColour(Color.light_text_color)
                 elif isinstance(child, wx.ToggleButton):

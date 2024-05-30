@@ -1,6 +1,8 @@
 import wx
 from typing import Optional
 
+from gui_color import Color
+
 
 class CustomDialogBox(wx.Dialog):
     """Custom dialog box for the add and remove buttons.
@@ -22,16 +24,6 @@ class CustomDialogBox(wx.Dialog):
         super().__init__(parent, title=title)
         self.selection = None
 
-        # UI Theme Colours - Light Mode
-        self.light_background_color = "#DDDDDD"
-        self.light_background_secondary = "#FAFAFA"
-        self.light_text_color = "#000000"
-
-        # UI Theme Colours - Dark Mode
-        self.dark_background_color = "#333333"
-        self.dark_background_secondary = "#444444"
-        self.dark_text_color = "#FFFFFF"
-
         sizer = wx.BoxSizer(wx.VERTICAL)
         
         text = wx.StaticText(self, label=message)
@@ -41,17 +33,17 @@ class CustomDialogBox(wx.Dialog):
         self.list_box.SetSizeHints(minSize=(250, 150))
 
         if theme == "light":
-            self.list_box.SetBackgroundColour(self.light_background_secondary)
-            self.list_box.SetForegroundColour(self.light_text_color)
-            self.SetBackgroundColour(self.light_background_color)
-            self.SetForegroundColour(self.light_text_color)
-            text.SetForegroundColour(self.light_text_color)
+            self.list_box.SetBackgroundColour(Color.light_background_secondary)
+            self.list_box.SetForegroundColour(Color.light_text_color)
+            self.SetBackgroundColour(Color.light_background_color)
+            self.SetForegroundColour(Color.light_text_color)
+            text.SetForegroundColour(Color.light_text_color)
         elif theme == "dark":
-            self.list_box.SetBackgroundColour(self.dark_background_secondary)
-            self.list_box.SetForegroundColour(self.dark_text_color)
-            self.SetBackgroundColour(self.dark_background_color)
-            self.SetForegroundColour(self.dark_text_color)
-            text.SetForegroundColour(self.dark_text_color)
+            self.list_box.SetBackgroundColour(Color.dark_background_secondary)
+            self.list_box.SetForegroundColour(Color.dark_text_color)
+            self.SetBackgroundColour(Color.dark_background_color)
+            self.SetForegroundColour(Color.dark_text_color)
+            text.SetForegroundColour(Color.dark_text_color)
 
         sizer.Add(self.list_box, proportion=1, flag=wx.EXPAND | wx.ALL, border=5)
 
@@ -89,16 +81,6 @@ class IdentifierInputDialog(wx.Dialog):
         
         self.theme = theme
 
-        # UI Theme Colours - Light Mode
-        self.light_background_color = "#DDDDDD"
-        self.light_background_secondary = "#FAFAFA"
-        self.light_text_color = "#000000"
-
-        # UI Theme Colours - Dark Mode
-        self.dark_background_color = "#333333"
-        self.dark_background_secondary = "#444444"
-        self.dark_text_color = "#FFFFFF"
-
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         label = wx.StaticText(self, label=message)
@@ -109,15 +91,15 @@ class IdentifierInputDialog(wx.Dialog):
 
         # Apply theme settings
         if self.theme == "light":
-            self.SetBackgroundColour(self.light_background_color)
-            self.text_ctrl.SetForegroundColour(self.light_text_color)
-            self.text_ctrl.SetBackgroundColour(self.light_background_secondary)
-            label.SetForegroundColour(self.light_text_color)
+            self.SetBackgroundColour(Color.light_background_color)
+            self.text_ctrl.SetForegroundColour(Color.light_text_color)
+            self.text_ctrl.SetBackgroundColour(Color.light_background_secondary)
+            label.SetForegroundColour(Color.light_text_color)
         elif self.theme == "dark":
-            self.SetBackgroundColour(self.dark_background_color)
-            self.text_ctrl.SetForegroundColour(self.dark_text_color)
-            self.text_ctrl.SetBackgroundColour(self.dark_background_secondary)
-            label.SetForegroundColour(self.dark_text_color)
+            self.SetBackgroundColour(Color.dark_background_color)
+            self.text_ctrl.SetForegroundColour(Color.dark_text_color)
+            self.text_ctrl.SetBackgroundColour(Color.dark_background_secondary)
+            label.SetForegroundColour(Color.dark_text_color)
 
         button_sizer = self.CreateButtonSizer(wx.OK | wx.CANCEL)
         sizer.Add(button_sizer, flag=wx.EXPAND | wx.ALL, border=10)

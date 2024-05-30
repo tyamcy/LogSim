@@ -2,6 +2,7 @@ import wx
 
 from gui_color import Color
 
+
 class Terminal:
     welcoming_text = "Welcome to Logic Simulator\n=========================="
 
@@ -25,3 +26,12 @@ class Terminal:
         self.border_sizer = wx.BoxSizer(wx.VERTICAL)
         self.border_sizer.Add(self.terminal_panel, 1, wx.EXPAND | wx.ALL, 10)
         self.border_panel.SetSizer(self.border_sizer)
+
+    def append_text(self, color: str, text: str):
+        self.terminal_content.SetDefaultStyle(wx.TextAttr(color))
+        self.terminal_content.AppendText(text)
+
+    def reset_terminal(self):
+        """Reset terminal when new file is uploaded"""
+        self.terminal_content.Clear()
+        self.append_text(Color.terminal_text_color, self.welcoming_text)

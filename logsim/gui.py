@@ -305,12 +305,6 @@ class Gui(wx.Frame):
         self.continue_button.Disable()
         self.continue_button.SetBackgroundColour(Color.color_disabled)
 
-    def reset_terminal(self):
-        """Reset terminal when new file is uploaded"""
-        self.terminal.terminal_content.Clear()
-        self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
-        self.terminal.terminal_content.AppendText(self.welcoming_text)
-
     def reset_gui_display(self):
         """Reset gui display when new file is uploaded."""
         self.monitors_scrolled_sizer.Clear(True)
@@ -321,8 +315,7 @@ class Gui(wx.Frame):
         if parser.parse_network():
 
             # Message on terminal
-            self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_success_color))
-            self.terminal.terminal_content.AppendText(f"\nFile {filename} uploaded successfully.")
+            self.terminal.append_text(Color.terminal_success_color, f"\nFile {filename} uploaded successfully.")
 
             # Enable add and remove button
             self.add_monitor_button.Enable()
@@ -337,8 +330,7 @@ class Gui(wx.Frame):
             return True
         else:
             # Message on terminal
-            self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
-            self.terminal.terminal_content.AppendText(f"\nError in the specification file {filename}.")
+            self.terminal.append_text(Color.terminal_error_color, f"\nError in the specification file {filename}.")
 
             # Disable monitor and simulation buttons
             self.disable_monitor_buttons()
@@ -348,8 +340,7 @@ class Gui(wx.Frame):
             errors = parser.error_handler.error_output_list
 
             for error in errors:
-                self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.dark_text_color))
-                self.terminal.terminal_content.AppendText(f"\n{error}")
+                self.terminal.append_text(Color.dark_text_color, f"\n{error}")
 
             return False
 
@@ -380,7 +371,7 @@ class Gui(wx.Frame):
                                             parent=self,
                                             style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE)
 
-            self.reset_terminal()
+            self.terminal.reset_terminal()
             self.reset_gui_display()
 
             try:
@@ -393,8 +384,8 @@ class Gui(wx.Frame):
                 try:
                     scanner = Scanner(path, names)
                 except UnicodeDecodeError:
-                    self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
-                    self.terminal.terminal_content.AppendText(f"\nError: file '{path}' is not a unicode text file")
+                    self.terminal.append_text(Color.terminal_error_color, f"\nError: file '{path}' is not a unicode text file")
+
                     self.disable_monitor_buttons()
                     self.disable_simulation_buttons()
                     return
@@ -416,8 +407,7 @@ class Gui(wx.Frame):
 
             except IOError:
                 progress_dialog.Destroy()
-                self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
-                self.terminal.terminal_content.AppendText(f"File {filename} upload failed.")
+                self.terminal.append_text(Color.terminal_error_color,f"File {filename} upload failed.")
 
             finally:
                 progress_dialog.Update(100)
@@ -592,8 +582,7 @@ class Gui(wx.Frame):
             if self.network.execute_network():
                 self.monitors.record_signals()
             else:
-                self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
-                self.terminal.terminal_content.AppendText(f"\n\nError: network oscillating!!")
+                self.terminal.append_text(Color.terminal_error_color,f"\n\nError: network oscillating!!")
                 self.disable_simulation_buttons()
                 return False
 
@@ -623,8 +612,7 @@ class Gui(wx.Frame):
         """Handle the event when the user clicks the run button."""
         self.canvas.reset_display()
 
-        self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
-        self.terminal.terminal_content.AppendText("\n\nRunning simulation...")
+        self.terminal.append_text(Color.terminal_text_color, "\n\nRunning simulation...")
         self.continue_button.Enable()
         self.continue_button.SetBackgroundColour(Color.color_primary)
 
@@ -633,9 +621,7 @@ class Gui(wx.Frame):
     def on_continue_button(self, event) -> None:
         """Handle the event when the user continue button."""
         self.continue_simulation()
-
-        self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
-        self.terminal.terminal_content.AppendText("\n\nUpdated parameters, continuing simulation...")
+        self.terminal.append_text(Color.terminal_text_color, "\n\nUpdated parameters, continuing simulation...")
 
     def toggle_theme(self, event) -> None:
         """Handle the event when the user presses the toggle switch menu item to switch between colour themes."""

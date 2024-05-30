@@ -16,6 +16,7 @@ from gui_canvas import MyGLCanvas
 from gui_color import Color
 from gui_terminal import Terminal
 from gui_buttons import UploadButton, RunButton, ContinueButton, MonitorAddButton, MonitorRemoveButton
+from gui_menu import MenuBar
 
 from names import Names
 from devices import Devices
@@ -106,39 +107,7 @@ class Gui(wx.Frame):
         self.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Roboto'))
 
         # Menu bar
-        # Configure the menu bar
-        menuBar = wx.MenuBar()
-
-        # File menu
-        fileMenu = wx.Menu()
-        theme_icon = wx.ArtProvider.GetBitmap(wx.ART_TIP, wx.ART_MENU, (16, 16))
-        about_icon = wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_MENU, (16, 16))
-        exit_icon = wx.ArtProvider.GetBitmap(wx.ART_QUIT, wx.ART_MENU, (16, 16))
-        toggle_theme_item = wx.MenuItem(fileMenu, wx.ID_PAGE_SETUP, "&Toggle theme")
-        about_item = wx.MenuItem(fileMenu, wx.ID_ABOUT, "&About")
-        exit_item = wx.MenuItem(fileMenu, wx.ID_EXIT, "&Exit")
-        toggle_theme_item.SetBitmap(theme_icon)
-        about_item.SetBitmap(about_icon)
-        exit_item.SetBitmap(exit_icon)
-        fileMenu.Append(toggle_theme_item)
-        fileMenu.AppendSeparator()
-        fileMenu.Append(about_item)
-        fileMenu.Append(exit_item)
-
-        # Help menu
-        helpMenu = wx.Menu()
-        help_icon = wx.ArtProvider.GetBitmap(wx.ART_HELP, wx.ART_MENU, (16, 16))
-        help_item = wx.MenuItem(helpMenu, wx.ID_HELP, "&Quick Guide")
-        help_item.SetBitmap(help_icon)
-        helpMenu.Append(help_item)
-
-        # Adding everything to menuBar
-        menuBar.Append(fileMenu, "&Menu")
-        menuBar.Append(helpMenu, "&Help")
-        self.SetMenuBar(menuBar)
-
-        # Bind event to menuBar
-        self.Bind(wx.EVT_MENU, self.on_menu)
+        self.menu_bar = MenuBar(self, self.on_menu)
 
         # Main UI layout
         # Canvas for drawing / plotting signals

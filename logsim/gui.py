@@ -13,6 +13,7 @@ import os
 
 from gui_dialogs import CustomDialogBox, IdentifierInputDialog
 from gui_canvas import MyGLCanvas
+from gui_color import Color
 
 from names import Names
 from devices import Devices
@@ -97,33 +98,9 @@ class Gui(wx.Frame):
         # {device_string: [signal_list]}
         self.signals_plot_dictionary = dict()
 
-        # Colour styles
-        self.color_primary = "#4DA2B4"
-        self.color_primary_shade = "#397E8D"
-        self.color_disabled = "#CBBBBB"
-
-        # UI Theme Colours - Light Mode
-        self.light_button_color = "#EAEAEA"
-        self.light_background_color = "#DDDDDD"
-        self.light_background_secondary = "#FAFAFA"
-        self.light_text_color = "#000000"
-
-        # UI Theme Colours - Dark Mode
-        self.dark_button_color = "#555555"
-        self.dark_background_color = "#333333"
-        self.dark_background_secondary = "#444444"
-        self.dark_text_color = "#FFFFFF"
-
-        # Terminal Colours
-        self.terminal_background_color = "#222222"
-        self.terminal_text_color = "#FFFFFF"
-        self.terminal_success_color = "#16C60C"
-        self.terminal_warning_color = "#F9F1A5"
-        self.terminal_error_color = "#E74856"
-
         # Initial styling (default as light mode)
         self.theme = "light"
-        self.SetBackgroundColour(self.light_background_color)
+        self.SetBackgroundColour(Color.light_background_color)
         self.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Roboto'))
 
         # Menu bar
@@ -172,15 +149,15 @@ class Gui(wx.Frame):
 
         # Terminal
         self.border_panel = wx.Panel(self)
-        self.border_panel.SetBackgroundColour(self.terminal_background_color)
+        self.border_panel.SetBackgroundColour(Color.terminal_background_color)
         self.terminal_panel = wx.Panel(self.border_panel)
-        self.terminal_panel.SetBackgroundColour(self.terminal_background_color)
+        self.terminal_panel.SetBackgroundColour(Color.terminal_background_color)
 
         self.terminal = wx.TextCtrl(self.terminal_panel,
                                     style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.BORDER_NONE)
-        self.terminal.SetBackgroundColour(self.terminal_background_color)
+        self.terminal.SetBackgroundColour(Color.terminal_background_color)
         self.terminal.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Consolas'))
-        self.terminal.SetForegroundColour(self.terminal_text_color)
+        self.terminal.SetForegroundColour(Color.terminal_text_color)
         self.terminal.AppendText(self.welcoming_text)
 
         self.terminal_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -198,7 +175,7 @@ class Gui(wx.Frame):
 
         # Upload button
         self.upload_button = wx.Button(self, wx.ID_ANY, "Upload")
-        self.upload_button.SetBackgroundColour(self.color_primary)
+        self.upload_button.SetBackgroundColour(Color.color_primary)
         self.upload_button.Bind(wx.EVT_BUTTON, self.on_upload_button)
         self.right_sizer.Add(self.upload_button, 0, wx.ALL | wx.EXPAND, 8)
 
@@ -222,7 +199,7 @@ class Gui(wx.Frame):
         self.monitors_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
 
         self.monitors_scrolled.SetMinSize((250, 150))
-        self.monitors_scrolled.SetBackgroundColour(self.light_background_secondary)
+        self.monitors_scrolled.SetBackgroundColour(Color.light_background_secondary)
         self.monitors_sizer.Add(self.monitors_text, 0, wx.ALL, 5)
         self.monitors_sizer.Add(self.monitors_scrolled, 1, wx.EXPAND | wx.ALL, 5)
         self.right_sizer.Add(self.monitors_sizer, 1, wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, 0)
@@ -231,12 +208,12 @@ class Gui(wx.Frame):
         self.monitors_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         self.add_monitor_button = wx.Button(self, wx.ID_ANY, "Add")
-        self.add_monitor_button.SetBackgroundColour(self.light_button_color)
+        self.add_monitor_button.SetBackgroundColour(Color.light_button_color)
         self.add_monitor_button.Bind(wx.EVT_BUTTON, self.on_add_monitor_button)
         self.monitors_buttons_sizer.Add(self.add_monitor_button, 1, wx.ALL | wx.EXPAND, 0)
 
         self.remove_monitor_button = wx.Button(self, wx.ID_ANY, "Remove")
-        self.remove_monitor_button.SetBackgroundColour(self.light_button_color)
+        self.remove_monitor_button.SetBackgroundColour(Color.light_button_color)
         self.remove_monitor_button.Bind(wx.EVT_BUTTON, self.on_remove_monitor_button)
         self.monitors_buttons_sizer.Add(self.remove_monitor_button, 1, wx.ALL | wx.EXPAND, 0)
 
@@ -251,7 +228,7 @@ class Gui(wx.Frame):
 
         self.switches_scrolled.SetSizer(self.switches_scrolled_sizer)
         self.switches_scrolled.SetMinSize((250, 150))
-        self.switches_scrolled.SetBackgroundColour(self.light_background_secondary)
+        self.switches_scrolled.SetBackgroundColour(Color.light_background_secondary)
 
         self.switches_sizer.Add(self.switches_text, 0, wx.ALL, 5)
         self.switches_sizer.Add(self.switches_scrolled, 1, wx.EXPAND | wx.ALL, 5)
@@ -260,13 +237,13 @@ class Gui(wx.Frame):
 
         # Run and continue button
         self.run_button = wx.Button(self, wx.ID_ANY, "Run")
-        self.run_button.SetBackgroundColour(self.color_primary)
-        self.run_button.SetBackgroundColour(self.color_primary)
+        self.run_button.SetBackgroundColour(Color.color_primary)
+        self.run_button.SetBackgroundColour(Color.color_primary)
         self.run_button.Bind(wx.EVT_BUTTON, self.on_run_button)
         self.right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
 
         self.continue_button = wx.Button(self, wx.ID_ANY, "Continue")
-        self.continue_button.SetBackgroundColour(self.color_disabled)
+        self.continue_button.SetBackgroundColour(Color.color_disabled)
         self.continue_button.Bind(wx.EVT_BUTTON, self.on_continue_button)
         self.continue_button.Disable()
         self.right_sizer.Add(self.continue_button, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
@@ -321,14 +298,14 @@ class Gui(wx.Frame):
     def disable_simulation_buttons(self):
         """Disable buttons controlling simulation"""
         self.run_button.Disable()
-        self.run_button.SetBackgroundColour(self.color_disabled)
+        self.run_button.SetBackgroundColour(Color.color_disabled)
         self.continue_button.Disable()
-        self.continue_button.SetBackgroundColour(self.color_disabled)
+        self.continue_button.SetBackgroundColour(Color.color_disabled)
 
     def reset_terminal(self):
         """Reset terminal when new file is uploaded"""
         self.terminal.Clear()
-        self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
+        self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
         self.terminal.AppendText(self.welcoming_text)
 
     def reset_gui_display(self):
@@ -341,7 +318,7 @@ class Gui(wx.Frame):
         if parser.parse_network():
 
             # Message on terminal
-            self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_success_color))
+            self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_success_color))
             self.terminal.AppendText(f"\nFile {filename} uploaded successfully.")
 
             # Enable add and remove button
@@ -350,14 +327,14 @@ class Gui(wx.Frame):
 
             # Enable run button and disable continue button
             self.run_button.Enable()
-            self.run_button.SetBackgroundColour(self.color_primary)
+            self.run_button.SetBackgroundColour(Color.color_primary)
             self.continue_button.Disable()
-            self.continue_button.SetBackgroundColour(self.color_disabled)
+            self.continue_button.SetBackgroundColour(Color.color_disabled)
 
             return True
         else:
             # Message on terminal
-            self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
+            self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
             self.terminal.AppendText(f"\nError in the specification file {filename}.")
 
             # Disable monitor and simulation buttons
@@ -368,7 +345,7 @@ class Gui(wx.Frame):
             errors = parser.error_handler.error_output_list
 
             for error in errors:
-                self.terminal.SetDefaultStyle(wx.TextAttr(self.dark_text_color))
+                self.terminal.SetDefaultStyle(wx.TextAttr(Color.dark_text_color))
                 self.terminal.AppendText(f"\n{error}")
 
             return False
@@ -413,7 +390,7 @@ class Gui(wx.Frame):
                 try:
                     scanner = Scanner(path, names)
                 except UnicodeDecodeError:
-                    self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
+                    self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
                     self.terminal.AppendText(f"\nError: file '{path}' is not a unicode text file")
                     self.disable_monitor_buttons()
                     self.disable_simulation_buttons()
@@ -436,7 +413,7 @@ class Gui(wx.Frame):
 
             except IOError:
                 progress_dialog.Destroy()
-                self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
+                self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
                 self.terminal.AppendText(f"File {filename} upload failed.")
 
             finally:
@@ -454,9 +431,9 @@ class Gui(wx.Frame):
 
         # Change text colour depending on theme
         if self.theme == "light":
-            color = self.light_text_color
+            color = Color.light_text_color
         else:
-            color = self.dark_text_color
+            color = Color.dark_text_color
 
         if not self.monitors.get_all_identifiers():
             # Empty list, displays a message saying "No active monitors"
@@ -562,17 +539,17 @@ class Gui(wx.Frame):
             initial_label = "1" if state == 1 else "0"
             toggle = wx.ToggleButton(self.switches_scrolled, wx.ID_ANY, initial_label)
             toggle.SetValue(state == 1)
-            toggle.SetBackgroundColour(self.light_button_color)
+            toggle.SetBackgroundColour(Color.light_button_color)
             toggle.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_switch)
 
             if self.theme == "light":
-                label.SetForegroundColour(self.light_text_color)
-                toggle.SetForegroundColour(self.light_text_color)
-                toggle.SetBackgroundColour(self.light_button_color)
+                label.SetForegroundColour(Color.light_text_color)
+                toggle.SetForegroundColour(Color.light_text_color)
+                toggle.SetBackgroundColour(Color.light_button_color)
             elif self.theme == "dark":
-                label.SetForegroundColour(self.dark_text_color)
-                toggle.SetForegroundColour(self.dark_text_color)
-                toggle.SetBackgroundColour(self.dark_button_color)
+                label.SetForegroundColour(Color.dark_text_color)
+                toggle.SetForegroundColour(Color.dark_text_color)
+                toggle.SetBackgroundColour(Color.dark_button_color)
 
             self.toggle_button_switch_name[toggle.GetId()] = switch
 
@@ -612,7 +589,7 @@ class Gui(wx.Frame):
             if self.network.execute_network():
                 self.monitors.record_signals()
             else:
-                self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
+                self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
                 self.terminal.AppendText(f"\n\nError: network oscillating!!")
                 self.disable_simulation_buttons()
                 return False
@@ -643,10 +620,10 @@ class Gui(wx.Frame):
         """Handle the event when the user clicks the run button."""
         self.canvas.reset_display()
 
-        self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
+        self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
         self.terminal.AppendText("\n\nRunning simulation...")
         self.continue_button.Enable()
-        self.continue_button.SetBackgroundColour(self.color_primary)
+        self.continue_button.SetBackgroundColour(Color.color_primary)
 
         self.run_simulation()
 
@@ -654,70 +631,70 @@ class Gui(wx.Frame):
         """Handle the event when the user continue button."""
         self.continue_simulation()
 
-        self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_text_color))
+        self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
         self.terminal.AppendText("\n\nUpdated parameters, continuing simulation...")
 
     def toggle_theme(self, event) -> None:
         """Handle the event when the user presses the toggle switch menu item to switch between colour themes."""
         if self.theme == "light":
             self.canvas.update_theme(self.theme)
-            self.SetBackgroundColour(self.dark_background_color)
-            self.cycles_text.SetForegroundColour(self.dark_text_color)
-            self.cycles_spin.SetBackgroundColour(self.dark_background_secondary)
-            self.cycles_spin.SetForegroundColour(self.dark_text_color)
-            self.monitors_text.SetForegroundColour(self.dark_text_color)
-            self.monitors_scrolled.SetForegroundColour(self.dark_background_secondary)
-            self.monitors_scrolled.SetBackgroundColour(self.dark_background_secondary)
-            self.add_monitor_button.SetBackgroundColour(self.dark_button_color)
-            self.add_monitor_button.SetForegroundColour(self.dark_text_color)
-            self.remove_monitor_button.SetBackgroundColour(self.dark_button_color)
-            self.remove_monitor_button.SetForegroundColour(self.dark_text_color)
-            self.switches_text.SetForegroundColour(self.dark_text_color)
-            self.switches_scrolled.SetBackgroundColour(self.dark_background_secondary)
-            self.switches_scrolled.SetForegroundColour(self.dark_background_secondary)
+            self.SetBackgroundColour(Color.dark_background_color)
+            self.cycles_text.SetForegroundColour(Color.dark_text_color)
+            self.cycles_spin.SetBackgroundColour(Color.dark_background_secondary)
+            self.cycles_spin.SetForegroundColour(Color.dark_text_color)
+            self.monitors_text.SetForegroundColour(Color.dark_text_color)
+            self.monitors_scrolled.SetForegroundColour(Color.dark_background_secondary)
+            self.monitors_scrolled.SetBackgroundColour(Color.dark_background_secondary)
+            self.add_monitor_button.SetBackgroundColour(Color.dark_button_color)
+            self.add_monitor_button.SetForegroundColour(Color.dark_text_color)
+            self.remove_monitor_button.SetBackgroundColour(Color.dark_button_color)
+            self.remove_monitor_button.SetForegroundColour(Color.dark_text_color)
+            self.switches_text.SetForegroundColour(Color.dark_text_color)
+            self.switches_scrolled.SetBackgroundColour(Color.dark_background_secondary)
+            self.switches_scrolled.SetForegroundColour(Color.dark_background_secondary)
 
             for child in self.monitors_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
-                    child.SetForegroundColour(self.dark_text_color)
+                    child.SetForegroundColour(Color.dark_text_color)
             self.monitors_scrolled.Layout()
 
             for child in self.switches_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
-                    child.SetForegroundColour(self.dark_text_color)
+                    child.SetForegroundColour(Color.dark_text_color)
                 elif isinstance(child, wx.ToggleButton):
-                    child.SetBackgroundColour(self.dark_button_color)
-                    child.SetForegroundColour(self.dark_text_color)
+                    child.SetBackgroundColour(Color.dark_button_color)
+                    child.SetForegroundColour(Color.dark_text_color)
 
             self.theme = "dark"  # update theme
 
         elif self.theme == "dark":
             self.canvas.update_theme(self.theme)
-            self.SetBackgroundColour(self.light_background_color)
-            self.cycles_text.SetForegroundColour(self.light_text_color)
-            self.cycles_spin.SetBackgroundColour(self.light_background_secondary)
-            self.cycles_spin.SetForegroundColour(self.light_text_color)
-            self.monitors_text.SetForegroundColour(self.light_text_color)
-            self.monitors_scrolled.SetForegroundColour(self.light_background_secondary)
-            self.monitors_scrolled.SetBackgroundColour(self.light_background_secondary)
-            self.add_monitor_button.SetBackgroundColour(self.light_button_color)
-            self.add_monitor_button.SetForegroundColour(self.light_text_color)
-            self.remove_monitor_button.SetBackgroundColour(self.light_button_color)
-            self.remove_monitor_button.SetForegroundColour(self.light_text_color)
-            self.switches_text.SetForegroundColour(self.light_text_color)
-            self.switches_scrolled.SetBackgroundColour(self.light_background_secondary)
-            self.switches_scrolled.SetForegroundColour(self.light_background_secondary)
+            self.SetBackgroundColour(Color.light_background_color)
+            self.cycles_text.SetForegroundColour(Color.light_text_color)
+            self.cycles_spin.SetBackgroundColour(Color.light_background_secondary)
+            self.cycles_spin.SetForegroundColour(Color.light_text_color)
+            self.monitors_text.SetForegroundColour(Color.light_text_color)
+            self.monitors_scrolled.SetForegroundColour(Color.light_background_secondary)
+            self.monitors_scrolled.SetBackgroundColour(Color.light_background_secondary)
+            self.add_monitor_button.SetBackgroundColour(Color.light_button_color)
+            self.add_monitor_button.SetForegroundColour(Color.light_text_color)
+            self.remove_monitor_button.SetBackgroundColour(Color.light_button_color)
+            self.remove_monitor_button.SetForegroundColour(Color.light_text_color)
+            self.switches_text.SetForegroundColour(Color.light_text_color)
+            self.switches_scrolled.SetBackgroundColour(Color.light_background_secondary)
+            self.switches_scrolled.SetForegroundColour(Color.light_background_secondary)
 
             for child in self.monitors_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
-                    child.SetForegroundColour(self.light_text_color)
+                    child.SetForegroundColour(Color.light_text_color)
             self.monitors_scrolled.Layout()
 
             for child in self.switches_scrolled.GetChildren():
                 if isinstance(child, wx.StaticText):
-                    child.SetForegroundColour(self.light_text_color)
+                    child.SetForegroundColour(Color.light_text_color)
                 elif isinstance(child, wx.ToggleButton):
-                    child.SetBackgroundColour(self.light_button_color)
-                    child.SetForegroundColour(self.light_text_color)
+                    child.SetBackgroundColour(Color.light_button_color)
+                    child.SetForegroundColour(Color.light_text_color)
 
             self.theme = "light"  # update theme
 

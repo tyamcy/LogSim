@@ -9,20 +9,13 @@ MyGLCanvas - handles all canvas drawing operations.
 Gui - configures the main window and all the widgets.
 """
 import wx
-import os
 
-from gui_dialogs import CustomDialogBox, IdentifierInputDialog
 from gui_canvas import MyGLCanvas
 from gui_color import Color
 from gui_terminal import Terminal
 from gui_buttons import UploadButton, RunButton, ContinueButton, MonitorAddButton, MonitorRemoveButton
 from gui_menu import MenuBar
 
-from names import Names
-from devices import Devices
-from network import Network
-from monitors import Monitors
-from scanner import Scanner
 from parse import Parser
 
 
@@ -69,8 +62,6 @@ class Gui(wx.Frame):
     on_continue_button(self, event): Event handler for when the user clicks the continue button.
 
     toggle_theme(self, event): Event handler for when the user changes the color theme.
-
-    fetch_cycle(self): Tracks the total number of simulation cycles.
     """
 
     welcoming_text = "Welcome to Logic Simulator\n=========================="
@@ -107,7 +98,7 @@ class Gui(wx.Frame):
         self.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Roboto'))
 
         # Menu bar
-        self.menu_bar = MenuBar(self, self.on_menu)
+        self.menu_bar = MenuBar(self)
 
         # Main UI layout
         # Canvas for drawing / plotting signals
@@ -127,7 +118,7 @@ class Gui(wx.Frame):
         self.main_sizer.Add(self.right_sizer, 1, wx.ALL, 5)
 
         # Upload button
-        self.upload_button = UploadButton(self, self.on_upload_button)
+        self.upload_button = UploadButton(self)
 
         self.right_sizer.Add(self.upload_button, 0, wx.ALL | wx.EXPAND, 8)
 
@@ -159,10 +150,10 @@ class Gui(wx.Frame):
         # Add and remove monitor buttons
         self.monitors_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.add_monitor_button = MonitorAddButton(self, self.on_add_monitor_button)
+        self.add_monitor_button = MonitorAddButton(self)
         self.monitors_buttons_sizer.Add(self.add_monitor_button, 1, wx.ALL | wx.EXPAND, 0)
 
-        self.remove_monitor_button = MonitorRemoveButton(self, self.on_remove_monitor_button)
+        self.remove_monitor_button = MonitorRemoveButton(self)
         self.monitors_buttons_sizer.Add(self.remove_monitor_button, 1, wx.ALL | wx.EXPAND, 0)
 
         self.right_sizer.Add(self.monitors_buttons_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 6)
@@ -184,10 +175,10 @@ class Gui(wx.Frame):
         self.right_sizer.Add(self.switches_sizer, 1, wx.EXPAND | wx.TOP, 5)
 
         # Run and continue button
-        self.run_button = RunButton(self, self.on_run_button)
+        self.run_button = RunButton(self)
         self.right_sizer.Add(self.run_button, 0, wx.ALL | wx.EXPAND, 8)
 
-        self.continue_button = ContinueButton(self, self.on_continue_button)
+        self.continue_button = ContinueButton(self)
         self.right_sizer.Add(self.continue_button, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
 
         # Checking the file supplied using <filepath>
@@ -207,30 +198,6 @@ class Gui(wx.Frame):
         self.network = parser.network
         self.monitors = parser.monitors
         self.parser = parser
-
-    def on_menu(self, event):
-        """Handle the event when the user selects a menu item."""
-        Id = event.GetId()
-        if Id == wx.ID_EXIT:
-            self.Close(True)
-        if Id == wx.ID_ABOUT:
-            wx.MessageBox("Logic Simulator\n"
-                          "\nCreated by Mojisola Agboola\n2017\n"
-                          "\nModified by Thomas Yam, Maxwell Li, Chloe Yiu\n2024",
-                          "About Logsim", wx.ICON_INFORMATION | wx.OK)
-        if Id == wx.ID_PAGE_SETUP:
-            self.toggle_theme(wx.EVT_BUTTON)
-        if Id == wx.ID_HELP:
-            wx.MessageBox("Controls\n"
-                          "\nUpload: Choose the specification file.\n"
-                          "\nNo. of Cycles: Change the number of simulation cycles.\n"
-                          "\nMonitor: The monitor section displays active monitor points.\n"
-                          "\nAdd: Add monitor points.\n"
-                          "\nRemove: Delete monitor points.\n"
-                          "\nSwitch: Toggle the button to turn the switch on and off.\n"
-                          "\nRun: Runs the simulation.\n"
-                          "\nContinue: Continues the simulation with updated paramaters.",
-                          "Controls", wx.ICON_INFORMATION | wx.OK)
 
     def disable_monitor_buttons(self):
         """Disable buttons controlling monitor"""
@@ -283,75 +250,6 @@ class Gui(wx.Frame):
 
             return False
 
-    def on_upload_button(self, event) -> None:
-        """Handles the event when the user clicks the upload button to select the specification file."""
-        wildcard = "Text files (*.txt)|*.txt"
-        with wx.FileDialog(self, "Open Specification File", wildcard=wildcard,
-                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
-            # Canceling the action
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return
-
-            path = fileDialog.GetPath()  # extracting the file path
-            filename = os.path.basename(path)  # extracting the file name
-
-            # Check if file is a text file
-            if not path.lower().endswith(".txt"):
-                wx.MessageBox("Please select a valid .txt file", "Error", wx.OK | wx.ICON_ERROR)
-                return
-
-            # clear display
-            self.canvas.clear_display()
-
-            # Processing the file
-            progress_dialog = wx.ProgressDialog("Processing file",
-                                            "Specification file is being processed...",
-                                            maximum=100,
-                                            parent=self,
-                                            style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE)
-
-            self.terminal.reset_terminal()
-            self.reset_gui_display()
-
-            try:
-                # Initialise instances of the inner simulator classes
-                names = Names()
-                devices = Devices(names)
-                network = Network(names, devices)
-                monitors = Monitors(names, devices, network)
-
-                try:
-                    scanner = Scanner(path, names)
-                except UnicodeDecodeError:
-                    self.terminal.append_text(Color.terminal_error_color, f"\nError: file '{path}' is not a unicode text file")
-
-                    self.disable_monitor_buttons()
-                    self.disable_simulation_buttons()
-                    return
-                parser = Parser(names, devices, network, monitors, scanner)
-
-                # Progress bar mock progress
-                for i in range(100):
-                    wx.MilliSleep(10)
-                    progress_dialog.Update(i + 1)
-
-                if self.check_errors(filename, parser):
-                    # Instantiate the circuit for the newly uploaded file
-                    self.update_parser(parser)
-
-                    # Update the GUI with new canvas, monitors and switches
-                    self.canvas.reset_canvas(parser)
-                    self.update_monitors_display()
-                    self.update_switches_display()
-
-            except IOError:
-                progress_dialog.Destroy()
-                self.terminal.append_text(Color.terminal_error_color,f"File {filename} upload failed.")
-
-            finally:
-                progress_dialog.Update(100)
-                progress_dialog.Destroy()
-
     def on_cycles_spin(self, event) -> None:
         """Handle the event when the user changes the spin control value."""
         spin_value = self.cycles_spin.GetValue()
@@ -390,64 +288,6 @@ class Gui(wx.Frame):
     def update_add_remove_button_states(self) -> None:
         """Updates the enabled/disabled state of the add and remove buttons."""
         self.remove_monitor_button.Enable(bool(self.monitors.get_all_identifiers()))
-
-    def on_add_monitor_button(self, event) -> None:
-        """Handle the click event of the add monitor button."""
-        dialog = CustomDialogBox(self, "Add Monitor", "Select a device to monitor:",
-                                 self.devices.fetch_all_device_names(),
-                                 self.theme)
-        device_name = None
-        device_port = None
-        if dialog.ShowModal() == wx.ID_OK:
-            device_name = dialog.get_selected_item()
-        if device_name:
-            device_id = self.names.query(device_name)
-            output_input_names = self.devices.fetch_device_output_names(device_id)
-            output_input_names += self.devices.fetch_device_input_names(device_id)
-            dialog = CustomDialogBox(self, "Add Monitor", "Select a port from the device to monitor:",
-                                     output_input_names,
-                                     self.theme)
-            if dialog.ShowModal() == wx.ID_OK:
-                device_port = dialog.get_selected_item()
-            if device_port:
-                identifier_dialog = IdentifierInputDialog(self, "Enter Identifier",
-                                                          "Please enter an identifier for the monitor:", self.theme)
-                if identifier_dialog.ShowModal() == wx.ID_OK:
-                    identifier = identifier_dialog.get_identifier()
-
-                else:
-                    identifier = None
-
-                device_id = self.names.query(device_name)
-                port_id = self.names.query(device_port) if device_port != "output" else None
-                if identifier and isinstance(identifier, str) and identifier[0].isalpha():
-                    error_type = self.monitors.make_monitor(device_id, port_id, identifier)
-                    if error_type == self.monitors.NO_ERROR:
-                        self.update_monitors_display()
-                    elif error_type == self.monitors.MONITOR_IDENTIFIER_PRESENT:
-                        wx.MessageBox("Identifier already used, please think of a new one!",
-                                      "Error", wx.OK | wx.ICON_ERROR)
-
-                else:
-                    wx.MessageBox("Please enter a valid identifier for the monitor! "
-                                  "\n(Alphanumerics starting with an alphabet)",
-                                  "Error", wx.OK | wx.ICON_ERROR)
-                self.update_add_remove_button_states()
-        dialog.Destroy()
-
-    def on_remove_monitor_button(self, event) -> None:
-        """Handle the click event of the remove monitor button."""
-        dialog = CustomDialogBox(self, "Remove Monitor", "Select a Monitor to Remove:",
-                                 list(self.monitors.get_all_identifiers()),
-                                 self.theme)
-        if dialog.ShowModal() == wx.ID_OK:
-            identifier = dialog.get_selected_item()
-            if identifier:
-                self.monitors.remove_monitor_by_identifier(identifier)
-                self.update_monitors_display()
-                self.update_add_remove_button_states()
-
-        dialog.Destroy()
 
     def update_switches_display(self) -> None:
         """Handle the event of updating the displayed list of switches."""
@@ -547,21 +387,6 @@ class Gui(wx.Frame):
         self.canvas.render("", self.signals_dictionary)
         return True
 
-    def on_run_button(self, event) -> None:
-        """Handle the event when the user clicks the run button."""
-        self.canvas.reset_display()
-
-        self.terminal.append_text(Color.terminal_text_color, "\n\nRunning simulation...")
-        self.continue_button.Enable()
-        self.continue_button.SetBackgroundColour(Color.color_primary)
-
-        self.run_simulation()
-
-    def on_continue_button(self, event) -> None:
-        """Handle the event when the user continue button."""
-        self.continue_simulation()
-        self.terminal.append_text(Color.terminal_text_color, "\n\nUpdated parameters, continuing simulation...")
-
     def toggle_theme(self, event) -> None:
         """Handle the event when the user presses the toggle switch menu item to switch between colour themes."""
         if self.theme == "light":
@@ -628,6 +453,3 @@ class Gui(wx.Frame):
 
         self.Refresh()
 
-    def fetch_cycle(self) -> int:
-        """Tracks the total number of simulation cycles."""
-        return self.total_cycles

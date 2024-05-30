@@ -42,7 +42,7 @@ class UploadButton(wx.Button):
 
             # Processing the file
             progress_dialog = wx.ProgressDialog("Processing file",
-                                            "Specification file is being processed...",
+                                                "Specification file is being processed...",
                                                 maximum=100,
                                                 parent=self.gui,
                                                 style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE)

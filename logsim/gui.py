@@ -611,7 +611,8 @@ class Gui(wx.Frame):
         self.canvas.devices = self.devices
         self.canvas.monitors = self.monitors
         self.canvas.names = self.names
-
+        self.canvas.signals = {}
+        self.canvas.signals_dictionary = {}
         self.canvas.clear_display()
 
     def reset_gui_display(self):
@@ -622,7 +623,6 @@ class Gui(wx.Frame):
     def check_errors(self, filename: str, parser: Parser) -> bool:
         """Handles the error checking when a file is uploaded."""
         if parser.parse_network():
-            self.reset_canvas()
 
             # Message on terminal
             self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_success_color))
@@ -684,6 +684,9 @@ class Gui(wx.Frame):
                                             parent=self,
                                             style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE)
 
+            self.reset_terminal()
+            self.reset_gui_display()
+
             try:
                 # Initialise instances of the inner simulator classes
                 names = Names()
@@ -714,16 +717,12 @@ class Gui(wx.Frame):
                     self.monitors = monitors
                     self.scanner = scanner
                     self.parser = parser
-                    self.canvas.signals = {}
-                    self.canvas.signals_dictionary = {}
 
-                    # Update the GUI with new monitors and switches
+                    # Update the GUI with new canvas, monitors and switches
+                    self.reset_canvas()
                     self.update_monitors_display()
                     self.update_switches_display()
 
-                self.reset_terminal()
-                self.reset_canvas()
-                self.reset_gui_display()
 
             except IOError:
                 progress_dialog.Destroy()

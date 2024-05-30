@@ -14,6 +14,7 @@ import os
 from gui_dialogs import CustomDialogBox, IdentifierInputDialog
 from gui_canvas import MyGLCanvas
 from gui_color import Color
+from gui_terminal import Terminal
 
 from names import Names
 from devices import Devices
@@ -148,28 +149,30 @@ class Gui(wx.Frame):
         self.right_sizer = wx.BoxSizer(wx.VERTICAL)  # right sizer for the controls
 
         # Terminal
-        self.border_panel = wx.Panel(self)
-        self.border_panel.SetBackgroundColour(Color.terminal_background_color)
-        self.terminal_panel = wx.Panel(self.border_panel)
-        self.terminal_panel.SetBackgroundColour(Color.terminal_background_color)
-
-        self.terminal = wx.TextCtrl(self.terminal_panel,
-                                    style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.BORDER_NONE)
-        self.terminal.SetBackgroundColour(Color.terminal_background_color)
-        self.terminal.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Consolas'))
-        self.terminal.SetForegroundColour(Color.terminal_text_color)
-        self.terminal.AppendText(self.welcoming_text)
-
-        self.terminal_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.terminal_sizer.Add(self.terminal, 1, wx.EXPAND | wx.ALL, 0)
-        self.terminal_panel.SetSizer(self.terminal_sizer)
-
-        self.border_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.border_sizer.Add(self.terminal_panel, 1, wx.EXPAND | wx.ALL, 10)
-        self.border_panel.SetSizer(self.border_sizer)
+        # self.border_panel = wx.Panel(self)
+        # self.border_panel.SetBackgroundColour(Color.terminal_background_color)
+        # self.termina.terminal_content_panel = wx.Panel(self.border_panel)
+        # self.termina.terminal_content_panel.SetBackgroundColour(Color.terminal_background_color)
+        # 
+        # self.termina.terminal_content = wx.TextCtrl(self.termina.terminal_content_panel,
+        #                             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.BORDER_NONE)
+        # self.termina.terminal_content.SetBackgroundColour(Color.terminal_background_color)
+        # self.termina.terminal_content.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Consolas'))
+        # self.termina.terminal_content.SetForegroundColour(Color.terminal_text_color)
+        # self.termina.terminal_content.AppendText(self.welcoming_text)
+        # 
+        # self.termina.terminal_content_sizer = wx.BoxSizer(wx.VERTICAL)
+        # self.termina.terminal_content_sizer.Add(self.termina.terminal_content, 1, wx.EXPAND | wx.ALL, 0)
+        # self.termina.terminal_content_panel.SetSizer(self.termina.terminal_content_sizer)
+        # 
+        # self.border_sizer = wx.BoxSizer(wx.VERTICAL)
+        # self.border_sizer.Add(self.termina.terminal_content_panel, 1, wx.EXPAND | wx.ALL, 10)
+        # self.border_panel.SetSizer(self.border_sizer)
+        
+        self.terminal = Terminal(self)
 
         self.left_sizer.Add(self.canvas, 7, wx.EXPAND | wx.ALL, 5)
-        self.left_sizer.Add(self.border_panel, 3, wx.EXPAND | wx.ALL, 5)
+        self.left_sizer.Add(self.terminal.border_panel, 3, wx.EXPAND | wx.ALL, 5)
         self.main_sizer.Add(self.left_sizer, 5, wx.EXPAND | wx.ALL, 10)
         self.main_sizer.Add(self.right_sizer, 1, wx.ALL, 5)
 
@@ -304,9 +307,9 @@ class Gui(wx.Frame):
 
     def reset_terminal(self):
         """Reset terminal when new file is uploaded"""
-        self.terminal.Clear()
-        self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
-        self.terminal.AppendText(self.welcoming_text)
+        self.terminal.terminal_content.Clear()
+        self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
+        self.terminal.terminal_content.AppendText(self.welcoming_text)
 
     def reset_gui_display(self):
         """Reset gui display when new file is uploaded."""
@@ -318,8 +321,8 @@ class Gui(wx.Frame):
         if parser.parse_network():
 
             # Message on terminal
-            self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_success_color))
-            self.terminal.AppendText(f"\nFile {filename} uploaded successfully.")
+            self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_success_color))
+            self.terminal.terminal_content.AppendText(f"\nFile {filename} uploaded successfully.")
 
             # Enable add and remove button
             self.add_monitor_button.Enable()
@@ -334,8 +337,8 @@ class Gui(wx.Frame):
             return True
         else:
             # Message on terminal
-            self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
-            self.terminal.AppendText(f"\nError in the specification file {filename}.")
+            self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
+            self.terminal.terminal_content.AppendText(f"\nError in the specification file {filename}.")
 
             # Disable monitor and simulation buttons
             self.disable_monitor_buttons()
@@ -345,8 +348,8 @@ class Gui(wx.Frame):
             errors = parser.error_handler.error_output_list
 
             for error in errors:
-                self.terminal.SetDefaultStyle(wx.TextAttr(Color.dark_text_color))
-                self.terminal.AppendText(f"\n{error}")
+                self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.dark_text_color))
+                self.terminal.terminal_content.AppendText(f"\n{error}")
 
             return False
 
@@ -390,8 +393,8 @@ class Gui(wx.Frame):
                 try:
                     scanner = Scanner(path, names)
                 except UnicodeDecodeError:
-                    self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
-                    self.terminal.AppendText(f"\nError: file '{path}' is not a unicode text file")
+                    self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
+                    self.terminal.terminal_content.AppendText(f"\nError: file '{path}' is not a unicode text file")
                     self.disable_monitor_buttons()
                     self.disable_simulation_buttons()
                     return
@@ -413,8 +416,8 @@ class Gui(wx.Frame):
 
             except IOError:
                 progress_dialog.Destroy()
-                self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
-                self.terminal.AppendText(f"File {filename} upload failed.")
+                self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
+                self.terminal.terminal_content.AppendText(f"File {filename} upload failed.")
 
             finally:
                 progress_dialog.Update(100)
@@ -589,8 +592,8 @@ class Gui(wx.Frame):
             if self.network.execute_network():
                 self.monitors.record_signals()
             else:
-                self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
-                self.terminal.AppendText(f"\n\nError: network oscillating!!")
+                self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_error_color))
+                self.terminal.terminal_content.AppendText(f"\n\nError: network oscillating!!")
                 self.disable_simulation_buttons()
                 return False
 
@@ -620,8 +623,8 @@ class Gui(wx.Frame):
         """Handle the event when the user clicks the run button."""
         self.canvas.reset_display()
 
-        self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
-        self.terminal.AppendText("\n\nRunning simulation...")
+        self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
+        self.terminal.terminal_content.AppendText("\n\nRunning simulation...")
         self.continue_button.Enable()
         self.continue_button.SetBackgroundColour(Color.color_primary)
 
@@ -631,8 +634,8 @@ class Gui(wx.Frame):
         """Handle the event when the user continue button."""
         self.continue_simulation()
 
-        self.terminal.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
-        self.terminal.AppendText("\n\nUpdated parameters, continuing simulation...")
+        self.terminal.terminal_content.SetDefaultStyle(wx.TextAttr(Color.terminal_text_color))
+        self.terminal.terminal_content.AppendText("\n\nUpdated parameters, continuing simulation...")
 
     def toggle_theme(self, event) -> None:
         """Handle the event when the user presses the toggle switch menu item to switch between colour themes."""

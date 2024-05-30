@@ -674,9 +674,8 @@ class Gui(wx.Frame):
                 wx.MessageBox("Please select a valid .txt file", "Error", wx.OK | wx.ICON_ERROR)
                 return
 
-            self.reset_terminal()
-            self.reset_canvas()
-            self.reset_gui_display()
+            # clear display
+            self.canvas.clear_display()
 
             # Processing the file
             progress_dialog = wx.ProgressDialog("Processing file",
@@ -684,13 +683,14 @@ class Gui(wx.Frame):
                                             maximum=100,
                                             parent=self,
                                             style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE)
-            
+
             try:
                 # Initialise instances of the inner simulator classes
                 names = Names()
                 devices = Devices(names)
                 network = Network(names, devices)
                 monitors = Monitors(names, devices, network)
+
                 try:
                     scanner = Scanner(path, names)
                 except UnicodeDecodeError:
@@ -703,7 +703,7 @@ class Gui(wx.Frame):
 
                 # Progress bar mock progress
                 for i in range(100):
-                    wx.MilliSleep(10) 
+                    wx.MilliSleep(10)
                     progress_dialog.Update(i + 1)
 
                 if self.check_errors(filename, parser):
@@ -721,13 +721,17 @@ class Gui(wx.Frame):
                     self.update_monitors_display()
                     self.update_switches_display()
 
+                self.reset_terminal()
+                self.reset_canvas()
+                self.reset_gui_display()
+
             except IOError:
                 progress_dialog.Destroy()
                 self.terminal.SetDefaultStyle(wx.TextAttr(self.terminal_error_color))
                 self.terminal.AppendText(f"File {filename} upload failed.")
-            
+
             finally:
-                progress_dialog.Update(100) 
+                progress_dialog.Update(100)
                 progress_dialog.Destroy()
 
     def on_cycles_spin(self, event) -> None:
@@ -824,7 +828,7 @@ class Gui(wx.Frame):
                 self.monitors.remove_monitor_by_identifier(identifier)
                 self.update_monitors_display()
                 self.update_add_remove_button_states()
-                
+
         dialog.Destroy()
 
     def update_switches_display(self) -> None:
@@ -909,7 +913,7 @@ class Gui(wx.Frame):
         self.canvas.update_cycle(self.total_cycles)
         self.canvas.render("", self.signals_dictionary)
         return True
-    
+
     def continue_simulation(self) -> bool:
         """Continues the simulation and plot the monitored traces."""
         # Running the simulation
@@ -925,7 +929,7 @@ class Gui(wx.Frame):
         self.canvas.update_cycle(self.total_cycles)
         self.canvas.render("", self.signals_dictionary)
         return True
-    
+
     def on_run_button(self, event) -> None:
         """Handle the event when the user clicks the run button."""
         self.canvas.reset_display()

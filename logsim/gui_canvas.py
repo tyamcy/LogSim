@@ -1,6 +1,8 @@
 import wx
 import wx.glcanvas as wxcanvas
-from OpenGL import GL, GLUT
+import math
+import numpy as np
+from OpenGL import GL, GLU, GLUT
 
 
 class Canvas(wxcanvas.GLCanvas):
@@ -49,12 +51,15 @@ class Canvas(wxcanvas.GLCanvas):
         self.total_cycles = 0
         self.signals = {}
 
+        self.mode = "3D" # 2D or 3D
+
         # Colour themes
         self.light_color_background = (0.98, 0.98, 0.98, 1)
         self.light_color_text = (0, 0, 0)
         self.light_color_trace = (0, 0, 0)
         self.light_color_grid = (0.8, 0.8, 0.8)
         self.light_color_grid_adaptive = (0.6, 0.6, 0.6)
+
         self.dark_color_background = (0.267, 0.267, 0.267, 1)
         self.dark_color_text = (1, 1, 1)
         self.dark_color_trace = (1, 1, 1)
@@ -83,6 +88,30 @@ class Canvas(wxcanvas.GLCanvas):
         self.zoom = 1
         self.zoom_current = 1
 
+        # Constants for OpenGL materials and lights
+        self.mat_diffuse = [0.0, 0.0, 0.0, 1.0]
+        self.mat_no_specular = [0.0, 0.0, 0.0, 0.0]
+        self.mat_no_shininess = [0.0]
+        self.mat_specular = [0.5, 0.5, 0.5, 1.0]
+        self.mat_shininess = [50.0]
+        self.top_right = [1.0, 1.0, 1.0, 0.0]
+        self.straight_on = [0.0, 0.0, 1.0, 0.0]
+        self.no_ambient = [0.0, 0.0, 0.0, 1.0]
+        self.dim_diffuse = [0.5, 0.5, 0.5, 1.0]
+        self.bright_diffuse = [1.0, 1.0, 1.0, 1.0]
+        self.med_diffuse = [0.75, 0.75, 0.75, 1.0]
+        self.full_specular = [0.5, 0.5, 0.5, 1.0]
+        self.no_specular = [0.0, 0.0, 0.0, 1.0]
+
+        # Initialise the scene rotation matrix
+        self.scene_rotate = np.identity(4, 'f')
+
+        # Initialise variables for zooming
+        self.zoom_3d = 1
+
+        # Offset between viewpoint and origin of the scene
+        self.depth_offset = 1000
+
         # Bind events to the canvas
         self.Bind(wx.EVT_PAINT, self.on_paint)
         self.Bind(wx.EVT_SIZE, self.on_size)
@@ -92,18 +121,64 @@ class Canvas(wxcanvas.GLCanvas):
         """Configure and initialise the OpenGL context."""
         size = self.GetClientSize()
         self.SetCurrent(self.context)
-        GL.glDrawBuffer(GL.GL_BACK)
-        GL.glClearColor(*self.color_background)
-        GL.glClearColor(*self.color_background)
-        GL.glViewport(0, 0, size.width, size.height)
-        GL.glMatrixMode(GL.GL_PROJECTION)
-        GL.glLoadIdentity()
-        GL.glOrtho(0, size.width, 0, size.height, -1, 1)
-        GL.glMatrixMode(GL.GL_MODELVIEW)
-        GL.glLoadIdentity()
-        GL.glTranslated(self.pan_x, self.pan_y, 0.0)
-        GL.glScaled(self.zoom, self.zoom, self.zoom)
 
+        GL.glClearColor(*self.color_background)
+
+        if self.mode == "2D":
+            GL.glDrawBuffer(GL.GL_BACK)
+            GL.glViewport(0, 0, size.width, size.height)
+            GL.glMatrixMode(GL.GL_PROJECTION)
+            GL.glLoadIdentity()
+            GL.glOrtho(0, size.width, 0, size.height, -1, 1)
+            GL.glMatrixMode(GL.GL_MODELVIEW)
+            GL.glLoadIdentity()
+            GL.glTranslated(self.pan_x, self.pan_y, 0.0)
+            GL.glScaled(self.zoom, self.zoom, self.zoom)
+
+        elif self.mode == "3D":
+            GL.glViewport(0, 0, size.width, size.height)
+
+            GL.glMatrixMode(GL.GL_PROJECTION)
+            GL.glLoadIdentity()
+            GLU.gluPerspective(45, size.width / size.height, 10, 10000)
+ 
+            GL.glMatrixMode(GL.GL_MODELVIEW)
+            GL.glLoadIdentity()  # lights positioned relative to the viewer
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, self.no_ambient)
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, self.med_diffuse)
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_SPECULAR, self.no_specular)
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, self.top_right)
+            GL.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, self.no_ambient)
+            GL.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, self.dim_diffuse)
+            GL.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, self.no_specular)
+            GL.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, self.straight_on)
+
+            GL.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, self.mat_specular)
+            GL.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, self.mat_shininess)
+            GL.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE,
+                            self.mat_diffuse)
+            GL.glColorMaterial(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE)
+ 
+            GL.glDepthFunc(GL.GL_LEQUAL)
+            GL.glShadeModel(GL.GL_SMOOTH)
+            GL.glDrawBuffer(GL.GL_BACK)
+            GL.glCullFace(GL.GL_BACK)
+            GL.glEnable(GL.GL_COLOR_MATERIAL)
+            GL.glEnable(GL.GL_CULL_FACE)
+            GL.glEnable(GL.GL_DEPTH_TEST)
+            GL.glEnable(GL.GL_LIGHTING)
+            GL.glEnable(GL.GL_LIGHT0)
+            GL.glEnable(GL.GL_LIGHT1)
+            GL.glEnable(GL.GL_NORMALIZE)
+
+            # Viewing transformation - set the viewpoint back from the scene
+            GL.glTranslatef(0.0, 0.0, -self.depth_offset)
+
+            # Modelling transformation - pan, zoom and rotate
+            GL.glTranslatef(self.pan_x, self.pan_y, 0.0)
+            GL.glMultMatrixf(self.scene_rotate)
+            GL.glScalef(self.zoom, self.zoom, self.zoom)
+ 
     def render(self, text: str, signals={}) -> None:
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
@@ -113,71 +188,83 @@ class Canvas(wxcanvas.GLCanvas):
             self.init = True
 
         # Clear everything
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
         if signals:
             self.signals = signals  # updating the dictionary of signal values
 
         if self.signals:
-            x_start = 60
-            y_start = 50
-            width = 30  # width of a cycle
-            height = 30  # height of a pulse
-            y_diff = 75  # distance between different plots
+            if self.mode == "2D":
+                x_start = 60
+                y_start = 50
+                width = 30  # width of a cycle
+                height = 30  # height of a pulse
+                y_diff = 75  # distance between different plots 
 
-            # Annotate x-axis (no. of cycles)
-            self.render_text("0", x_start, y_start - 20)
-            no_cycles = len(list(self.signals.values())[0])
-            #self.render_text(str(no_cycles), x_start + no_cycles * width, y_start - 20)
+                identifier_dict = self.gui.monitors.fetch_identifier_to_device_port_name()
 
-            identifier_dict = self.gui.monitors.fetch_identifier_to_device_port_name()
+                # Plot x-axis, no of cycles
+                no_of_monitors = len(identifier_dict.keys())
+                self.render_text("0", x_start, y_start - 20)
+                no_cycles = len(list(self.signals.values())[0])
+                self.plot_grid(x_start, no_of_monitors, no_cycles)
 
-            # Plot x-axis, no of cycles
-            no_of_monitors = len(identifier_dict.keys())
-            self.plot_grid(x_start, no_of_monitors, no_cycles)
+                for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
+                    device_id = self.gui.names.query(device_name)
+                    port_id = self.gui.names.query(port_name) if port_name else None
+                    trace = self.signals[(device_id, port_id)]
 
-            for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
-                device_id = self.gui.names.query(device_name)
-                port_id = self.gui.names.query(port_name) if port_name else None
-                trace = self.signals[(device_id, port_id)]
+                    # Update y
+                    y = y_start + index * y_diff
 
-                # Update y
-                y = y_start + index * y_diff
+                    # Rendering the identifier name
+                    self.render_text(identifier, 20, y + int(y_diff / 5))
 
-                # Rendering the identifier name
-                self.render_text(identifier, 20, y + int(y_diff / 5))
+                    # Adding 0 and 1
+                    self.render_text("0", 40, y)
+                    self.render_text("1", 40, y + height)
 
-                # Adding 0 and 1
-                self.render_text("0", 40, y)
-                self.render_text("1", 40, y + height)
-
-                # Check x starting position
-                if self.total_cycles > len(trace):
-                    x_start += (self.total_cycles - len(trace)) * width
-
-                # Update x
-                x = x_start
-                x_next = x_start + width
-
-                GL.glColor3f(*self.color_trace)
-                GL.glLineWidth(self.width_trace)
-                GL.glBegin(GL.GL_LINE_STRIP)
-
-                for value in trace:
-                    if value == 0:
-                        y_curr = y
-                    elif value == 1:
-                        y_curr = y + height
-                        
-                    GL.glVertex2f(x, y_curr)
-                    GL.glVertex2f(x_next, y_curr)
+                    # Check x starting position
+                    if self.total_cycles > len(trace):
+                        x_start += (self.total_cycles - len(trace)) * width
 
                     # Update x
-                    x = x_next
-                    x_next += width
+                    x = x_start
+                    x_next = x_start + width
 
-                GL.glEnd()
-                x_start = 60
+                    GL.glColor3f(*self.color_trace)
+                    GL.glLineWidth(self.width_trace)
+                    GL.glBegin(GL.GL_LINE_STRIP)
+
+                    for value in trace:
+                        if value == 0:
+                            y_curr = y
+                        elif value == 1:
+                            y_curr = y + height
+                            
+                        GL.glVertex2f(x, y_curr)
+                        GL.glVertex2f(x_next, y_curr)
+
+                        # Update x
+                        x = x_next
+                        x_next += width
+
+                    GL.glEnd()
+                    x_start = 60
+
+            elif self.mode == "3D":
+                # Draw a sample signal trace, make sure its centre of gravity
+                # is at the scene origin
+                GL.glColor3f(1.0, 0.7, 0.5)  # signal trace is beige
+                for i in range(-10, 10):
+                    z = i * 20
+                    if i % 2 == 0:
+                        self.draw_cuboid(0, z, 5, 10, 1)
+                    else:
+                        self.draw_cuboid(0, z, 5, 10, 11)
+
+                GL.glColor3f(*self.color_text)  # text is white
+                self.render_text_3d("D1.QBAR", 0, 0, 210)
 
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
@@ -216,6 +303,45 @@ class Canvas(wxcanvas.GLCanvas):
 
             x += width
 
+    def draw_cuboid(self, x_pos, z_pos, half_width, half_depth, height):
+        """Draw a cuboid.
+
+        Draw a cuboid at the specified position, with the specified
+        dimensions.
+        """
+        GL.glBegin(GL.GL_QUADS)
+        GL.glNormal3f(0, -1, 0)
+        GL.glVertex3f(x_pos - half_width, -6, z_pos - half_depth)
+        GL.glVertex3f(x_pos + half_width, -6, z_pos - half_depth)
+        GL.glVertex3f(x_pos + half_width, -6, z_pos + half_depth)
+        GL.glVertex3f(x_pos - half_width, -6, z_pos + half_depth)
+        GL.glNormal3f(0, 1, 0)
+        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos - half_depth)
+        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos - half_depth)
+        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos + half_depth)
+        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos + half_depth)
+        GL.glNormal3f(-1, 0, 0)
+        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos - half_depth)
+        GL.glVertex3f(x_pos - half_width, -6, z_pos - half_depth)
+        GL.glVertex3f(x_pos - half_width, -6, z_pos + half_depth)
+        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos + half_depth)
+        GL.glNormal3f(1, 0, 0)
+        GL.glVertex3f(x_pos + half_width, -6, z_pos - half_depth)
+        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos - half_depth)
+        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos + half_depth)
+        GL.glVertex3f(x_pos + half_width, -6, z_pos + half_depth)
+        GL.glNormal3f(0, 0, -1)
+        GL.glVertex3f(x_pos - half_width, -6, z_pos - half_depth)
+        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos - half_depth)
+        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos - half_depth)
+        GL.glVertex3f(x_pos + half_width, -6, z_pos - half_depth)
+        GL.glNormal3f(0, 0, 1)
+        GL.glVertex3f(x_pos - half_width, -6 + height, z_pos + half_depth)
+        GL.glVertex3f(x_pos - half_width, -6, z_pos + half_depth)
+        GL.glVertex3f(x_pos + half_width, -6, z_pos + half_depth)
+        GL.glVertex3f(x_pos + half_width, -6 + height, z_pos + half_depth)
+        GL.glEnd()
+
     def on_paint(self, event) -> None:
         """Handle the paint event."""
         self.SetCurrent(self.context)
@@ -236,51 +362,107 @@ class Canvas(wxcanvas.GLCanvas):
     def on_mouse(self, event) -> None:
         """Handle mouse events."""
         text = ""
-        # Calculate object coordinates of the mouse position
-        size = self.GetClientSize()
-        ox = (event.GetX() - self.pan_x) / self.zoom
-        oy = (size.height - event.GetY() - self.pan_y) / self.zoom
-        old_zoom = self.zoom
-        if event.ButtonDown():
-            self.last_mouse_x = event.GetX()
-            self.last_mouse_y = event.GetY()
-        if event.Dragging():
-            self.pan_x += event.GetX() - self.last_mouse_x
-            self.pan_y -= event.GetY() - self.last_mouse_y
-            self.last_mouse_x = event.GetX()
-            self.last_mouse_y = event.GetY()
-            self.init = False
-        if event.GetWheelRotation() < 0:
-            self.zoom *= (1.0 + (
+
+        if self.mode == "2D":
+            # Calculate object coordinates of the mouse position
+            size = self.GetClientSize()
+            ox = (event.GetX() - self.pan_x) / self.zoom
+            oy = (size.height - event.GetY() - self.pan_y) / self.zoom
+            old_zoom = self.zoom
+            if event.ButtonDown():
+                self.last_mouse_x = event.GetX()
+                self.last_mouse_y = event.GetY()
+            if event.Dragging():
+                self.pan_x += event.GetX() - self.last_mouse_x
+                self.pan_y -= event.GetY() - self.last_mouse_y
+                self.last_mouse_x = event.GetX()
+                self.last_mouse_y = event.GetY()
+                self.init = False
+            if event.GetWheelRotation() < 0:
+                self.zoom *= (1.0 + (
+                        event.GetWheelRotation() / (20 * event.GetWheelDelta())))
+                # Adjust pan so as to zoom around the mouse position
+                self.pan_x -= (self.zoom - old_zoom) * ox
+                self.pan_y -= (self.zoom - old_zoom) * oy
+                self.init = False
+            if event.GetWheelRotation() > 0:
+                self.zoom /= (1.0 - (
+                        event.GetWheelRotation() / (20 * event.GetWheelDelta())))
+                # Adjust pan so as to zoom around the mouse position
+                self.pan_x -= (self.zoom - old_zoom) * ox
+                self.pan_y -= (self.zoom - old_zoom) * oy
+                self.init = False
+            if text:
+                self.render(text)
+            else:
+                self.Refresh()  # triggers the paint event
+
+        elif self.mode == "3D":
+            self.SetCurrent(self.context)
+
+            if event.ButtonDown():
+                self.last_mouse_x = event.GetX()
+                self.last_mouse_y = event.GetY()
+
+            if event.Dragging():
+                GL.glMatrixMode(GL.GL_MODELVIEW)
+                GL.glLoadIdentity()
+                x = event.GetX() - self.last_mouse_x
+                y = event.GetY() - self.last_mouse_y
+                if event.LeftIsDown():
+                    GL.glRotatef(math.sqrt((x * x) + (y * y)), y, x, 0)
+                if event.MiddleIsDown():
+                    GL.glRotatef((x + y), 0, 0, 1)
+                if event.RightIsDown():
+                    self.pan_x += x
+                    self.pan_y -= y
+                GL.glMultMatrixf(self.scene_rotate)
+                GL.glGetFloatv(GL.GL_MODELVIEW_MATRIX, self.scene_rotate)
+                self.last_mouse_x = event.GetX()
+                self.last_mouse_y = event.GetY()
+                self.init = False
+
+            if event.GetWheelRotation() < 0:
+                self.zoom *= (1.0 + (
                     event.GetWheelRotation() / (20 * event.GetWheelDelta())))
-            # Adjust pan so as to zoom around the mouse position
-            self.pan_x -= (self.zoom - old_zoom) * ox
-            self.pan_y -= (self.zoom - old_zoom) * oy
-            self.init = False
-        if event.GetWheelRotation() > 0:
-            self.zoom /= (1.0 - (
+                self.init = False
+
+            if event.GetWheelRotation() > 0:
+                self.zoom /= (1.0 - (
                     event.GetWheelRotation() / (20 * event.GetWheelDelta())))
-            # Adjust pan so as to zoom around the mouse position
-            self.pan_x -= (self.zoom - old_zoom) * ox
-            self.pan_y -= (self.zoom - old_zoom) * oy
-            self.init = False
-        if text:
-            self.render(text)
-        else:
+                self.init = False
+
             self.Refresh()  # triggers the paint event
 
     def render_text(self, text: str, x_pos: int, y_pos: int) -> None:
-        """Handle text drawing operations."""
-        GL.glColor3f(*self.color_text)
-        GL.glRasterPos2f(x_pos, y_pos)
-        font = GLUT.GLUT_BITMAP_HELVETICA_12
+        """Handle text drawing operations for 2D."""
+        if self.mode == "2D":
+            GL.glColor3f(*self.color_text)
+            GL.glRasterPos2f(x_pos, y_pos)
+            font = GLUT.GLUT_BITMAP_HELVETICA_12
+
+            for character in text:
+                if character == '\n':
+                    y_pos = y_pos - 20
+                    GL.glRasterPos2f(x_pos, y_pos)
+                else:
+                    GLUT.glutBitmapCharacter(font, ord(character))
+    
+    def render_text_3d(self, text:str, x_pos:int, y_pos:int, z_pos:int) -> None:
+        """Handle text drawing operations for 3D."""
+        GL.glDisable(GL.GL_LIGHTING)
+        GL.glColor3f(*self.color_text) 
+        GL.glRasterPos3f(x_pos, y_pos, z_pos)
+        font = GLUT.GLUT_BITMAP_HELVETICA_10
 
         for character in text:
             if character == '\n':
                 y_pos = y_pos - 20
-                GL.glRasterPos2f(x_pos, y_pos)
+                GL.glRasterPos3f(x_pos, y_pos, z_pos)
             else:
                 GLUT.glutBitmapCharacter(font, ord(character))
+
+        GL.glEnable(GL.GL_LIGHTING)
 
     def update_theme(self, theme: str) -> None:
         """Handle background colour update."""
@@ -299,8 +481,9 @@ class Canvas(wxcanvas.GLCanvas):
             self.color_trace = self.dark_color_trace
             self.color_grid = self.dark_color_grid
             self.color_grid_adaptive = self.dark_color_grid_adaptive
-            GL.glClearColor(*self.dark_color_background)
+            GL.glClearColor(*self.dark_color_background) 
             GL.glColor3f(*self.dark_color_text)
+
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         self.SwapBuffers()
 
@@ -326,4 +509,11 @@ class Canvas(wxcanvas.GLCanvas):
         self.signals.clear()
         self.init = False
         self.Refresh()
+
+    def change_mode(self) -> None:
+        """Switching between 2D and 3D."""
+        if self.mode == "2D":
+            self.mode == "3D"
+        elif self.mode == "3D":
+            self.mode == "2D"
 

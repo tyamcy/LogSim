@@ -48,10 +48,11 @@ class Canvas(wxcanvas.GLCanvas):
         self.context = wxcanvas.GLContext(self)
         self.gui = parent
 
+        self.no_cycles = 0
         self.total_cycles = 0
         self.signals = {}
 
-        self.mode = "3D" # 2D or 3D
+        self.mode = "2D" # 2D or 3D
 
         # Colour themes
         self.light_color_background = (0.98, 0.98, 0.98, 1)
@@ -70,6 +71,7 @@ class Canvas(wxcanvas.GLCanvas):
         self.color_background = self.light_color_background
         self.color_text = self.light_color_text
         self.color_trace = self.light_color_trace
+        self.color_trace_3d = (0.3, 0.63, 0.706)
         self.color_grid = self.light_color_grid
         self.color_grid_adaptive = self.light_color_grid_adaptive
 
@@ -88,6 +90,9 @@ class Canvas(wxcanvas.GLCanvas):
         self.zoom = 1
         self.zoom_current = 1
 
+        # Flag to turn grid on and off
+        self.grid_on = True
+
         # Constants for OpenGL materials and lights
         self.mat_diffuse = [0.0, 0.0, 0.0, 1.0]
         self.mat_no_specular = [0.0, 0.0, 0.0, 0.0]
@@ -105,6 +110,11 @@ class Canvas(wxcanvas.GLCanvas):
 
         # Initialise the scene rotation matrix
         self.scene_rotate = np.identity(4, 'f')
+        self.scene_origin = np.array([[9.9997663e-01, 8.5962471e-04, 6.9437968e-03, 0],
+                             [-5.5076974e-03, 7.0875227e-01, 7.0543826e-01, 0],
+                             [-4.3150606e-03, -7.0545882e-01, 7.0873958e-01, 0],
+                             [0, 0, 0, 1]], "f")
+
 
         # Initialise variables for zooming
         self.zoom_3d = 1
@@ -181,6 +191,7 @@ class Canvas(wxcanvas.GLCanvas):
  
     def render(self, text: str, signals={}) -> None:
         """Handle all drawing operations."""
+        #print(self.scene_rotate)
         self.SetCurrent(self.context)
         if not self.init:
             # Configure the viewport, modelview and projection matrices
@@ -206,8 +217,12 @@ class Canvas(wxcanvas.GLCanvas):
                 # Plot x-axis, no of cycles
                 no_of_monitors = len(identifier_dict.keys())
                 self.render_text("0", x_start, y_start - 20)
-                no_cycles = len(list(self.signals.values())[0])
-                self.plot_grid(x_start, no_of_monitors, no_cycles)
+                self.no_cycles = len(list(self.signals.values())[0])
+
+                if self.grid_on:
+                   self.plot_grid(x_start, no_of_monitors, self.no_cycles)
+                else:
+                   self.render_text(str(self.no_cycles), x_start + width * self.no_cycles, y_start - 20)
 
                 for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
                     device_id = self.gui.names.query(device_name)
@@ -253,18 +268,46 @@ class Canvas(wxcanvas.GLCanvas):
                     x_start = 60
 
             elif self.mode == "3D":
-                # Draw a sample signal trace, make sure its centre of gravity
-                # is at the scene origin
-                GL.glColor3f(1.0, 0.7, 0.5)  # signal trace is beige
-                for i in range(-10, 10):
-                    z = i * 20
-                    if i % 2 == 0:
-                        self.draw_cuboid(0, z, 5, 10, 1)
-                    else:
-                        self.draw_cuboid(0, z, 5, 10, 11)
+                x_start = 60
+                z_start = 50
+                width = 30  # width of a cycle in 3D
+                height_low = 1  # height of a cuboid for signal '0'
+                height_high = 31  # height of a cuboid for signal '1'
+                z_spacing = 75  # spacing between different signal plots in depth
 
-                GL.glColor3f(*self.color_text)  # text is white
-                self.render_text_3d("D1.QBAR", 0, 0, 210)
+                identifier_dict = self.gui.monitors.fetch_identifier_to_device_port_name()
+
+                for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
+                    device_id = self.gui.names.query(device_name)
+                    port_id = self.gui.names.query(port_name) if port_name else None
+                    trace = self.signals[(device_id, port_id)]
+
+                    # Initialize z position for the current trace
+                    z_pos = z_start - index * z_spacing
+
+                    # Render the identifier name in 3D
+                    self.render_text_3d(identifier, 20, -8, z_pos)
+
+                    # Check x starting position
+                    if self.total_cycles > len(trace):
+                        x_start += (self.total_cycles - len(trace)) * width
+
+                    # Initialize x position
+                    x = x_start
+
+                    # Loop through each value in the trace to plot cuboids
+                    for value in trace:
+                        if value == 0:
+                            height = height_low
+                        elif value == 1:
+                            height = height_high
+
+                        # Draw cuboid for the signal value
+                        GL.glColor3f(*self.color_trace_3d)
+                        self.draw_cuboid(x, z_pos, width // 2, width // 2, height)
+
+                        # Move x position for the next cycle
+                        x += width
 
         # We have been drawing to the back buffer, flush the graphics pipeline
         # and swap the back buffer to the front
@@ -272,7 +315,7 @@ class Canvas(wxcanvas.GLCanvas):
         self.SwapBuffers()
 
     def plot_grid(self, x_start: int, no_of_monitors: int, cycles: int) -> None:
-        """Adds grid lines to the plot."""
+        """Adds grid lines to the plot in 2D."""
         width = 30
         x = x_start + width
         y_start = 40
@@ -302,6 +345,10 @@ class Canvas(wxcanvas.GLCanvas):
                 GL.glEnd()
 
             x += width
+
+    def plot_grid_3d(self, x_start: int, no_of_monitors: int, cycles: int) -> None:
+        """Adds grid lines to the plot in 3D."""
+        return
 
     def draw_cuboid(self, x_pos, z_pos, half_width, half_depth, height):
         """Draw a cuboid.
@@ -350,7 +397,6 @@ class Canvas(wxcanvas.GLCanvas):
             self.init_gl()
             self.init = True
 
-        size = self.GetClientSize()
         self.render("")
 
     def on_size(self, event) -> None:
@@ -361,8 +407,6 @@ class Canvas(wxcanvas.GLCanvas):
 
     def on_mouse(self, event) -> None:
         """Handle mouse events."""
-        text = ""
-
         if self.mode == "2D":
             # Calculate object coordinates of the mouse position
             size = self.GetClientSize()
@@ -392,10 +436,8 @@ class Canvas(wxcanvas.GLCanvas):
                 self.pan_x -= (self.zoom - old_zoom) * ox
                 self.pan_y -= (self.zoom - old_zoom) * oy
                 self.init = False
-            if text:
-                self.render(text)
-            else:
-                self.Refresh()  # triggers the paint event
+
+            self.Refresh()  # triggers the paint event
 
         elif self.mode == "3D":
             self.SetCurrent(self.context)
@@ -436,17 +478,16 @@ class Canvas(wxcanvas.GLCanvas):
 
     def render_text(self, text: str, x_pos: int, y_pos: int) -> None:
         """Handle text drawing operations for 2D."""
-        if self.mode == "2D":
-            GL.glColor3f(*self.color_text)
-            GL.glRasterPos2f(x_pos, y_pos)
-            font = GLUT.GLUT_BITMAP_HELVETICA_12
+        GL.glColor3f(*self.color_text)
+        GL.glRasterPos2f(x_pos, y_pos)
+        font = GLUT.GLUT_BITMAP_HELVETICA_12
 
-            for character in text:
-                if character == '\n':
-                    y_pos = y_pos - 20
-                    GL.glRasterPos2f(x_pos, y_pos)
-                else:
-                    GLUT.glutBitmapCharacter(font, ord(character))
+        for character in text:
+            if character == '\n':
+                y_pos = y_pos - 20
+                GL.glRasterPos2f(x_pos, y_pos)
+            else:
+                GLUT.glutBitmapCharacter(font, ord(character))
     
     def render_text_3d(self, text:str, x_pos:int, y_pos:int, z_pos:int) -> None:
         """Handle text drawing operations for 3D."""
@@ -490,13 +531,26 @@ class Canvas(wxcanvas.GLCanvas):
     def reset_display(self) -> None:
         """Return to the initial viewpoint at the origin."""
         # Reset location parameters
-        self.pan_x = 0
-        self.pan_y = 0
-        self.zoom = 1
+        if self.mode == "2D":
+            self.pan_x = 0
+            self.pan_y = 0
+            self.zoom = 1
+        elif self.mode == "3D":
+            self.pan_x = -400
+            self.pan_y = -90
+            self.zoom = 2
+            self.scene_rotate = self.scene_origin
+      
         self.init = False
+        
+        self.SetCurrent(self.context)
+
+        #GL.glMatrixMode(GL.GL_MODELVIEW)
+        #GL.glLoadIdentity()
+        #GL.glMultMatrixf(self.scene_rotate)
         self.on_paint(None)
-        GL.glMatrixMode(GL.GL_MODELVIEW)
-        GL.glLoadIdentity()
+
+        self.render("")
 
     def update_cycle(self, cycle: int) -> None:
         """Keeps track of the total number of simulation cycles."""
@@ -513,7 +567,16 @@ class Canvas(wxcanvas.GLCanvas):
     def change_mode(self) -> None:
         """Switching between 2D and 3D."""
         if self.mode == "2D":
-            self.mode == "3D"
+            self.mode = "3D"
         elif self.mode == "3D":
-            self.mode == "2D"
+            self.mode = "2D"
+        self.reset_display()
+        self.render("")
 
+    def toggle_grid(self) -> None:
+        """Handles the event of turning the grids on and off."""
+        if self.grid_on:
+            self.grid_on = False 
+        else:
+            self.grid_on = True
+        self.render("")

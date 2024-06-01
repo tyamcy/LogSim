@@ -10,11 +10,12 @@ Gui - configures the main window and all the widgets.
 """
 import wx
 
-from gui_canvas import Canvas
 from gui_color import Color
+from gui_menu import MenuBar
+from gui_canvas import Canvas
+from gui_canvas_buttons import CanvasSettingButtons
 from gui_terminal import Terminal
 from gui_buttons import UploadButton, RunButton, ContinueButton, MonitorAddButton, MonitorRemoveButton
-from gui_menu import MenuBar
 from gui_cycle_selector import CycleSelector
 from gui_switch import Switch
 from gui_monitor import MonitorsList
@@ -81,12 +82,15 @@ class Gui(wx.Frame):
         self.num_cycles = 10
         self.total_cycles = self.num_cycles
 
+        self.mode = "3D"
+
         # A dictionary for the signals and simulated output
         self.signals_dictionary = dict()   # {(device_id, port_id): [signal_list]}
         self.signals_plot_dictionary = dict()  # {device_string: [signal_list]}
 
         self.menu_bar = MenuBar(self)
         self.canvas = Canvas(self)
+        self.canvas_buttons = CanvasSettingButtons(self, self.canvas)
         self.terminal = Terminal(self)
         self.upload_button = UploadButton(self)
         self.cycle_selector = CycleSelector(self)
@@ -115,8 +119,9 @@ class Gui(wx.Frame):
         main_sizer.Add(left_sizer, 5, wx.EXPAND | wx.ALL, 10)
         main_sizer.Add(right_sizer, 1, wx.ALL, 5)
 
-        left_sizer.Add(self.canvas, 7, wx.EXPAND | wx.ALL, 5)
-        left_sizer.Add(self.terminal.border_panel, 3, wx.EXPAND | wx.ALL, 5)
+        left_sizer.Add(self.canvas, 20, wx.EXPAND | wx.ALL, 5)
+        left_sizer.Add(self.canvas_buttons.canvas_buttons_panel, 1, wx.EXPAND | wx.ALL, 1)
+        left_sizer.Add(self.terminal.border_panel, 7, wx.EXPAND | wx.ALL, 5)
         right_sizer.Add(self.upload_button, 0, wx.ALL | wx.EXPAND, 8)
         right_sizer.Add(self.cycle_selector.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
         right_sizer.Add(self.monitors_list.monitors_sizer, 1, wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, 0)
@@ -238,6 +243,13 @@ class Gui(wx.Frame):
         if self.theme == "light":
             self.canvas.update_theme(self.theme)
             self.SetBackgroundColour(Color.dark_background_color)
+            self.canvas_buttons.canvas_buttons_panel.SetBackgroundColour(Color.dark_background_color)
+            self.canvas_buttons.origin_button.SetBackgroundColour(Color.dark_button_color)
+            self.canvas_buttons.origin_button.SetForegroundColour(Color.dark_text_color)
+            self.canvas_buttons.grid_button.SetBackgroundColour(Color.dark_button_color)
+            self.canvas_buttons.grid_button.SetForegroundColour(Color.dark_text_color)
+            self.canvas_buttons.toggle_mode_button.SetBackgroundColour(Color.dark_button_color)
+            self.canvas_buttons.toggle_mode_button.SetForegroundColour(Color.dark_text_color)
             self.cycle_selector.cycles_text.SetForegroundColour(Color.dark_text_color)
             self.cycle_selector.cycles_spin.SetBackgroundColour(Color.dark_background_secondary)
             self.cycle_selector.cycles_spin.SetForegroundColour(Color.dark_text_color)
@@ -269,6 +281,13 @@ class Gui(wx.Frame):
         elif self.theme == "dark":
             self.canvas.update_theme(self.theme)
             self.SetBackgroundColour(Color.light_background_color)
+            self.canvas_buttons.canvas_buttons_panel.SetBackgroundColour(Color.light_background_color)
+            self.canvas_buttons.origin_button.SetBackgroundColour(Color.light_button_color)
+            self.canvas_buttons.origin_button.SetForegroundColour(Color.light_text_color)
+            self.canvas_buttons.grid_button.SetBackgroundColour(Color.light_button_color)
+            self.canvas_buttons.grid_button.SetForegroundColour(Color.light_text_color)
+            self.canvas_buttons.toggle_mode_button.SetBackgroundColour(Color.light_button_color)
+            self.canvas_buttons.toggle_mode_button.SetForegroundColour(Color.light_text_color)
             self.cycle_selector.cycles_text.SetForegroundColour(Color.light_text_color)
             self.cycle_selector.cycles_spin.SetBackgroundColour(Color.light_background_secondary)
             self.cycle_selector.cycles_spin.SetForegroundColour(Color.light_text_color)

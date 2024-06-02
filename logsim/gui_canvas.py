@@ -224,7 +224,7 @@ class Canvas(wxcanvas.GLCanvas):
                 if self.grid_on:
                    self.plot_grid(x_start, no_of_monitors, self.no_cycles)
                 else:
-                   self.render_text(str(self.no_cycles), x_start + width * self.no_cycles + 15, y_start - 20)
+                   self.render_text(str(self.no_cycles), x_start + width * self.no_cycles, y_start - 20)
 
                 for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
                     device_id = self.gui.names.query(device_name)

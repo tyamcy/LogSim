@@ -72,7 +72,8 @@ class Canvas(wxcanvas.GLCanvas):
         self.color_background = self.light_color_background
         self.color_text = self.light_color_text
         self.color_trace = self.light_color_trace
-        self.color_trace_3d = (0.3, 0.63, 0.706)
+        self.color_trace_3d_high = (0.3, 0.63, 0.706)
+        self.color_trace_3d_low = (0.22, 0.49, 0.553)
         self.color_grid = self.light_color_grid
         self.color_grid_adaptive = self.light_color_grid_adaptive
 
@@ -305,11 +306,12 @@ class Canvas(wxcanvas.GLCanvas):
                     for value in trace:
                         if value == 0:
                             height = height_low
+                            GL.glColor3f(*self.color_trace_3d_low)
                         elif value == 1:
                             height = height_high
+                            GL.glColor3f(*self.color_trace_3d_high)
 
                         # Draw cuboid for the signal value
-                        GL.glColor3f(*self.color_trace_3d)
                         self.draw_cuboid(x, z_pos, width // 2, width // 2, height)
 
                         # Move x position for the next cycle
@@ -545,6 +547,7 @@ class Canvas(wxcanvas.GLCanvas):
 
     def render_text(self, text: str, x_pos: int, y_pos: int) -> None:
         """Handle text drawing operations for 2D."""
+        GL.glDisable(GL.GL_LIGHTING)
         GL.glColor3f(*self.color_text)
         GL.glRasterPos2f(x_pos, y_pos)
         font = GLUT.GLUT_BITMAP_HELVETICA_12

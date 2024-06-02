@@ -11,9 +11,10 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 
+from internationalization import _
 
 class UploadButton(wx.Button):
-    def __init__(self, parent, label="Upload"):
+    def __init__(self, parent, label=_(u"Upload")):
         super().__init__(parent, label=label)
         self.gui = parent
 
@@ -23,7 +24,7 @@ class UploadButton(wx.Button):
     def on_upload(self, event) -> None:
         """Handles the event when the user clicks the upload button to select the specification file."""
         wildcard = "Text files (*.txt)|*.txt"
-        with wx.FileDialog(self.gui, "Open Specification File", wildcard=wildcard,
+        with wx.FileDialog(self.gui, _(u"Open Specification File"), wildcard=wildcard,
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             # Canceling the action
             if fileDialog.ShowModal() == wx.ID_CANCEL:
@@ -34,15 +35,15 @@ class UploadButton(wx.Button):
 
             # Check if file is a text file
             if not path.lower().endswith(".txt"):
-                wx.MessageBox("Please select a valid .txt file", "Error", wx.OK | wx.ICON_ERROR)
+                wx.MessageBox(_(u"Please select a valid .txt file"), _(u"Error"), wx.OK | wx.ICON_ERROR)
                 return
 
             # clear display
             self.gui.canvas.clear_display()
 
             # Processing the file
-            progress_dialog = wx.ProgressDialog("Processing file",
-                                                "Specification file is being processed...",
+            progress_dialog = wx.ProgressDialog(_(u"Processing file"),
+                                                _(u"Specification file is being processed..."),
                                                 maximum=100,
                                                 parent=self.gui,
                                                 style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE)
@@ -90,7 +91,7 @@ class UploadButton(wx.Button):
 
 
 class RunButton(wx.Button):
-    def __init__(self, parent, label="Run"):
+    def __init__(self, parent, label=_(u"Run")):
         super().__init__(parent, label=label)
         self.SetBackgroundColour(Color.color_primary)
         self.Bind(wx.EVT_BUTTON, self.on_run)
@@ -101,7 +102,7 @@ class RunButton(wx.Button):
         """Handle the event when the user clicks the run button."""
         self.gui.canvas.reset_display()
 
-        self.gui.terminal.append_text(Color.terminal_text_color, "\n\nRunning simulation...")
+        self.gui.terminal.append_text(Color.terminal_text_color, _(u"\n\nRunning simulation..."))
         self.gui.continue_button.Enable()
         self.gui.continue_button.SetBackgroundColour(Color.color_primary)
 
@@ -109,7 +110,7 @@ class RunButton(wx.Button):
 
 
 class ContinueButton(wx.Button):
-    def __init__(self, parent, label="Continue"):
+    def __init__(self, parent, label=_(u"Continue")):
         super().__init__(parent, label=label)
         self.SetBackgroundColour(Color.color_disabled)
         self.Bind(wx.EVT_BUTTON, self.on_continue)
@@ -120,11 +121,11 @@ class ContinueButton(wx.Button):
     def on_continue(self, event) -> None:
         """Handle the event when the user continue button."""
         self.gui.continue_simulation()
-        self.gui.terminal.append_text(Color.terminal_text_color, "\n\nUpdated parameters, continuing simulation...")
+        self.gui.terminal.append_text(Color.terminal_text_color, _(u"\n\nUpdated parameters, continuing simulation..."))
 
 
 class MonitorAddButton(wx.Button):
-    def __init__(self, parent, label="Add"):
+    def __init__(self, parent, label=_("Add")):
         super().__init__(parent, label=label)
         self.SetBackgroundColour(Color.light_button_color)
         self.Bind(wx.EVT_BUTTON, self.on_add_monitor)
@@ -133,7 +134,7 @@ class MonitorAddButton(wx.Button):
 
     def on_add_monitor(self, event) -> None:
         """Handle the click event of the add monitor button."""
-        dialog = CustomDialogBox(self.gui, "Add Monitor", "Select a device to monitor:",
+        dialog = CustomDialogBox(self.gui, _(u"Add Monitor"), _(u"Select a device to monitor:"),
                                  self.gui.devices.fetch_all_device_names(),
                                  self.gui.theme)
         device_name = None
@@ -144,14 +145,14 @@ class MonitorAddButton(wx.Button):
             device_id = self.gui.names.query(device_name)
             output_input_names = self.gui.devices.fetch_device_output_names(device_id)
             output_input_names += self.gui.devices.fetch_device_input_names(device_id)
-            dialog = CustomDialogBox(self.gui, "Add Monitor", "Select a port from the device to monitor:",
+            dialog = CustomDialogBox(self.gui, _(u"Add Monitor"), _(u"Select a port from the device to monitor:"),
                                      output_input_names,
                                      self.gui.theme)
             if dialog.ShowModal() == wx.ID_OK:
                 device_port = dialog.get_selected_item()
             if device_port:
-                identifier_dialog = IdentifierInputDialog(self.gui, "Enter Identifier",
-                                                          "Please enter an identifier for the monitor:",
+                identifier_dialog = IdentifierInputDialog(self.gui, _(u"Enter Identifier"),
+                                                          _(u"Please enter an identifier for the monitor:"),
                                                           self.gui.theme)
                 if identifier_dialog.ShowModal() == wx.ID_OK:
                     identifier = identifier_dialog.get_identifier()
@@ -166,19 +167,19 @@ class MonitorAddButton(wx.Button):
                     if error_type == self.gui.monitors.NO_ERROR:
                         self.gui.monitors_list.update_monitors_list()
                     elif error_type == self.gui.monitors.MONITOR_IDENTIFIER_PRESENT:
-                        wx.MessageBox("Identifier already used, please think of a new one!",
-                                      "Error", wx.OK | wx.ICON_ERROR)
+                        wx.MessageBox(_(u"Identifier already used, please think of a new one!"),
+                                      _(u"Error"), wx.OK | wx.ICON_ERROR)
 
                 else:
-                    wx.MessageBox("Please enter a valid identifier for the monitor! "
-                                  "\n(Alphanumerics starting with an alphabet)",
-                                  "Error", wx.OK | wx.ICON_ERROR)
+                    wx.MessageBox(_(u"Please enter a valid identifier for the monitor! "
+                                  "\n(Alphanumerics starting with an alphabet)"),
+                                  _(u"Error"), wx.OK | wx.ICON_ERROR)
                 self.gui.update_add_remove_button_states()
         dialog.Destroy()
 
 
 class MonitorRemoveButton(wx.Button):
-    def __init__(self, parent, label="Remove"):
+    def __init__(self, parent, label=_(u"Remove")):
         super().__init__(parent, label=label)
         self.SetBackgroundColour(Color.light_button_color)
         self.Bind(wx.EVT_BUTTON, self.on_remove_monitor)
@@ -187,7 +188,7 @@ class MonitorRemoveButton(wx.Button):
 
     def on_remove_monitor(self, event) -> None:
         """Handle the click event of the remove monitor button."""
-        dialog = CustomDialogBox(self.gui, "Remove Monitor", "Select a Monitor to Remove:",
+        dialog = CustomDialogBox(self.gui, _(u"Remove Monitor"), _(u"Select a Monitor to Remove:"),
                                  list(self.gui.monitors.get_all_identifiers()),
                                  self.gui.theme)
         if dialog.ShowModal() == wx.ID_OK:

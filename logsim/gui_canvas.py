@@ -53,6 +53,7 @@ class Canvas(wxcanvas.GLCanvas):
         self.signals = {}
 
         self.mode = "2D" # 2D or 3D
+        self.theme = "light"
 
         # Colour themes
         self.light_color_background = (0.98, 0.98, 0.98, 1)
@@ -109,7 +110,7 @@ class Canvas(wxcanvas.GLCanvas):
         self.no_specular = [0.0, 0.0, 0.0, 1.0]
 
         # Initialise the scene rotation matrix
-        self.scene_rotate = np.identity(4, 'f')
+        self.scene_rotate = np.identity(4, "f")
         self.scene_origin = np.array([[9.9997663e-01, 8.5962471e-04, 6.9437968e-03, 0],
                              [-5.5076974e-03, 7.0875227e-01, 7.0543826e-01, 0],
                              [-4.3150606e-03, -7.0545882e-01, 7.0873958e-01, 0],
@@ -205,6 +206,10 @@ class Canvas(wxcanvas.GLCanvas):
             self.signals = signals  # updating the dictionary of signal values
 
         if self.signals:
+            identifier_dict = self.gui.monitors.fetch_identifier_to_device_port_name()
+            no_of_monitors = len(identifier_dict.keys())
+            self.no_cycles = len(list(self.signals.values())[0])
+
             if self.mode == "2D":
                 x_start = 60
                 y_start = 50
@@ -212,17 +217,13 @@ class Canvas(wxcanvas.GLCanvas):
                 height = 30  # height of a pulse
                 y_diff = 75  # distance between different plots 
 
-                identifier_dict = self.gui.monitors.fetch_identifier_to_device_port_name()
-
                 # Plot x-axis, no of cycles
-                no_of_monitors = len(identifier_dict.keys())
                 self.render_text("0", x_start, y_start - 20)
-                self.no_cycles = len(list(self.signals.values())[0])
 
                 if self.grid_on:
                    self.plot_grid(x_start, no_of_monitors, self.no_cycles)
                 else:
-                   self.render_text(str(self.no_cycles), x_start + width * self.no_cycles, y_start - 20)
+                   self.render_text(str(self.no_cycles), x_start + width * self.no_cycles + 15, y_start - 20)
 
                 for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
                     device_id = self.gui.names.query(device_name)
@@ -270,12 +271,17 @@ class Canvas(wxcanvas.GLCanvas):
             elif self.mode == "3D":
                 x_start = 60
                 z_start = 50
-                width = 30  # width of a cycle in 3D
-                height_low = 1  # height of a cuboid for signal '0'
-                height_high = 31  # height of a cuboid for signal '1'
+                width = 30  
+                height_low = 1  
+                height_high = 25  
                 z_spacing = 75  # spacing between different signal plots in depth
 
-                identifier_dict = self.gui.monitors.fetch_identifier_to_device_port_name()
+                self.render_text_3d("0", x_start - 15, -8, z_start + 55)
+
+                if self.grid_on:
+                   self.plot_grid_3d(x_start, z_start, no_of_monitors, self.no_cycles)
+                else:
+                   self.render_text_3d(str(self.no_cycles), x_start + width * self.no_cycles - 15, -8, z_start + 55)
 
                 for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
                     device_id = self.gui.names.query(device_name)
@@ -346,10 +352,71 @@ class Canvas(wxcanvas.GLCanvas):
 
             x += width
 
-    def plot_grid_3d(self, x_start: int, no_of_monitors: int, cycles: int) -> None:
-        """Adds grid lines to the plot in 3D."""
-        return
+    def _setup_3d_grid_material(self):
+        """Setup material properties to emulate a glassy material."""
+        GL.glEnable(GL.GL_BLEND)
+        GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
+        GL.glEnable(GL.GL_DEPTH_TEST)
+        GL.glDepthMask(False)  
+        GL.glEnable(GL.GL_COLOR_MATERIAL)
+        GL.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE)
 
+        # Define material properties for a glass-like look
+        ambient = [0.1, 0.1, 0.1, 0.5]
+        diffuse = [0.6, 0.6, 0.6, 0.5]  
+        specular = [0.9, 0.9, 0.9, 0.5] 
+        shininess = 30.0  
+
+        GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, ambient)
+        GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, diffuse)
+        GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, specular)
+        GL.glMaterialf(GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, shininess)
+
+    def plot_grid_3d(self, x_start: int, z_start: int, no_of_monitors: int, cycles: int) -> None:
+        """Adds grid planes to the plot in 3D."""
+        self._setup_3d_grid_material()
+
+        width = 30
+        z_depth = 75 * (no_of_monitors - 1)
+
+        x = x_start + 15
+        y_grid_bottom = -15 
+        y_grid_top = 45  
+        z_offset = 30
+        z_start += z_offset
+        z_end = z_start - z_depth - z_offset * 2
+
+        for i in range(1, cycles + 1):
+            if i % 5 == 0:
+                if self.theme == "light":
+                    color = (*self.color_grid_adaptive, 0.5)  
+                elif self.theme == "dark":
+                    color = (0.7, 0.7, 0.2, 0.8)
+                self.render_text_3d(str(i), x, -8, z_start + 25)
+            else:
+                if self.theme == "light":
+                    color = (*self.color_grid, 0.2)
+                elif self.theme == "dark":
+                    color = (0.7, 0.7, 0.5, 0.4)
+
+            # Draw grid planes
+            GL.glColor4f(*color) 
+            GL.glBegin(GL.GL_QUADS)
+            # Front face
+            GL.glVertex3f(x, y_grid_bottom, z_start)
+            GL.glVertex3f(x, y_grid_top, z_start)
+            GL.glVertex3f(x, y_grid_top, z_end)
+            GL.glVertex3f(x, y_grid_bottom, z_end)
+            # Back face 
+            GL.glVertex3f(x, y_grid_bottom, z_end)
+            GL.glVertex3f(x, y_grid_top, z_end)
+            GL.glVertex3f(x, y_grid_top, z_start)
+            GL.glVertex3f(x, y_grid_bottom, z_start)
+            GL.glEnd()
+
+            # Update x for the next cycle
+            x += width
+        
     def draw_cuboid(self, x_pos, z_pos, half_width, half_depth, height):
         """Draw a cuboid.
 
@@ -509,6 +576,7 @@ class Canvas(wxcanvas.GLCanvas):
         """Handle background colour update."""
         self.SetCurrent(self.context)
         if theme == "dark":
+            self.theme = "light"
             self.color_background = self.light_color_background
             self.color_text = self.light_color_text
             self.color_trace = self.light_color_trace
@@ -517,6 +585,7 @@ class Canvas(wxcanvas.GLCanvas):
             GL.glClearColor(*self.light_color_background)
             GL.glColor3f(*self.light_color_text)
         elif theme == "light":
+            self.theme = "dark"
             self.color_background = self.dark_color_background
             self.color_text = self.dark_color_text
             self.color_trace = self.dark_color_trace
@@ -542,12 +611,7 @@ class Canvas(wxcanvas.GLCanvas):
             self.scene_rotate = self.scene_origin
       
         self.init = False
-        
-        self.SetCurrent(self.context)
 
-        #GL.glMatrixMode(GL.GL_MODELVIEW)
-        #GL.glLoadIdentity()
-        #GL.glMultMatrixf(self.scene_rotate)
         self.on_paint(None)
 
         self.render("")

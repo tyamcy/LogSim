@@ -1,14 +1,14 @@
 import wx
 
 from gui_color import Color
-
+from internationalization import _
 
 class MonitorsList:
     def __init__(self, parent):
         self.gui = parent
 
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.monitors_text = wx.StaticText(parent, wx.ID_ANY, "Monitors")
+        self.monitors_text = wx.StaticText(parent, wx.ID_ANY, _(u"Monitors"))
         self.monitors_scrolled = wx.ScrolledWindow(parent, style=wx.VSCROLL)
         self.monitors_scrolled.SetScrollRate(10, 10)
         self.monitors_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -30,7 +30,7 @@ class MonitorsList:
 
         if not self.gui.monitors.get_all_identifiers():
             # Empty list, displays a message saying "No active monitors"
-            no_monitor_text = wx.StaticText(self.monitors_scrolled, wx.ID_ANY, "No active monitors")
+            no_monitor_text = wx.StaticText(self.monitors_scrolled, wx.ID_ANY, _(u"No active monitors"))
             no_monitor_text.SetForegroundColour(color)
             self.monitors_scrolled_sizer.Add(no_monitor_text, 0, wx.ALL | wx.CENTER, 5)
         else:

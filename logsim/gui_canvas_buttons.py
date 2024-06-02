@@ -3,6 +3,7 @@ import wx.glcanvas as wxcanvas
 import os
 
 from gui_color import Color
+from internationalization import _
 
 class CanvasSettingButtons:
     def __init__(self, parent, canvas:wxcanvas.GLCanvas):
@@ -13,9 +14,9 @@ class CanvasSettingButtons:
 
         self.container_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.origin_button = wx.Button(self.canvas_buttons_panel, label="Origin")
-        self.grid_button = wx.Button(self.canvas_buttons_panel, label="Grid")
-        self.toggle_mode_button = wx.Button(self.canvas_buttons_panel, label="2D/3D")
+        self.origin_button = wx.Button(self.canvas_buttons_panel, label=_(u"Origin"))
+        self.grid_button = wx.Button(self.canvas_buttons_panel, label=_(u"Grid"))
+        self.toggle_mode_button = wx.Button(self.canvas_buttons_panel, label=_(u"2D/3D"))
 
         self.origin_button.Bind(wx.EVT_BUTTON, self.reset_origin)
         self.grid_button.Bind(wx.EVT_BUTTON, self.on_toggle_grids)

@@ -2,7 +2,7 @@ import wx
 from typing import Optional
 
 from gui_color import Color
-
+from internationalization import _
 
 class CustomDialogBox(wx.Dialog):
     """Custom dialog box for the add and remove buttons.

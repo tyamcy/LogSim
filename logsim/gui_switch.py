@@ -1,7 +1,7 @@
 import wx
 
 from gui_color import Color
-
+from internationalization import _
 
 class Switch:
     def __init__(self, parent):
@@ -13,7 +13,7 @@ class Switch:
         self.toggle_button_switch_name = dict()  # {toggle button: switch name}
 
         self.switches_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.switches_text = wx.StaticText(parent, wx.ID_ANY, "Switches")
+        self.switches_text = wx.StaticText(parent, wx.ID_ANY, _(u"Switches"))
         self.switches_scrolled = wx.ScrolledWindow(parent, style=wx.VSCROLL)
         self.switches_scrolled.SetScrollRate(10, 10)
         self.switches_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)

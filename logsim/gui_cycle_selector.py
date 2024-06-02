@@ -1,12 +1,13 @@
 import wx
 
+from internationalization import _
 
 class CycleSelector:
     def __init__(self, parent):
         self.gui = parent
 
         self.cycles_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.cycles_text = wx.StaticText(parent, wx.ID_ANY, "No. of Cycles")
+        self.cycles_text = wx.StaticText(parent, wx.ID_ANY, _(u"No. of Cycles"))
         self.cycles_spin = wx.SpinCtrl(parent, wx.ID_ANY, str(parent.num_cycles))
 
         self.cycles_spin.SetRange(1, 100)

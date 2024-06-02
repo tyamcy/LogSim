@@ -5,15 +5,20 @@ from internationalization import _
 class FileMenu(wx.Menu):
     def __init__(self):
         super().__init__()
+        file_icon = wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_MENU, (16, 16))
         theme_icon = wx.ArtProvider.GetBitmap(wx.ART_TIP, wx.ART_MENU, (16, 16))
         about_icon = wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_MENU, (16, 16))
         exit_icon = wx.ArtProvider.GetBitmap(wx.ART_QUIT, wx.ART_MENU, (16, 16))
+        file_item = wx.MenuItem(self, wx.ID_FILE, _(u"Open file"))
         toggle_theme_item = wx.MenuItem(self, wx.ID_PAGE_SETUP, _(u"Toggle theme"))
         about_item = wx.MenuItem(self, wx.ID_ABOUT, _(u"About"))
         exit_item = wx.MenuItem(self, wx.ID_EXIT, _(u"Exit"))
+        file_item.SetBitmap(file_icon)
         toggle_theme_item.SetBitmap(theme_icon)
         about_item.SetBitmap(about_icon)
         exit_item.SetBitmap(exit_icon)
+        self.Append(file_item)
+        self.AppendSeparator()
         self.Append(toggle_theme_item)
         self.AppendSeparator()
         self.Append(about_item)
@@ -32,7 +37,7 @@ class HelpMenu(wx.Menu):
 class MenuBar(wx.MenuBar):
     def __init__(self, parent):
         super().__init__()
-        self.Append(FileMenu(), _(u"Menu"))
+        self.Append(FileMenu(), _(u"File"))
         self.Append(HelpMenu(), _(u"Help"))
 
         self.gui = parent
@@ -49,6 +54,8 @@ class MenuBar(wx.MenuBar):
                           "\nCreated by Mojisola Agboola\n2017\n"
                           "\nModified by Thomas Yam, Maxwell Li, Chloe Yiu\n2024"),
                           _(u"About Logsim"), wx.ICON_INFORMATION | wx.OK)
+        if Id == wx.ID_FILE:
+            return
         if Id == wx.ID_PAGE_SETUP:
             self.gui.toggle_theme(wx.EVT_BUTTON)
         if Id == wx.ID_HELP:

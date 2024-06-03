@@ -1,4 +1,25 @@
+"""Storing the colors for the graphical user interface.
+
+Used in the Logic Simulator project to allow color adjustment for the graphical user interface
+
+Classes:
+--------
+Color - contains all colors used for decorating the graphical user interface.
+"""
+
+
 class Color:
+    """
+    A class containing all the colors for decorating the graphical user interface.
+
+    Parameters
+    ----------
+    No parameters.
+
+    Public methods
+    --------------
+    No public methods.
+    """
     # Colour styles
     color_primary = "#4DA2B4"
     color_primary_shade = "#397E8D"

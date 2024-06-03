@@ -15,7 +15,8 @@ from logsim.base_app import _
 class Switch:
     """Configure the switches section.
 
-    This class provides a component that displays the available switches and toggle buttons that allows the user to change the states of the swtiches.
+    This class provides a component that displays the available switches and toggle buttons
+    that allows the user to change the states of the switches.
 
     Parameters
     ----------

@@ -41,7 +41,8 @@ class Gui(wx.Frame):
 
     update_parser(self, parser): Updates the parser object.
 
-    on_upload_button(self, event): Event handler for when user clicks the upload button to upload a specification file (.txt file).
+    on_upload_button(self, event): Event handler for when user clicks the upload button to upload
+    a specification file (.txt file).
 
     disable_monitor_buttons(self): Disable buttons controlling monitor
 
@@ -135,7 +136,8 @@ class Gui(wx.Frame):
 
             # Message on terminal
             self.terminal.append_text(Color.terminal_success_color,
-                                      _(u"\nFile {filename} uploaded successfully.").format(filename=filename))
+                                      _(u"\nFile {filename} uploaded successfully.")
+                                      .format(filename=filename))
 
             # Enable add and remove button
             self.add_monitor_button.Enable()
@@ -151,7 +153,8 @@ class Gui(wx.Frame):
         else:
             # Message on terminal
             self.terminal.append_text(Color.terminal_error_color,
-                                      _(u"\nError in the specification file {filename}.").format(filename=filename))
+                                      _(u"\nError in the specification file {filename}.")
+                                      .format(filename=filename))
 
             # Disable monitor and simulation buttons
             self.disable_monitor_buttons()

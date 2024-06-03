@@ -15,7 +15,7 @@ from logsim.gui_widgets.color import Color
 class Terminal:
     """Configure the terminal.
 
-    This class provides a terminal compoent for the GUI to display console messages.
+    This class provides a terminal component for the GUI to display console messages.
 
     Parameters
     ----------

@@ -66,7 +66,6 @@ def test_identify_monitor(new_monitors: Monitors) -> None:
 def test_make_monitor_gives_errors(new_monitors: Monitors) -> None:
     """Test if make_monitor returns the correct errors."""
     names = new_monitors.names
-    network = new_monitors.network
     devices = new_monitors.devices
     [SW1_ID, SW3_ID, OR1_ID, I1, SWITCH_ID, I3] = names.lookup(["Sw1", "Sw3",
                                                                 "Or1", "I1",

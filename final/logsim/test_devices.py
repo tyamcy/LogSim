@@ -1,8 +1,6 @@
 """Test the devices module."""
 import pytest
 
-from typing import Tuple
-
 from logsim.names import Names
 from logsim.devices import Devices
 

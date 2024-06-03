@@ -255,9 +255,9 @@ class ParserErrorHandler:
         elif error_code == self.MISSING_INPUT_TO_PIN:
             return f"Missing input to pin {name}"
         elif error_code == self.MISSING_MONITOR:
-            return f"At least one monitor should be defined"
+            return "At least one monitor should be defined"
         elif error_code == self.MISSING_CLOCK_OR_SWITCH:
-            return f"At least one list between 'CLOCK' and 'SWITCH' is needed. neither is found"
+            return "At least one list between 'CLOCK' and 'SWITCH' is needed. neither is found"
 
         else:
             raise ValueError(f"Invalid error code '{error_code}'")

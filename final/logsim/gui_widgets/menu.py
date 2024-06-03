@@ -92,7 +92,8 @@ class MenuBar(wx.MenuBar):
     --------------
     on_menu(self, event): Handle the event when the user selects a menu item.
 
-    on_upload(self, event): Handles the event when the user clicks the upload button to select the specification file.
+    on_upload(self, event): Handles the event when the user clicks the upload button to select the
+    specification file.
     """
 
     def __init__(self, parent):

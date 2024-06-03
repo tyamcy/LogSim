@@ -72,7 +72,8 @@ class UploadButton(wx.Button):
                 try:
                     scanner = Scanner(path, names)
                 except UnicodeDecodeError:
-                    self.gui.terminal.append_text(Color.terminal_error_color, f"\nError: file '{path}' is not a unicode text file")
+                    self.gui.terminal.append_text(Color.terminal_error_color,
+                                                  f"\nError: file '{path}' is not a unicode text file")
 
                     self.gui.disable_monitor_buttons()
                     self.gui.disable_simulation_buttons()
@@ -94,7 +95,8 @@ class UploadButton(wx.Button):
 
             except IOError:
                 progress_dialog.Destroy()
-                self.gui.terminal.append_text(Color.terminal_error_color, f"File {filename} upload failed.")
+                self.gui.terminal.append_text(Color.terminal_error_color,
+                                              f"File {filename} upload failed.")
 
             finally:
                 progress_dialog.Update(100)
@@ -162,7 +164,8 @@ class ContinueButton(wx.Button):
     def on_continue(self, event) -> None:
         """Handle the event when the user continue button."""
         self.gui.continue_simulation()
-        self.gui.terminal.append_text(Color.terminal_text_color, _(u"\n\nUpdated parameters, continuing simulation..."))
+        self.gui.terminal.append_text(Color.terminal_text_color,
+                                      _(u"\n\nUpdated parameters, continuing simulation..."))
 
 
 class MonitorAddButton(wx.Button):
@@ -201,7 +204,8 @@ class MonitorAddButton(wx.Button):
             device_id = self.gui.names.query(device_name)
             output_input_names = self.gui.devices.fetch_device_output_names(device_id)
             output_input_names += self.gui.devices.fetch_device_input_names(device_id)
-            dialog = CustomDialogBox(self.gui, _(u"Add Monitor"), _(u"Select a port from the device to monitor:"),
+            dialog = CustomDialogBox(self.gui, _(u"Add Monitor"),
+                                     _(u"Select a port from the device to monitor:"),
                                      output_input_names,
                                      self.gui.theme)
             if dialog.ShowModal() == wx.ID_OK:

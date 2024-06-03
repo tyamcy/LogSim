@@ -1,24 +1,51 @@
-# IIA-Logic-Simulator
+# LogSim
 
 ## Team members
 
 Thomas Yam (cyy33), Maxwell Li (ml2019), Chloe Yiu (ymy23)
 
-## Table of contents
-
-1. [Introduction](#introduction)
-2. [Run the program](#run-the-program)
-
 ## Introduction
 
-LogSim is a logic simulator software, which is capable of simulating a logic circuit specified using Digital Logic Layout Mapper, a logic circuit description language.
+LogSim is a logic simulator software, which is capable of simulating a logic circuit specified using 
+Digital Logic Layout Mapper, a logic circuit description language.
+
 ## Run the program
+Make sure the following dependencies are installed
+- [wxPython](https://wiki.wxpython.org/How%20to%20install%20wxPython)
+- [PyOpenGL](https://pyopengl.sourceforge.net/documentation/installation.html)
 
-To use the text-based command line user interface, run
+Run the following commands
 
-`python logsim.py -c <file path>`
+```
+git clone https://github.com/tyamcy/IIA-Logic-Simulator.git
+cd IIA-Logic-Simulator/final
+```
 
-To use the graphic user interface, run
+For text-based command line user interface, run
 
-`python logsim.py <file path>`
+```
+python main.py -c <file path>
+```
+
+Currently, the graphical user interface supports both English and Traditional Chinese. 
+The language is either detected automatically or specified when the program is run.
+
+For the system language, run
+
+```
+python main.py <file path>
+```
+
+For English, run
+
+```
+LANG=en_US python main.py <file path>
+```
+
+For Traditional Chinese, run
+
+```
+LANG=zh_HK python main.py <file path>
+```
+
 

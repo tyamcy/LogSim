@@ -129,7 +129,7 @@ class Canvas(wxcanvas.GLCanvas):
                              [9.2356848e-03, -0.67397875, 0.7387122, 0],
                              [0, 0, 0, 1]], "f")
 
-        self.scene_rotate = self.scene_origin
+        self.scene_rotate = self.scene_origin.copy()
 
         # Initialise variables for zooming
         self.zoom_3d = 1
@@ -144,6 +144,7 @@ class Canvas(wxcanvas.GLCanvas):
 
     def init_gl(self):
         """Configure and initialise the OpenGL context."""
+        print("run")
         size = self.GetClientSize()
         self.SetCurrent(self.context)
 
@@ -203,10 +204,10 @@ class Canvas(wxcanvas.GLCanvas):
             GL.glTranslatef(self.pan_x, self.pan_y, 0.0)
             GL.glMultMatrixf(self.scene_rotate)
             GL.glScalef(self.zoom, self.zoom, self.zoom)
+        self.init = True
  
     def render(self, text: str, signals={}) -> None:
         """Handle all drawing operations."""
-        print(self.scene_rotate)
         self.SetCurrent(self.context)
         if not self.init:
             # Configure the viewport, modelview and projection matrices
@@ -624,11 +625,7 @@ class Canvas(wxcanvas.GLCanvas):
             self.pan_x = -400
             self.pan_y = -90
             self.zoom = 2
-            self.scene_rotate = self.scene_origin
-            #GL.glMatrixMode(GL.GL_MODELVIEW)
-            #GL.glLoadIdentity()
-            #GL.glRotatef(10, 5, 33, 0)
-            #GL.glMultMatrixf(self.scene_rotate)
+            self.scene_rotate = self.scene_origin.copy()
       
         self.init = False
         self.on_paint(None)

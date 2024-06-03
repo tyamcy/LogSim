@@ -1,8 +1,9 @@
-import wx
 from typing import Optional
 
+import wx
+
 from gui_color import Color
-from internationalization import _
+
 
 class CustomDialogBox(wx.Dialog):
     """Custom dialog box for the add and remove buttons.
@@ -25,7 +26,7 @@ class CustomDialogBox(wx.Dialog):
         self.selection = None
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        
+
         text = wx.StaticText(self, label=message)
         sizer.Add(text, flag=wx.ALL, border=5)
 
@@ -78,7 +79,7 @@ class IdentifierInputDialog(wx.Dialog):
 
     def __init__(self, parent, title: str, message: str, theme: str):
         super().__init__(parent, title=title)
-        
+
         self.theme = theme
 
         sizer = wx.BoxSizer(wx.VERTICAL)

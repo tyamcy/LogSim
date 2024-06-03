@@ -2,6 +2,7 @@ import wx
 
 from internationalization import _
 
+
 class CycleSelector:
     def __init__(self, parent):
         self.gui = parent

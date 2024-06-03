@@ -2,6 +2,7 @@ import wx
 
 from internationalization import _
 
+
 class FileMenu(wx.Menu):
     def __init__(self):
         super().__init__()
@@ -51,8 +52,8 @@ class MenuBar(wx.MenuBar):
             self.gui.Close(True)
         if Id == wx.ID_ABOUT:
             wx.MessageBox(_(u"Logic Simulator\n"
-                          "\nCreated by Mojisola Agboola\n2017\n"
-                          "\nModified by Thomas Yam, Maxwell Li, Chloe Yiu\n2024"),
+                            "\nCreated by Mojisola Agboola\n2017\n"
+                            "\nModified by Thomas Yam, Maxwell Li, Chloe Yiu\n2024"),
                           _(u"About Logsim"), wx.ICON_INFORMATION | wx.OK)
         if Id == wx.ID_FILE:
             return
@@ -60,14 +61,12 @@ class MenuBar(wx.MenuBar):
             self.gui.toggle_theme(wx.EVT_BUTTON)
         if Id == wx.ID_HELP:
             wx.MessageBox(_(u"Controls\n"
-                          "\nUpload: Choose the specification file.\n"
-                          "\nNo. of Cycles: Change the number of simulation cycles.\n"
-                          "\nMonitor: The monitor section displays active monitor points.\n"
-                          "\nAdd: Add monitor points.\n"
-                          "\nRemove: Delete monitor points.\n"
-                          "\nSwitch: Toggle the button to turn the switch on and off.\n"
-                          "\nRun: Runs the simulation.\n"
-                          "\nContinue: Continues the simulation with updated paramaters."),
+                            "\nUpload: Choose the specification file.\n"
+                            "\nNo. of Cycles: Change the number of simulation cycles.\n"
+                            "\nMonitor: The monitor section displays active monitor points.\n"
+                            "\nAdd: Add monitor points.\n"
+                            "\nRemove: Delete monitor points.\n"
+                            "\nSwitch: Toggle the button to turn the switch on and off.\n"
+                            "\nRun: Runs the simulation.\n"
+                            "\nContinue: Continues the simulation with updated paramaters."),
                           _(u"Controls"), wx.ICON_INFORMATION | wx.OK)
-
-

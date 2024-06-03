@@ -3,6 +3,7 @@ import wx
 from gui_color import Color
 from internationalization import _
 
+
 class Switch:
     def __init__(self, parent):
         self.gui = parent
@@ -41,7 +42,7 @@ class Switch:
             self.switches_dict[switch_name] = 0
             self.gui.devices.set_switch(switch_id, 0)
         self.gui.Refresh()
-        
+
     def update_switches_display(self) -> None:
         """Handle the event of updating the displayed list of switches."""
         # Creating a dictionary of switches

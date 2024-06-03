@@ -3,6 +3,7 @@ import wx
 from gui_color import Color
 from internationalization import _
 
+
 class MonitorsList:
     def __init__(self, parent):
         self.gui = parent
@@ -35,7 +36,8 @@ class MonitorsList:
             self.monitors_scrolled_sizer.Add(no_monitor_text, 0, wx.ALL | wx.CENTER, 5)
         else:
             # Populate the display if there are active monitors
-            for identifier, (device_name, port_name) in self.gui.monitors.fetch_identifier_to_device_port_name().items():
+            for identifier, (
+                    device_name, port_name) in self.gui.monitors.fetch_identifier_to_device_port_name().items():
                 output = identifier + ": " + device_name
                 if port_name:
                     output += "." + port_name

@@ -64,7 +64,7 @@ class Canvas(wxcanvas.GLCanvas):
         self.total_cycles = 0
         self.signals = {}
 
-        self.mode = "2D" # 2D or 3D
+        self.mode = "2D"  # 2D or 3D
         self.theme = "light"
 
         # Colour themes
@@ -125,9 +125,9 @@ class Canvas(wxcanvas.GLCanvas):
         # Initialise the scene rotation matrix
         self.scene_rotate = np.identity(4, "f")
         self.scene_origin = np.array([[9.9997663e-01, 6.9979425e-03, -6.0286466e-03, 0],
-                             [9.6203759e-05, 6.4476335e-01, 7.6438475e-01, 0],
-                             [9.2356848e-03, -0.67397875, 0.7387122, 0],
-                             [0, 0, 0, 1]], "f")
+                                      [9.6203759e-05, 6.4476335e-01, 7.6438475e-01, 0],
+                                      [9.2356848e-03, -0.67397875, 0.7387122, 0],
+                                      [0, 0, 0, 1]], "f")
 
         self.scene_rotate = self.scene_origin.copy()
 
@@ -144,7 +144,6 @@ class Canvas(wxcanvas.GLCanvas):
 
     def init_gl(self):
         """Configure and initialise the OpenGL context."""
-        print("run")
         size = self.GetClientSize()
         self.SetCurrent(self.context)
 
@@ -167,7 +166,7 @@ class Canvas(wxcanvas.GLCanvas):
             GL.glMatrixMode(GL.GL_PROJECTION)
             GL.glLoadIdentity()
             GLU.gluPerspective(45, size.width / size.height, 10, 10000)
- 
+
             GL.glMatrixMode(GL.GL_MODELVIEW)
             GL.glLoadIdentity()  # lights positioned relative to the viewer
             GL.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, self.no_ambient)
@@ -184,7 +183,7 @@ class Canvas(wxcanvas.GLCanvas):
             GL.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE,
                             self.mat_diffuse)
             GL.glColorMaterial(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE)
- 
+
             GL.glDepthFunc(GL.GL_LEQUAL)
             GL.glShadeModel(GL.GL_SMOOTH)
             GL.glDrawBuffer(GL.GL_BACK)
@@ -205,7 +204,7 @@ class Canvas(wxcanvas.GLCanvas):
             GL.glMultMatrixf(self.scene_rotate)
             GL.glScalef(self.zoom, self.zoom, self.zoom)
         self.init = True
- 
+
     def render(self, text: str, signals={}) -> None:
         """Handle all drawing operations."""
         self.SetCurrent(self.context)
@@ -236,9 +235,9 @@ class Canvas(wxcanvas.GLCanvas):
                 self.render_text("0", x_start, y_start - 20)
 
                 if self.grid_on:
-                   self.plot_grid(x_start, no_of_monitors, self.no_cycles)
+                    self.plot_grid(x_start, no_of_monitors, self.no_cycles)
                 else:
-                   self.render_text(str(self.no_cycles), x_start + width * self.no_cycles, y_start - 20)
+                    self.render_text(str(self.no_cycles), x_start + width * self.no_cycles, y_start - 20)
 
                 for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
                     device_id = self.gui.names.query(device_name)
@@ -272,7 +271,7 @@ class Canvas(wxcanvas.GLCanvas):
                             y_curr = y
                         elif value == 1:
                             y_curr = y + height
-                            
+
                         GL.glVertex2f(x, y_curr)
                         GL.glVertex2f(x_next, y_curr)
 
@@ -286,17 +285,17 @@ class Canvas(wxcanvas.GLCanvas):
             elif self.mode == "3D":
                 x_start = 60
                 z_start = 50
-                width = 30  
-                height_low = 1  
-                height_high = 25  
+                width = 30
+                height_low = 1
+                height_high = 25
                 z_spacing = 75  # spacing between different signal plots in depth
 
                 self.render_text_3d("0", x_start - 15, -8, z_start + 55)
 
                 if self.grid_on:
-                   self.plot_grid_3d(x_start, z_start, no_of_monitors, self.no_cycles)
+                    self.plot_grid_3d(x_start, z_start, no_of_monitors, self.no_cycles)
                 else:
-                   self.render_text_3d(str(self.no_cycles), x_start + width * self.no_cycles - 15, -8, z_start + 55)
+                    self.render_text_3d(str(self.no_cycles), x_start + width * self.no_cycles - 15, -8, z_start + 55)
 
                 for index, (identifier, (device_name, port_name)) in enumerate(identifier_dict.items()):
                     device_id = self.gui.names.query(device_name)
@@ -341,7 +340,7 @@ class Canvas(wxcanvas.GLCanvas):
         width = 30
         x = x_start + width
         y_start = 40
-        y_end = y_start + no_of_monitors * 75  - 20
+        y_end = y_start + no_of_monitors * 75 - 20
 
         for i in range(1, cycles + 1):
             # Thicker grid lines for multiples of 5 and annotate
@@ -373,15 +372,15 @@ class Canvas(wxcanvas.GLCanvas):
         GL.glEnable(GL.GL_BLEND)
         GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
         GL.glEnable(GL.GL_DEPTH_TEST)
-        GL.glDepthMask(False)  
+        GL.glDepthMask(False)
         GL.glEnable(GL.GL_COLOR_MATERIAL)
         GL.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE)
 
         # Define material properties for a glass-like look
         ambient = [0.1, 0.1, 0.1, 0.5]
-        diffuse = [0.6, 0.6, 0.6, 0.5]  
-        specular = [0.9, 0.9, 0.9, 0.5] 
-        shininess = 30.0  
+        diffuse = [0.6, 0.6, 0.6, 0.5]
+        specular = [0.9, 0.9, 0.9, 0.5]
+        shininess = 30.0
 
         GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, ambient)
         GL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, diffuse)
@@ -396,8 +395,8 @@ class Canvas(wxcanvas.GLCanvas):
         z_depth = 75 * (no_of_monitors - 1)
 
         x = x_start + 15
-        y_grid_bottom = -15 
-        y_grid_top = 45  
+        y_grid_bottom = -15
+        y_grid_top = 45
         z_offset = 30
         z_start += z_offset
         z_end = z_start - z_depth - z_offset * 2
@@ -405,7 +404,7 @@ class Canvas(wxcanvas.GLCanvas):
         for i in range(1, cycles + 1):
             if i % 5 == 0:
                 if self.theme == "light":
-                    color = (*self.color_grid_adaptive, 0.5)  
+                    color = (*self.color_grid_adaptive, 0.5)
                 elif self.theme == "dark":
                     color = (0.7, 0.7, 0.2, 0.8)
                 self.render_text_3d(str(i), x, -8, z_start + 25)
@@ -416,7 +415,7 @@ class Canvas(wxcanvas.GLCanvas):
                     color = (0.7, 0.7, 0.5, 0.4)
 
             # Draw grid planes
-            GL.glColor4f(*color) 
+            GL.glColor4f(*color)
             GL.glBegin(GL.GL_QUADS)
             # Front face
             GL.glVertex3f(x, y_grid_bottom, z_start)
@@ -432,7 +431,7 @@ class Canvas(wxcanvas.GLCanvas):
 
             # Update x for the next cycle
             x += width
-        
+
     def _draw_cuboid(self, x_pos, z_pos, half_width, half_depth, height) -> None:
         """Draw a cuboid.
 
@@ -549,12 +548,12 @@ class Canvas(wxcanvas.GLCanvas):
 
             if event.GetWheelRotation() < 0:
                 self.zoom *= (1.0 + (
-                    event.GetWheelRotation() / (20 * event.GetWheelDelta())))
+                        event.GetWheelRotation() / (20 * event.GetWheelDelta())))
                 self.init = False
 
             if event.GetWheelRotation() > 0:
                 self.zoom /= (1.0 - (
-                    event.GetWheelRotation() / (20 * event.GetWheelDelta())))
+                        event.GetWheelRotation() / (20 * event.GetWheelDelta())))
                 self.init = False
 
             self.Refresh()  # triggers the paint event
@@ -572,11 +571,11 @@ class Canvas(wxcanvas.GLCanvas):
                 GL.glRasterPos2f(x_pos, y_pos)
             else:
                 GLUT.glutBitmapCharacter(font, ord(character))
-    
-    def render_text_3d(self, text:str, x_pos:int, y_pos:int, z_pos:int) -> None:
+
+    def render_text_3d(self, text: str, x_pos: int, y_pos: int, z_pos: int) -> None:
         """Handle text drawing operations for 3D."""
         GL.glDisable(GL.GL_LIGHTING)
-        GL.glColor3f(*self.color_text) 
+        GL.glColor3f(*self.color_text)
         GL.glRasterPos3f(x_pos, y_pos, z_pos)
         font = GLUT.GLUT_BITMAP_HELVETICA_10
 
@@ -608,7 +607,7 @@ class Canvas(wxcanvas.GLCanvas):
             self.color_trace = self.dark_color_trace
             self.color_grid = self.dark_color_grid
             self.color_grid_adaptive = self.dark_color_grid_adaptive
-            GL.glClearColor(*self.dark_color_background) 
+            GL.glClearColor(*self.dark_color_background)
             GL.glColor3f(*self.dark_color_text)
 
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
@@ -626,7 +625,7 @@ class Canvas(wxcanvas.GLCanvas):
             self.pan_y = -90
             self.zoom = 2
             self.scene_rotate = self.scene_origin.copy()
-      
+
         self.init = False
         self.on_paint(None)
         self.render("")
@@ -655,7 +654,7 @@ class Canvas(wxcanvas.GLCanvas):
     def toggle_grid(self) -> None:
         """Handles the event of turning the grids on and off."""
         if self.grid_on:
-            self.grid_on = False 
+            self.grid_on = False
         else:
             self.grid_on = True
         self.render("")

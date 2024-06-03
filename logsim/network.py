@@ -317,6 +317,26 @@ class Network:
         else:
             return False
 
+    def execute_rc(self, device_id: int) -> bool:
+        """Simulate an RC device and update its output signal value.
+
+        Return True if successful.
+        """
+        device = self.devices.get_device(device_id)
+        output_signal = device.outputs[None]  # output ID is None
+        if output_signal == self.devices.FALLING:
+            new_signal = self.update_signal(output_signal, self.devices.LOW)
+            if new_signal is None:  # update is unsuccessful
+                return False
+            device.outputs[None] = new_signal
+            return True
+
+        elif output_signal in [self.devices.HIGH, self.devices.LOW]:
+            return True
+
+        else:
+            return False
+
     def update_clocks(self) -> None:
         """If it is time to do so, set clock signals to RISING or FALLING."""
         clock_devices = self.devices.find_devices(self.devices.CLOCK)
@@ -332,6 +352,15 @@ class Network:
                     device.outputs[None] = self.devices.RISING
             device.clock_counter += 1
 
+    def update_rc(self) -> None:
+        """If it is time to lower the RC signal to LOW, set it to LOW."""
+        rc_devices = self.devices.find_devices(self.devices.RC)
+        for device_id in rc_devices:
+            device = self.devices.get_device(device_id)
+            if device.rc_counter == device.trigger_cycle:
+                device.outputs[None] = self.devices.FALLING
+            device.rc_counter += 1
+
     def execute_network(self) -> bool:
         """Execute all the devices in the network for one simulation cycle.
 
@@ -345,9 +374,13 @@ class Network:
         nand_devices = self.devices.find_devices(self.devices.NAND)
         nor_devices = self.devices.find_devices(self.devices.NOR)
         xor_devices = self.devices.find_devices(self.devices.XOR)
+        rc_devices = self.devices.find_devices(self.devices.RC)
 
         # This sets clock signals to RISING or FALLING, where necessary
         self.update_clocks()
+
+        # Checks if any RC has to be triggered
+        self.update_rc()
 
         # Number of iterations to wait for the signals to settle before
         # declaring the network unstable
@@ -387,6 +420,9 @@ class Network:
                     return False
             for device_id in xor_devices:  # execute XOR devices
                 if not self.execute_gate(device_id, None, None):
+                    return False
+            for device_id in rc_devices:  # execute RC devices
+                if not self.execute_rc(device_id):
                     return False
             if self.steady_state:
                 break

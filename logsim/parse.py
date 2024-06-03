@@ -50,7 +50,7 @@ class Parser:
     VARIABLE_INPUT_DEVICE = ["AND", "NAND", "OR", "NOR"]
     FIXED_INPUT_DEVICE = ["XOR", "DTYPE"]
     INITIAL_STATE = ["0", "1"]
-
+    RC = "RC"
     def __init__(self, names: Names, devices: Devices, network: Network, monitors: Monitors, scanner: Scanner):
         """Initialise constants."""
         self.names = names
@@ -411,6 +411,16 @@ class Parser:
                 self.current_qualifier = None
                 self.current_device_kind = self.symbol.id
                 return True
+            elif self.symbol_string() == self.RC:
+                self.current_device_kind = self.symbol.id
+                self.advance()
+                if self.symbol.type != Scanner.COMMA:
+                    # expect comma
+                    self.error_handler.line_error(self.error_handler.EXPECT_COMMA, self.symbol)
+                    return False
+                self.advance()
+                # expect variable input number
+                return self.check_rc_trigger_cycle()
 
         # expect input device
         self.error_handler.line_error(self.error_handler.EXPECT_INPUT_DEVICE, self.symbol)
@@ -494,6 +504,16 @@ class Parser:
         else:
             # expect clock cycle
             self.error_handler.line_error(self.error_handler.EXPECT_CLOCK_CYCLE, self.symbol)
+            return False
+
+    def check_rc_trigger_cycle(self) -> bool:
+        """Check if the qualifier is a valid clock cycle number."""
+        if self.symbol.type == Scanner.NUMBER and self.symbol.id[0] != "0":
+            self.current_qualifier = self.symbol
+            return True
+        else:
+            # expect RC trigger cycle
+            self.error_handler.line_error(self.error_handler.EXPECT_RC_TRIGGER_CYCLE, self.symbol)
             return False
 
     def skip_after_semicolon_or_to_close_bracket(self) -> None:

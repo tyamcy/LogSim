@@ -8,6 +8,7 @@ Classes:
 App - creates an app for the graphical user interface with language setting.
 """
 import sys
+import os
 import locale
 import wx
 from wx.lib.mixins.inspection import InspectionMixin
@@ -40,7 +41,11 @@ class App(wx.App, InspectionMixin):
         super().__init__()
         sys.displayhook = self.display_hook
         self.locale = None
-        wx.Locale.AddCatalogLookupPathPrefix('logsim/language')
+
+        current_file_directory = os.path.dirname(os.path.abspath(__file__))
+        language_directory = os.path.join(current_file_directory, 'language')
+        wx.Locale.AddCatalogLookupPathPrefix(language_directory)
+
         self.update_language(language)
 
     def update_language(self, language):

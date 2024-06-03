@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-06-03 15:35+0100\n"
+"POT-Creation-Date: 2024-06-03 16:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,26 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:17
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui.py:150
+msgid ""
+"\n"
+"File {filename} uploaded successfully."
+msgstr ""
+
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui.py:166
+msgid ""
+"\n"
+"Error in the specification file {filename}."
+msgstr ""
+
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui.py:219
+msgid ""
+"\n"
+"\n"
+"Error: network oscillating!!"
+msgstr ""
+
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:19
 msgid "Upload"
 msgstr ""
 
@@ -28,8 +47,8 @@ msgid "Please select a valid .txt file"
 msgstr ""
 
 #: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:39
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:173
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:178
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:174
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:179
 msgid "Error"
 msgstr ""
 
@@ -41,72 +60,78 @@ msgstr ""
 msgid "Specification file is being processed..."
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:97
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:66
+msgid ""
+"\n"
+"Error: file '{path}' is not a unicode text file"
+msgstr ""
+
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:98
 msgid "Run"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:107
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:108
 msgid ""
 "\n"
 "\n"
 "Running simulation..."
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:116
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:117
 msgid "Continue"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:126
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:127
 msgid ""
 "\n"
 "\n"
 "Updated parameters, continuing simulation..."
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:131
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:132
 msgid "Add"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:139
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:140
 msgid "Select a device to monitor:"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:139
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:150
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:140
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:151
 msgid "Add Monitor"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:150
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:151
 msgid "Select a port from the device to monitor:"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:156
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:157
 msgid "Enter Identifier"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:157
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:158
 msgid "Please enter an identifier for the monitor:"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:172
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:173
 msgid "Identifier already used, please think of a new one!"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:176
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:177
 msgid ""
 "Please enter a valid identifier for the monitor! \n"
 "(Alphanumerics starting with an alphabet)"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:185
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:186
 msgid "Remove"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:193
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:194
 msgid "Remove Monitor"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:193
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:194
 msgid "Select a Monitor to Remove:"
 msgstr ""
 
@@ -206,7 +231,7 @@ msgstr ""
 msgid "Switches"
 msgstr ""
 
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_terminal.py:7
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_terminal.py:9
 msgid ""
 "Welcome to Logic Simulator\n"
 "=========================="

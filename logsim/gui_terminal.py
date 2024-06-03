@@ -11,6 +11,7 @@ import wx
 from gui_color import Color
 from base_app import _
 
+
 class Terminal:
     """Configure the terminal.
 
@@ -26,10 +27,9 @@ class Terminal:
 
     reset_terminal(self): Resets the terminal when a new file is uploaded.
     """
-
-    welcoming_text = _(u"Welcome to Logic Simulator\n==========================")
-
     def __init__(self, parent):
+        self.welcoming_text = _(u"Welcome to Logic Simulator\n==========================")
+
         self.border_panel = wx.Panel(parent)
         self.border_panel.SetBackgroundColour(Color.terminal_background_color)
         self.terminal_panel = wx.Panel(self.border_panel)

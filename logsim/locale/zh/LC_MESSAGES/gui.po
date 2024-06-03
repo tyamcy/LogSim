@@ -10,10 +10,38 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=uft-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
+#:
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui.py:150
+msgid ""
+"\n"
+"File {filename} uploaded successfully."
+msgstr ""
+"\n"
+"成功上載檔案 {filename}"
+
+#:
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui.py:166
+msgid ""
+"\n"
+"Error in the specification file {filename}."
+msgstr ""
+"\n"
+"檔案 {filename} 有錯誤"
+
+#:
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui.py:219
+msgid ""
+"\n"
+"\n"
+"Error: network oscillating!!"
+msgstr ""
+"\n"
+"\n"
+"錯誤：電路網絡振盪！！"
 
 #:
 #: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:17
@@ -32,8 +60,8 @@ msgstr "請上傳有效的.txt文件"
 
 #:
 #: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:38
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:171
-#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:176
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:174
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:179
 msgid "Error"
 msgstr "錯誤"
 
@@ -46,6 +74,14 @@ msgstr "正在處理文件"
 #: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:46
 msgid "Specification file is being processed..."
 msgstr "處理文件中"
+
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:66
+msgid ""
+"\n"
+"Error: file '{path}' is not a unicode text file"
+msgstr ""
+"\n"
+"錯誤：檔案 '{path}' 不是統一碼文件"
 
 #:
 #: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:94
@@ -238,7 +274,7 @@ msgstr ""
 "\n"
 "上載：選出規格文件\n"
 "\n"
-週期數目：更改模擬週期數\n"
+"週期數目：更改模擬週期數\n"
 "\n"
 "監測點：顯示監測點\n"
 "\n"
@@ -277,4 +313,7 @@ msgstr "開關"
 msgid ""
 "Welcome to Logic Simulator\n"
 "=========================="
-msgstr "歡迎使用邏輯模擬器"
+msgstr ""
+"歡迎使用邏輯模擬器 \n"
+"=========================="
+

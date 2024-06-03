@@ -8,7 +8,6 @@ Classes:
 Gui - configures the main window and all the widgets.
 """
 import wx
-import gettext
 
 from gui_color import Color
 from gui_menu import MenuBar
@@ -19,9 +18,9 @@ from gui_buttons import RunButton, ContinueButton, MonitorAddButton, MonitorRemo
 from gui_cycle_selector import CycleSelector
 from gui_switch import Switch
 from gui_monitor import MonitorsList
+from base_app import _
 
 from parse import Parser
-import wx.locale
 
 
 class Gui(wx.Frame):
@@ -135,7 +134,8 @@ class Gui(wx.Frame):
         if parser.parse_network():
 
             # Message on terminal
-            self.terminal.append_text(Color.terminal_success_color, f"\nFile {filename} uploaded successfully.")
+            self.terminal.append_text(Color.terminal_success_color,
+                                      _(u"\nFile {filename} uploaded successfully.").format(filename=filename))
 
             # Enable add and remove button
             self.add_monitor_button.Enable()
@@ -150,7 +150,8 @@ class Gui(wx.Frame):
             return True
         else:
             # Message on terminal
-            self.terminal.append_text(Color.terminal_error_color, f"\nError in the specification file {filename}.")
+            self.terminal.append_text(Color.terminal_error_color,
+                                      _(u"\nError in the specification file {filename}.").format(filename=filename))
 
             # Disable monitor and simulation buttons
             self.disable_monitor_buttons()
@@ -199,11 +200,13 @@ class Gui(wx.Frame):
 
         # Running the simulation
         self.devices.cold_startup()
-        for _ in range(self.num_cycles):
+        for __ in range(self.num_cycles):
             if self.network.execute_network():
                 self.monitors.record_signals()
             else:
-                self.terminal.append_text(Color.terminal_error_color,f"\n\nError: network oscillating!!")
+                self.terminal.append_text(Color.terminal_error_color,
+                                          _(u"\n\nError: network oscillating!!"))
+
                 self.disable_simulation_buttons()
                 return False
 

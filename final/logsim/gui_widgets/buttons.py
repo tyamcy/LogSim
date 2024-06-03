@@ -10,6 +10,7 @@ MonitorAddButton - a button that allows users to add a new monitor point.
 MonitorRemoveButton - a button that allows users to remove an existing monitor point.
 """
 import wx
+import os
 
 from logsim.gui_widgets.color import Color
 from logsim.gui_widgets.dialogs import CustomDialogBox, IdentifierInputDialog

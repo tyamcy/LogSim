@@ -50,7 +50,6 @@ class App(wx.App, InspectionMixin):
 
     def update_language(self, language):
         """Update the language to the requested one."""
-
         # if the input language is supported, use the language
         if language in supported_language:
             selected_language = supported_language[language]

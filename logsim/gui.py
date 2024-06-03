@@ -165,7 +165,7 @@ class Gui(wx.Frame):
 
             return False
 
-    def update_parser(self, parser: Parser):
+    def update_parser(self, parser: Parser) -> None:
         """Updates the parser object."""
         self.names = parser.names
         self.devices = parser.devices

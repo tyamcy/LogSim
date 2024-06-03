@@ -15,7 +15,7 @@ from gui_menu import MenuBar
 from gui_canvas import Canvas
 from gui_canvas_buttons import CanvasSettingButtons
 from gui_terminal import Terminal
-from gui_buttons import UploadButton, RunButton, ContinueButton, MonitorAddButton, MonitorRemoveButton
+from gui_buttons import RunButton, ContinueButton, MonitorAddButton, MonitorRemoveButton
 from gui_cycle_selector import CycleSelector
 from gui_switch import Switch
 from gui_monitor import MonitorsList
@@ -83,7 +83,6 @@ class Gui(wx.Frame):
         self.canvas = Canvas(self)
         self.canvas_buttons = CanvasSettingButtons(self, self.canvas)
         self.terminal = Terminal(self)
-        self.upload_button = UploadButton(self)
         self.cycle_selector = CycleSelector(self)
         self.monitors_list = MonitorsList(self)
         self.add_monitor_button = MonitorAddButton(self)
@@ -114,8 +113,7 @@ class Gui(wx.Frame):
         left_sizer.Add(self.canvas, 20, wx.EXPAND | wx.ALL, 5)
         left_sizer.Add(self.canvas_buttons.canvas_buttons_panel, 1, wx.EXPAND | wx.ALL, 1)
         left_sizer.Add(self.terminal.border_panel, 7, wx.EXPAND | wx.ALL, 5)
-        right_sizer.Add(self.upload_button, 0, wx.ALL | wx.EXPAND, 8)
-        right_sizer.Add(self.cycle_selector.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
+        right_sizer.Add(self.cycle_selector.cycles_sizer, 0, wx.EXPAND | wx.TOP | wx.BOTTOM, 8)
         right_sizer.Add(self.monitors_list.monitors_sizer, 1, wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, 0)
 
         monitors_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)

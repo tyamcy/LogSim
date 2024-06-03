@@ -4,7 +4,6 @@ Used in the Logic Simulator project to enable the user to perform different acti
 
 Classes:
 --------
-UploadButton - a button that allows users to upload a new specification file.
 RunButton - a button that allows users to run the simulation.
 ContinueButton - a button that allows users to continue the simulation.
 MonitorAddButton - a button that allows users to add a new monitor point.
@@ -24,98 +23,6 @@ from scanner import Scanner
 from parse import Parser
 
 from base_app import _
-
-class UploadButton(wx.Button):
-    """Configure the upload button.
-
-    This class provides a button that allows users to upload a specification file.
-
-    Parameters
-    ----------
-    parent: parent window.
-    label: text on the button.
-
-    Public methods
-    --------------
-    on_upload(self, event): Handles the event when the user clicks the upload button to select the specification file.
-    """
-
-    def __init__(self, parent, label=_(u"Upload")):
-        """Initialize button layout and styling."""
-        super().__init__(parent, label=label)
-        self.gui = parent
-
-        self.SetBackgroundColour(Color.color_primary)
-        self.Bind(wx.EVT_BUTTON, self.on_upload)
-
-    def on_upload(self, event) -> None:
-        """Handles the event when the user clicks the upload button to select the specification file."""
-        wildcard = "Text files (*.txt)|*.txt"
-        with wx.FileDialog(self.gui, _(u"Open Specification File"), wildcard=wildcard,
-                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
-            # Canceling the action
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return
-
-            path = fileDialog.GetPath()  # extracting the file path
-            filename = os.path.basename(path)  # extracting the file name
-
-            # Check if file is a text file
-            if not path.lower().endswith(".txt"):
-                wx.MessageBox(_(u"Please select a valid .txt file"), _(u"Error"), wx.OK | wx.ICON_ERROR)
-                return
-
-            # clear display
-            self.gui.canvas.clear_display()
-
-            # Processing the file
-            progress_dialog = wx.ProgressDialog(_(u"Processing file"),
-                                                _(u"Specification file is being processed..."),
-                                                maximum=100,
-                                                parent=self.gui,
-                                                style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE)
-
-            self.gui.terminal.reset_terminal()
-            self.gui.reset_gui_display()
-
-            try:
-                # Initialise instances of the inner simulator classes
-                names = Names()
-                devices = Devices(names)
-                network = Network(names, devices)
-                monitors = Monitors(names, devices, network)
-
-                try:
-                    scanner = Scanner(path, names)
-                except UnicodeDecodeError:
-                    self.gui.terminal.append_text(Color.terminal_error_color,
-                                                  f"\nError: file '{path}' is not a unicode text file")
-
-                    self.gui.disable_monitor_buttons()
-                    self.gui.disable_simulation_buttons()
-                    return
-                parser = Parser(names, devices, network, monitors, scanner)
-
-                # Progress bar mock progress
-                for i in range(100):
-                    wx.MilliSleep(10)
-                    progress_dialog.Update(i + 1)
-
-                if self.gui.check_errors(filename, parser):
-                    # Instantiate the circuit for the newly uploaded file
-                    self.gui.update_parser(parser)
-
-                    # Update the GUI with new canvas, monitors and switches
-                    self.gui.monitors_list.update_monitors_list()
-                    self.gui.switch.update_switches_display()
-
-            except IOError:
-                progress_dialog.Destroy()
-                self.gui.terminal.append_text(Color.terminal_error_color, f"File {filename} upload failed.")
-
-            finally:
-                progress_dialog.Update(100)
-                progress_dialog.Destroy()
 
 
 class RunButton(wx.Button):

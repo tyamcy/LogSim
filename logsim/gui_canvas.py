@@ -1,3 +1,12 @@
+"""Implement the graphical user interface for the Logic Simulator.
+
+Used in the Logic Simulator project to enable the user to run the simulation
+or adjust the network properties.
+
+Classes:
+--------
+MyGLCanvas - handles all canvas drawing operations.
+"""
 import wx
 import wx.glcanvas as wxcanvas
 import math
@@ -142,7 +151,7 @@ class Canvas(wxcanvas.GLCanvas):
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse)
 
-    def init_gl(self):
+    def init_gl(self) -> None:
         """Configure and initialise the OpenGL context."""
         size = self.GetClientSize()
         self.SetCurrent(self.context)
@@ -325,7 +334,7 @@ class Canvas(wxcanvas.GLCanvas):
                             GL.glColor3f(*self.color_trace_3d_high)
 
                         # Draw cuboid for the signal value
-                        self._draw_cuboid(x, z_pos, width // 2, width // 2, height)
+                        self.draw_cuboid(x, z_pos, width // 2, width // 2, height)
 
                         # Move x position for the next cycle
                         x += width
@@ -367,7 +376,7 @@ class Canvas(wxcanvas.GLCanvas):
 
             x += width
 
-    def _setup_3d_grid_material(self) -> None:
+    def setup_3d_grid_material(self) -> None:
         """Setup material properties to emulate a glassy material."""
         GL.glEnable(GL.GL_BLEND)
         GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
@@ -389,7 +398,7 @@ class Canvas(wxcanvas.GLCanvas):
 
     def plot_grid_3d(self, x_start: int, z_start: int, no_of_monitors: int, cycles: int) -> None:
         """Adds grid planes to the plot in 3D."""
-        self._setup_3d_grid_material()
+        self.setup_3d_grid_material()
 
         width = 30
         z_depth = 75 * (no_of_monitors - 1)
@@ -432,7 +441,7 @@ class Canvas(wxcanvas.GLCanvas):
             # Update x for the next cycle
             x += width
 
-    def _draw_cuboid(self, x_pos, z_pos, half_width, half_depth, height) -> None:
+    def draw_cuboid(self, x_pos, z_pos, half_width, half_depth, height) -> None:
         """Draw a cuboid.
 
         Draw a cuboid at the specified position, with the specified

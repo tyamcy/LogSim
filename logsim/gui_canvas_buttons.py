@@ -1,3 +1,11 @@
+"""Implement the buttons for changing the OpenGL canvas settings.
+
+Used in the Logic Simulator project to enable the user to adjust the plot display canvas.
+
+Classes:
+--------
+CanvasSettingButtons - contains all buttons for adjusting the canvas.
+"""
 import wx
 import wx.glcanvas as wxcanvas
 
@@ -6,7 +14,26 @@ from base_app import _
 
 
 class CanvasSettingButtons:
+    """
+    A class responsible for managing the interactive buttons that control settings
+    on a GLCanvas.
+
+    This class creates a panel with buttons that allow the user to reset the canvas
+    to its origin, toggle grid visibility, and switch between 2D and 3D display modes.
+
+    Parameters
+    ----------
+    parent: parent window.
+    canvas: the OpenGL canvas that the buttons will control.
+
+    Public methods
+    --------------
+    on_toggle_canvas_mode(self, event): Handles switching between 2D and 3D display modes.
+    on_toggle_grids(self, event): Toggles the grid visibility on the canvas.
+    reset_origin(self, event): Resets the view of the canvas to the origin point.
+    """
     def __init__(self, parent, canvas: wxcanvas.GLCanvas):
+        """Initialize buttons and layout."""
         self.canvas = canvas
 
         self.canvas_buttons_panel = wx.Panel(parent)

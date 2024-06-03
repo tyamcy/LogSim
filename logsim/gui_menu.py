@@ -1,11 +1,32 @@
+"""Implement the menu bar for the GUI.
+
+Used in the Logic Simulator project to enable the user to access different option via the menu bar.
+
+Classes:
+--------
+FileMenu - configures the file menu.
+HelpMenu - configures the help menu.
+MenuBar - configures the entire menu bar.
+"""
 import wx
 
 from base_app import _
 
 
-
 class FileMenu(wx.Menu):
+    """Configure the file sub-menu.
+
+    This class configures the file sub-menu.
+
+    Parameters
+    ----------
+
+    Public methods
+    --------------
+    """
+
     def __init__(self):
+        """Initializes the file menu."""
         super().__init__()
         file_icon = wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_MENU, (16, 16))
         theme_icon = wx.ArtProvider.GetBitmap(wx.ART_TIP, wx.ART_MENU, (16, 16))
@@ -28,7 +49,19 @@ class FileMenu(wx.Menu):
 
 
 class HelpMenu(wx.Menu):
+    """Configure the help sub-menu.
+
+    This class configures the help sub-menu.
+
+    Parameters
+    ----------
+
+    Public methods
+    --------------
+    """
+
     def __init__(self):
+        """Initializes the help menu."""
         super().__init__()
         help_icon = wx.ArtProvider.GetBitmap(wx.ART_HELP, wx.ART_MENU, (16, 16))
         help_item = wx.MenuItem(self, wx.ID_HELP, _(u"Quick Guide"))
@@ -37,7 +70,21 @@ class HelpMenu(wx.Menu):
 
 
 class MenuBar(wx.MenuBar):
+    """Configure the menu bar.
+
+    This class configures the menu bar by adding all sub-menus and binds the functionality of each option.
+
+    Parameters
+    ----------
+    parent: parent window.
+
+    Public methods
+    --------------
+    on_menu(self, event): Handle the event when the user selects a menu item.
+    """
+
     def __init__(self, parent):
+        """Initializes the menu bar."""
         super().__init__()
         self.Append(FileMenu(), _(u"File"))
         self.Append(HelpMenu(), _(u"Help"))

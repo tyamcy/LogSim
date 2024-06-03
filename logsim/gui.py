@@ -5,7 +5,6 @@ or adjust the network properties.
 
 Classes:
 --------
-MyGLCanvas - handles all canvas drawing operations.
 Gui - configures the main window and all the widgets.
 """
 import wx
@@ -41,31 +40,21 @@ class Gui(wx.Frame):
 
     check_errors(self, filename, parser): Handles the error checking when a file is uploaded.
 
+    update_parser(self, parser): Updates the parser object.
+
     on_upload_button(self, event): Event handler for when user clicks the upload button to upload a specification file (.txt file).
 
-    on_cycles_spin(self, event): Event handler for when the user changes the spin
-                           control value.
+    disable_monitor_buttons(self): Disable buttons controlling monitor
 
-    update_monitors_display(self): Handle the event of updating the laist of monitors upon change.
+    disable_simulation_buttons(self): Disable buttons controlling simulation.
+
+    reset_gui_display(self): Reset gui display when new file is uploaded.
 
     update_add_remove_button_states(self): Updates the enabled/disabled state of the add and remove buttons.
-
-    on_add_monitor_button(self, event): Event handler for when the users click the add monitor button.
-
-    on_remove_monitor_button(self, event): Event handler for when the user clicks the remove monitor button.
-
-    update_switches_display(self): Event handler for updating the displayed list of switches.
-
-    on_toggle_switch(self, event): Event handler for when the user toggles a switch.
 
     run_simulation(self): Runs the simulation and plot the monitored traces.
 
     continue_simulation(self): Continues the simulation and plot the monitored traces.
-
-    on_run_button(self, event): Event handler for when the user clicks the run
-                                button.
-
-    on_continue_button(self, event): Event handler for when the user clicks the continue button.
 
     toggle_theme(self, event): Event handler for when the user changes the color theme.
     """
@@ -114,7 +103,8 @@ class Gui(wx.Frame):
         self.monitors_list.update_monitors_list()
         self.switch.update_switches_display()
 
-    def set_gui_layout(self):
+    def set_gui_layout(self) -> None:
+        """Set up the gui layout."""
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)  # main sizer with everything
         left_sizer = wx.BoxSizer(wx.VERTICAL)  # left sizer for the canvas and terminal
         right_sizer = wx.BoxSizer(wx.VERTICAL)  # right sizer for the controls
@@ -177,25 +167,26 @@ class Gui(wx.Frame):
             return False
 
     def update_parser(self, parser: Parser):
+        """Updates the parser object."""
         self.names = parser.names
         self.devices = parser.devices
         self.network = parser.network
         self.monitors = parser.monitors
         self.parser = parser
 
-    def disable_monitor_buttons(self):
-        """Disable buttons controlling monitor"""
+    def disable_monitor_buttons(self) -> None:
+        """Disable buttons controlling monitor."""
         self.add_monitor_button.Disable()
         self.remove_monitor_button.Disable()
 
-    def disable_simulation_buttons(self):
-        """Disable buttons controlling simulation"""
+    def disable_simulation_buttons(self) -> None:
+        """Disable buttons controlling simulation."""
         self.run_button.Disable()
         self.run_button.SetBackgroundColour(Color.color_disabled)
         self.continue_button.Disable()
         self.continue_button.SetBackgroundColour(Color.color_disabled)
 
-    def reset_gui_display(self):
+    def reset_gui_display(self) -> None:
         """Reset gui display when new file is uploaded."""
         self.monitors_list.monitors_scrolled_sizer.Clear(True)
         self.switch.switches_scrolled_sizer.Clear(True)

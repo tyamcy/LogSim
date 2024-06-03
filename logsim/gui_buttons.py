@@ -1,3 +1,15 @@
+"""Implement the interactive buttons for the Logic Simulator.
+
+Used in the Logic Simulator project to enable the user to perform different actions via button clicks.
+
+Classes:
+--------
+UploadButton - a button that allows users to upload a new specification file.
+RunButton - a button that allows users to run the simulation.
+ContinueButton - a button that allows users to continue the simulation.
+MonitorAddButton - a button that allows users to add a new monitor point.
+MonitorRemoveButton - a button that allows users to remove an existing monitor point.
+"""
 import wx
 import os
 
@@ -14,7 +26,22 @@ from parse import Parser
 from base_app import _
 
 class UploadButton(wx.Button):
+    """Configure the upload button.
+
+    This class provides a button that allows users to upload a specification file.
+
+    Parameters
+    ----------
+    parent: parent window.
+    label: text on the button.
+
+    Public methods
+    --------------
+    on_upload(self, event): Handles the event when the user clicks the upload button to select the specification file.
+    """
+
     def __init__(self, parent, label=_(u"Upload")):
+        """Initialize button layout and styling."""
         super().__init__(parent, label=label)
         self.gui = parent
 
@@ -92,7 +119,22 @@ class UploadButton(wx.Button):
 
 
 class RunButton(wx.Button):
+    """Configure the run button.
+
+    This class provides a button that allows users to start the simulation (cold start).
+
+    Parameters
+    ----------
+    parent: parent window.
+    label: text on the button.
+
+    Public methods
+    --------------
+    on_run(self, event): Handle the event when the user clicks the run button.
+    """
+
     def __init__(self, parent, label=_(u"Run")):
+        """Initialize button layout and styling."""
         super().__init__(parent, label=label)
         self.SetBackgroundColour(Color.color_primary)
         self.Bind(wx.EVT_BUTTON, self.on_run)
@@ -111,7 +153,22 @@ class RunButton(wx.Button):
 
 
 class ContinueButton(wx.Button):
+    """Configure the continue button.
+
+    This class provides a button that allows users to continue the simulation.
+
+    Parameters
+    ----------
+    parent: parent window.
+    label: text on the button.
+
+    Public methods
+    --------------
+    on_continue(self, event): Handle the event when the user continue button.
+    """
+
     def __init__(self, parent, label=_(u"Continue")):
+        """Initialize button layout and styling."""
         super().__init__(parent, label=label)
         self.SetBackgroundColour(Color.color_disabled)
         self.Bind(wx.EVT_BUTTON, self.on_continue)
@@ -126,7 +183,22 @@ class ContinueButton(wx.Button):
 
 
 class MonitorAddButton(wx.Button):
+    """Configure the add monitor button.
+
+    This class provides a button that allows users to add an active monitor point.
+
+    Parameters
+    ----------
+    parent: parent window.
+    label: text on the button.
+
+    Public methods
+    --------------
+    on_add_monitor(self, event): Handle the click event of the add monitor button.
+    """
+
     def __init__(self, parent, label=_("Add")):
+        """Initialize button layout and styling."""
         super().__init__(parent, label=label)
         self.SetBackgroundColour(Color.light_button_color)
         self.Bind(wx.EVT_BUTTON, self.on_add_monitor)
@@ -180,7 +252,22 @@ class MonitorAddButton(wx.Button):
 
 
 class MonitorRemoveButton(wx.Button):
+    """Configure the remove monitor button.
+
+    This class provides a button that allows users to remove an active monitor point.
+
+    Parameters
+    ----------
+    parent: parent window.
+    label: text on the button.
+
+    Public methods
+    --------------
+    on_remove_monitor(self, event): Handle the click event of the remove monitor button.
+    """
+
     def __init__(self, parent, label=_(u"Remove")):
+        """Initialize button layout and styling."""
         super().__init__(parent, label=label)
         self.SetBackgroundColour(Color.light_button_color)
         self.Bind(wx.EVT_BUTTON, self.on_remove_monitor)

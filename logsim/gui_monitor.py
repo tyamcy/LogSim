@@ -1,12 +1,33 @@
+"""Implement the monitors component for the GUI.
+
+Used in the Logic Simulator project to display the active monitor points.
+
+Classes:
+--------
+MonitorsList - displays the active monitor points.
+"""
 import wx
 
 from gui_color import Color
 from base_app import _
 
 
-
 class MonitorsList:
+    """Configure the monitors section.
+
+    This class provides a component that displays the active monitor points.
+
+    Parameters
+    ----------
+    parent: parent window.
+
+    Public methods
+    --------------
+    update_monitors_list(self): Handle the event of updating the list of monitors upon change.
+    """
+
     def __init__(self, parent):
+        """Initialize the layout."""
         self.gui = parent
 
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)

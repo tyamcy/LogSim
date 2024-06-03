@@ -1,9 +1,32 @@
+"""Implement the terminal component in the GUI.
+
+Used in the Logic Simulator project to enable the GUI to display the console logs such as error messages.
+
+Classes:
+--------
+Terminal - configures the terminal component.
+"""
 import wx
 
 from gui_color import Color
 
 
 class Terminal:
+    """Configure the terminal.
+
+    This class provides a terminal compoent for the GUI to display console messages.
+
+    Parameters
+    ----------
+    parent: parent window.
+
+    Public methods
+    --------------
+    append_text(self, color, text): Handles the event of adding output messages to the terminal.
+
+    reset_terminal(self): Resets the terminal when a new file is uploaded.
+    """
+
     welcoming_text = "Welcome to Logic Simulator\n=========================="
 
     def __init__(self, parent):
@@ -27,11 +50,12 @@ class Terminal:
         self.border_sizer.Add(self.terminal_panel, 1, wx.EXPAND | wx.ALL, 10)
         self.border_panel.SetSizer(self.border_sizer)
 
-    def append_text(self, color: str, text: str):
+    def append_text(self, color: str, text: str) -> None:
+        """Handles the event of adding output messages to the terminal."""
         self.terminal_content.SetDefaultStyle(wx.TextAttr(color))
         self.terminal_content.AppendText(text)
 
-    def reset_terminal(self):
+    def reset_terminal(self) -> None:
         """Reset terminal when new file is uploaded"""
         self.terminal_content.Clear()
         self.append_text(Color.terminal_text_color, self.welcoming_text)

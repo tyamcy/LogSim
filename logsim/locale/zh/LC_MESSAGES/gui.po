@@ -152,7 +152,7 @@ msgstr "網格"
 #:
 #: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_canvas_buttons.py:19
 msgid "2D/3D"
-msgstr "2D/3D"
+msgstr "二維/三維"
 
 #:
 #: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_cycle_selector.py:10
@@ -205,7 +205,7 @@ msgstr ""
 "由 Mojisola Agboola 創作\n"
 "2017\n"
 "\n"
-"由 Thomas Yam, Maxwell Li, Chloe Yiu 改進\n"
+"由 任倬賢，李明馳，姚伊文改進\n"
 "2024"
 
 #:
@@ -272,3 +272,9 @@ msgstr "沒有監測點"
 msgid "Switches"
 msgstr "開關"
 
+#:
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_terminal.py:7
+msgid ""
+"Welcome to Logic Simulator\n"
+"=========================="
+msgstr "歡迎使用邏輯模擬器"

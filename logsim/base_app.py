@@ -8,13 +8,14 @@ Classes:
 App - creates an app for the graphical user interface with language setting.
 """
 import sys
+import locale
 import wx
 from wx.lib.mixins.inspection import InspectionMixin
 
 language_domain = "gui"
 supported_language = {
-    u"en": wx.LANGUAGE_ENGLISH,
-    u"zh": wx.LANGUAGE_CHINESE_HONGKONG
+    u"en_US": wx.LANGUAGE_ENGLISH,
+    u"zh_HK": wx.LANGUAGE_CHINESE_HONGKONG
 }
 _ = wx.GetTranslation
 
@@ -39,7 +40,7 @@ class App(wx.App, InspectionMixin):
         super().__init__()
         sys.displayhook = self.display_hook
         self.locale = None
-        wx.Locale.AddCatalogLookupPathPrefix('locale')
+        wx.Locale.AddCatalogLookupPathPrefix('language')
         self.update_language(language)
 
     def update_language(self, language):
@@ -49,10 +50,16 @@ class App(wx.App, InspectionMixin):
         if language in supported_language:
             selected_language = supported_language[language]
         else:
-            selected_language = wx.LANGUAGE_ENGLISH
-            if language:
+            if not language:
+                language = locale.getdefaultlocale()[0]
+                if language in supported_language:
+                    selected_language = supported_language[language]
+                else:
+                    selected_language = wx.LANGUAGE_ENGLISH
+            else:
                 print(f"Unsupported language '{language}', using default language 'en'")
-            
+                selected_language = wx.LANGUAGE_ENGLISH
+
         if self.locale:
             assert sys.getrefcount(self.locale) <= 2
             del self.locale

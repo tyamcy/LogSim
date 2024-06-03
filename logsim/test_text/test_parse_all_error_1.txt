@@ -10,6 +10,7 @@ G4: AND. 2; # EXPECT_COMMA
 G5: OR, 2! # EXPECT_SEMICOLON
 G6: OR, 2;
 G6: NAND, 2; # DEVICE_PRESENT (semantic, won't be checked)
+RC1: RC, 0;
 }
 
 / Inputs /

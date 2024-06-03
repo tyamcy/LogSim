@@ -29,6 +29,7 @@ S1: D1.QBAR;
 S2: G2;
 S3: G4;
 f: G1;
+RC: RC1;
 }
 
 / Internal connections of the circuit /
@@ -50,7 +51,7 @@ A > G3.I1;
 B > G3.I2;
 C > G3.I3;
 G2 > G4.I1;
-G3 > G4.I2;
+RC1 > G4.I2;
 G4 > G5.I1;
 D2.Q > G5.I2;
 }

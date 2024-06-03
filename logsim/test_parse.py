@@ -71,19 +71,20 @@ def all_error_1_expected_content(parser: Parser) -> List[Tuple[str, int]]:
         ("Line 8:", parser.error_handler.EXPECT_VARIABLE_INPUT_NUMBER),
         ("Line 9:", parser.error_handler.EXPECT_COMMA),
         ("Line 10:", parser.error_handler.EXPECT_SEMICOLON),
-        ("Line 20:", parser.error_handler.EXPECT_INITIAL_STATE),
-        ("Line 26:", parser.error_handler.EXPECT_CLOCK_CYCLE),
-        ("Line 31:", parser.error_handler.EXPECT_PIN_IN_OR_OUT),
-        ("Line 32:", parser.error_handler.EXPECT_FULL_STOP_OR_SEMICOLON),
-        ("Line 35:", parser.error_handler.EXPECT_COLON),
-        ("Line 42:", parser.error_handler.EXPECT_PIN_IN),
-        ("Line 43:", parser.error_handler.EXPECT_FULL_STOP_OR_ARROW),
-        ("Line 44:", parser.error_handler.EXPECT_FULL_STOP),
+        ("Line 13:", parser.error_handler.EXPECT_RC_TRIGGER_CYCLE),
+        ("Line 21:", parser.error_handler.EXPECT_INITIAL_STATE),
+        ("Line 27:", parser.error_handler.EXPECT_CLOCK_CYCLE),
+        ("Line 32:", parser.error_handler.EXPECT_PIN_IN_OR_OUT),
+        ("Line 33:", parser.error_handler.EXPECT_FULL_STOP_OR_SEMICOLON),
+        ("Line 36:", parser.error_handler.EXPECT_COLON),
+        ("Line 43:", parser.error_handler.EXPECT_PIN_IN),
+        ("Line 44:", parser.error_handler.EXPECT_FULL_STOP_OR_ARROW),
         ("Line 45:", parser.error_handler.EXPECT_FULL_STOP),
-        ("Line 46:", parser.error_handler.EXPECT_PIN_IN),
-        ("Line 48:", parser.error_handler.EXPECT_PIN_IN),
-        ("Line 50:", parser.error_handler.EXPECT_FULL_STOP),
-        ("Line 67:", parser.error_handler.EXPECT_CLOSE_CURLY_BRACKET)
+        ("Line 46:", parser.error_handler.EXPECT_FULL_STOP),
+        ("Line 47:", parser.error_handler.EXPECT_PIN_IN),
+        ("Line 49:", parser.error_handler.EXPECT_PIN_IN),
+        ("Line 51:", parser.error_handler.EXPECT_FULL_STOP),
+        ("Line 68:", parser.error_handler.EXPECT_CLOSE_CURLY_BRACKET)
     ]
 
 

@@ -14,14 +14,16 @@ class Canvas(wxcanvas.GLCanvas):
     Parameters
     ----------
     parent: parent window.
-    devices: instance of the devices.Devices() class.
-    monitors: instance of the monitors.Monitors() class.
 
     Public methods
     --------------
     init_gl(self): Configures the OpenGL context.
 
     render(self, text): Handles all drawing operations.
+
+    plot_grid(self, x_start, no_of_monitors, cycles): Adds grid lines to the plot in 2D.
+
+    plot_grid_3d(self, x_start, z_start, no_of_monitors, cycles): Adds grid planes to the plot in 3D.
 
     on_paint(self, event): Handles the paint event.
 
@@ -32,9 +34,19 @@ class Canvas(wxcanvas.GLCanvas):
     render_text(self, text, x_pos, y_pos): Handles text drawing
                                            operations.
 
+    render_text_3d(self, text, x_pos, y_pos, z_pos): Handle text drawing operations for 3D.
+
     update_theme(self, theme): Updates the colour palette.
 
+    reset_display(self): Return to the initial viewpoint at the origin.
+
+    update_cycle(self, cycle): Keeps track of the total number of simulation cycles.
+
     clear_display(self): Clear the canvas.
+
+    change_mode(self): Switching between 2D and 3D.
+
+    toggle_grid(self): Handles the event of turning the grids on and off.
     """
 
     def __init__(self, parent):
@@ -112,11 +124,12 @@ class Canvas(wxcanvas.GLCanvas):
 
         # Initialise the scene rotation matrix
         self.scene_rotate = np.identity(4, "f")
-        self.scene_origin = np.array([[9.9997663e-01, 8.5962471e-04, 6.9437968e-03, 0],
-                             [-5.5076974e-03, 7.0875227e-01, 7.0543826e-01, 0],
-                             [-4.3150606e-03, -7.0545882e-01, 7.0873958e-01, 0],
+        self.scene_origin = np.array([[9.9997663e-01, 6.9979425e-03, -6.0286466e-03, 0],
+                             [9.6203759e-05, 6.4476335e-01, 7.6438475e-01, 0],
+                             [9.2356848e-03, -0.67397875, 0.7387122, 0],
                              [0, 0, 0, 1]], "f")
 
+        self.scene_rotate = self.scene_origin
 
         # Initialise variables for zooming
         self.zoom_3d = 1
@@ -193,7 +206,7 @@ class Canvas(wxcanvas.GLCanvas):
  
     def render(self, text: str, signals={}) -> None:
         """Handle all drawing operations."""
-        #print(self.scene_rotate)
+        print(self.scene_rotate)
         self.SetCurrent(self.context)
         if not self.init:
             # Configure the viewport, modelview and projection matrices
@@ -312,7 +325,7 @@ class Canvas(wxcanvas.GLCanvas):
                             GL.glColor3f(*self.color_trace_3d_high)
 
                         # Draw cuboid for the signal value
-                        self.draw_cuboid(x, z_pos, width // 2, width // 2, height)
+                        self._draw_cuboid(x, z_pos, width // 2, width // 2, height)
 
                         # Move x position for the next cycle
                         x += width
@@ -354,7 +367,7 @@ class Canvas(wxcanvas.GLCanvas):
 
             x += width
 
-    def _setup_3d_grid_material(self):
+    def _setup_3d_grid_material(self) -> None:
         """Setup material properties to emulate a glassy material."""
         GL.glEnable(GL.GL_BLEND)
         GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
@@ -419,7 +432,7 @@ class Canvas(wxcanvas.GLCanvas):
             # Update x for the next cycle
             x += width
         
-    def draw_cuboid(self, x_pos, z_pos, half_width, half_depth, height):
+    def _draw_cuboid(self, x_pos, z_pos, half_width, half_depth, height) -> None:
         """Draw a cuboid.
 
         Draw a cuboid at the specified position, with the specified
@@ -612,11 +625,13 @@ class Canvas(wxcanvas.GLCanvas):
             self.pan_y = -90
             self.zoom = 2
             self.scene_rotate = self.scene_origin
+            #GL.glMatrixMode(GL.GL_MODELVIEW)
+            #GL.glLoadIdentity()
+            #GL.glRotatef(10, 5, 33, 0)
+            #GL.glMultMatrixf(self.scene_rotate)
       
         self.init = False
-
         self.on_paint(None)
-
         self.render("")
 
     def update_cycle(self, cycle: int) -> None:

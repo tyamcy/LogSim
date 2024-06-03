@@ -196,6 +196,12 @@ msgid "No. of Cycles"
 msgstr "週期數目"
 
 #:
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:13
+msgid "Open file"
+msgstr "開啟檔案"
+
+
+#:
 #: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:11
 msgid "Toggle theme"
 msgstr "切換主題"

@@ -2,7 +2,7 @@ import wx
 import wx.glcanvas as wxcanvas
 
 from gui_color import Color
-from internationalization import _
+from base_app import _
 
 
 class CanvasSettingButtons:
@@ -30,14 +30,14 @@ class CanvasSettingButtons:
         self.canvas_buttons_panel.SetSizer(self.container_sizer)
         self.canvas_buttons_panel.Layout()
 
-    def on_toggle_canvas_mode(self) -> None:
+    def on_toggle_canvas_mode(self, event) -> None:
         """Handle the event of changing between 2D and 3D display."""
         self.canvas.change_mode()
 
-    def on_toggle_grids(self) -> None:
+    def on_toggle_grids(self, event) -> None:
         """Handles the event of toggling the grids on and off."""
         self.canvas.toggle_grid()
 
-    def reset_origin(self) -> None:
+    def reset_origin(self, event) -> None:
         """Handles the event of setting the view point back to the origin."""
         self.canvas.reset_display()

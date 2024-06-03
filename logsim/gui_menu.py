@@ -1,6 +1,7 @@
 import wx
 
-from internationalization import _
+from base_app import _
+
 
 
 class FileMenu(wx.Menu):

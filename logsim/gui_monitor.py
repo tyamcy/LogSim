@@ -1,7 +1,8 @@
 import wx
 
 from gui_color import Color
-from internationalization import _
+from base_app import _
+
 
 
 class MonitorsList:

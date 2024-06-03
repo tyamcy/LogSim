@@ -11,7 +11,7 @@ from monitors import Monitors
 from scanner import Scanner
 from parse import Parser
 
-from internationalization import _
+from base_app import _
 
 class UploadButton(wx.Button):
     def __init__(self, parent, label=_(u"Upload")):
@@ -61,7 +61,8 @@ class UploadButton(wx.Button):
                 try:
                     scanner = Scanner(path, names)
                 except UnicodeDecodeError:
-                    self.gui.terminal.append_text(Color.terminal_error_color, f"\nError: file '{path}' is not a unicode text file")
+                    self.gui.terminal.append_text(Color.terminal_error_color,
+                                                  f"\nError: file '{path}' is not a unicode text file")
 
                     self.gui.disable_monitor_buttons()
                     self.gui.disable_simulation_buttons()

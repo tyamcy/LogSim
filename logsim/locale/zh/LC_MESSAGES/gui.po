@@ -10,50 +10,50 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=cp1252\n"
+"Content-Type: text/plain; charset=uft-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:17
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:17
 msgid "Upload"
 msgstr "上傳"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:27
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:27
 msgid "Open Specification File"
 msgstr "開啓檔案"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:38
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:38
 msgid "Please select a valid .txt file"
 msgstr "請上傳有效的.txt文件"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:38
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:171
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:176
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:38
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:171
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:176
 msgid "Error"
 msgstr "錯誤"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:45
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:45
 msgid "Processing file"
 msgstr "正在處理文件"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:46
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:46
 msgid "Specification file is being processed..."
 msgstr "處理文件中"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:94
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:94
 msgid "Run"
 msgstr "運行"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:105
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:105
 msgid ""
 "\n"
 "\n"
@@ -64,12 +64,12 @@ msgstr ""
 "正在運行模擬..."
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:113
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:113
 msgid "Continue"
 msgstr "繼續"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:124
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:124
 msgid ""
 "\n"
 "\n"
@@ -80,43 +80,43 @@ msgstr ""
 "已更新參數，繼續運行程式"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:128
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:128
 msgid "Add"
 msgstr "加入"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:137
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:137
 msgid "Select a device to monitor:"
 msgstr "選擇要監測的設備："
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:137
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:148
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:137
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:148
 msgid "Add Monitor"
 msgstr "新增監測點"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:148
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:148
 msgid "Select a port from the device to monitor:"
 msgstr "選擇要監測的連接埠："
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:154
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:154
 msgid "Enter Identifier"
 msgstr "輸入識別碼"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:155
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:155
 msgid "Please enter an identifier for the monitor:"
 msgstr "請輸入識別碼"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:170
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:170
 msgid "Identifier already used, please think of a new one!"
 msgstr "識別碼已被使用，請使用新的識別碼"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:174
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:174
 msgid ""
 "Please enter a valid identifier for the monitor! \n"
 "(Alphanumerics starting with an alphabet)"
@@ -125,72 +125,72 @@ msgstr ""
 "（以字母開頭的字母數字）"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:182
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:182
 msgid "Remove"
 msgstr "移除"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:191
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:191
 msgid "Remove Monitor"
 msgstr "移除監測點"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_buttons.py:191
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_buttons.py:191
 msgid "Select a Monitor to Remove:"
 msgstr "選擇要移除的監測點"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_canvas_buttons.py:17
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_canvas_buttons.py:17
 msgid "Origin"
 msgstr "重置"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_canvas_buttons.py:18
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_canvas_buttons.py:18
 msgid "Grid"
 msgstr "網格"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_canvas_buttons.py:19
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_canvas_buttons.py:19
 msgid "2D/3D"
 msgstr "2D/3D"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_cycle_selector.py:10
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_cycle_selector.py:10
 msgid "No. of Cycles"
 msgstr "週期數目"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_menu.py:11
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:11
 msgid "Toggle theme"
 msgstr "切換主題"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_menu.py:12
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:12
 msgid "About"
 msgstr "關於"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_menu.py:13
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:13
 msgid "Exit"
 msgstr "退出"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_menu.py:27
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:27
 msgid "Quick Guide"
 msgstr "指南"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_menu.py:35
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:35
 msgid "Menu"
 msgstr "選單"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_menu.py:36
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:36
 msgid "Help"
 msgstr "幫助"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_menu.py:48
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:48
 msgid ""
 "Logic Simulator\n"
 "\n"
@@ -209,12 +209,12 @@ msgstr ""
 "2024"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_menu.py:51
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:51
 msgid "About Logsim"
 msgstr "關於 Logsim"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_menu.py:55
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:55
 msgid ""
 "Controls\n"
 "\n"
@@ -253,22 +253,22 @@ msgstr ""
 "繼續： 用已更新的參數進行模擬"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_menu.py:64
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_menu.py:64
 msgid "Controls"
 msgstr "控制"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_monitor.py:11
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_monitor.py:11
 msgid "Monitors"
 msgstr "監測點"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_monitor.py:33
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_monitor.py:33
 msgid "No active monitors"
 msgstr "沒有監測點"
 
 #:
-#: C:\Users\Thomas Yam\Documents\IIA-projects\software\IIA-Logic-Simulator\logsim\gui_switch.py:16
+#: C:\Users\chloe_\Desktop\IIA-Logic-Simulator\logsim\gui_switch.py:16
 msgid "Switches"
 msgstr "開關"
 

@@ -24,7 +24,6 @@ from gui_monitor import MonitorsList
 from parse import Parser
 import wx.locale
 
-from internationalization import init_locale
 
 class Gui(wx.Frame):
     """Configure the main window and all the widgets.
@@ -74,9 +73,6 @@ class Gui(wx.Frame):
     def __init__(self, title: str, path: str, parser: Parser):
         """Initialise widgets and layout."""
         super().__init__(parent=None, title=title, size=(800, 600))
-
-        # Language
-        init_locale()
 
         # Initialise variables
         self.names = parser.names

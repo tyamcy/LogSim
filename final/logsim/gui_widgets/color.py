@@ -1,6 +1,6 @@
 """Storing the colors for the graphical user interface.
 
-Used in the Logic Simulator project to allow color adjustment for the graphical user interface
+Used in the Logic Simulator project to allow color adjustment for the graphical user interface.
 
 Classes:
 --------

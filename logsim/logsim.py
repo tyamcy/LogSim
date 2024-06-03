@@ -15,8 +15,6 @@ import os
 import sys
 from contextlib import contextmanager
 
-import wx
-
 import base_app
 from typing import List
 from names import Names

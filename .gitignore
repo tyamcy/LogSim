@@ -1,3 +1,4 @@
 # Pycharm file
 .idea/
-logsim/__pycache__/
+**/__pycache__
+**/.pytest_cache

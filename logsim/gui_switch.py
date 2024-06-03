@@ -1,10 +1,35 @@
+"""Implement the switches component for the GUI.
+
+Used in the Logic Simulator project to enable the user toggle the states of the switches.
+
+Classes:
+--------
+Switch - configures the switches component and the corresponding toggle switches.
+"""
 import wx
 
 from gui_color import Color
+from base_app import _
 
 
 class Switch:
+    """Configure the switches section.
+
+    This class provides a component that displays the available switches and toggle buttons that allows the user to change the states of the swtiches.
+
+    Parameters
+    ----------
+    parent: parent window.
+
+    Public methods
+    --------------
+    on_toggle_switch(self, event): Handle the event when the user toggles a switch.
+
+    update_switches_display(self): Handle the event of updating the displayed list of switches.
+    """
+
     def __init__(self, parent):
+        """Initialize the layout."""
         self.gui = parent
 
         # Creating a dictionary of switches
@@ -13,7 +38,7 @@ class Switch:
         self.toggle_button_switch_name = dict()  # {toggle button: switch name}
 
         self.switches_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.switches_text = wx.StaticText(parent, wx.ID_ANY, "Switches")
+        self.switches_text = wx.StaticText(parent, wx.ID_ANY, _(u"Switches"))
         self.switches_scrolled = wx.ScrolledWindow(parent, style=wx.VSCROLL)
         self.switches_scrolled.SetScrollRate(10, 10)
         self.switches_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -41,7 +66,7 @@ class Switch:
             self.switches_dict[switch_name] = 0
             self.gui.devices.set_switch(switch_id, 0)
         self.gui.Refresh()
-        
+
     def update_switches_display(self) -> None:
         """Handle the event of updating the displayed list of switches."""
         # Creating a dictionary of switches

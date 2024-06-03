@@ -1,12 +1,36 @@
+"""Implement the cycle selector component for the GUI.
+
+Used in the Logic Simulator project to enable the user toggle the states of the switches.
+
+Classes:
+--------
+CycleSelector - configures the cycle selector component.
+"""
 import wx
+
+from base_app import _
 
 
 class CycleSelector:
+    """Configure the number of cycles section.
+
+    This class provides a component that allows the user to choose the number of simulation cycles.
+
+    Parameters
+    ----------
+    parent: parent window.
+
+    Public methods
+    --------------
+    on_cycles_spin(self, event): Handle the event when the user changes the spin control value.
+    """
+
     def __init__(self, parent):
+        """Initialize layout and syling of component."""
         self.gui = parent
 
         self.cycles_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.cycles_text = wx.StaticText(parent, wx.ID_ANY, "No. of Cycles")
+        self.cycles_text = wx.StaticText(parent, wx.ID_ANY, _(u"No. of Cycles"))
         self.cycles_spin = wx.SpinCtrl(parent, wx.ID_ANY, str(parent.num_cycles))
 
         self.cycles_spin.SetRange(1, 100)

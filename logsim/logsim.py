@@ -11,11 +11,11 @@ Command line user interface: logsim.py -c <file path>
 Graphical user interface: logsim.py <file path>
 """
 import getopt
+import os
 import sys
 from contextlib import contextmanager
 
-import wx
-
+import base_app
 from typing import List
 from names import Names
 from devices import Devices
@@ -97,7 +97,8 @@ def main(arg_list: List[str]) -> None:
         # It is possible to provide a file that is wrong initially
         # An error will be given in the GUI terminal
         # Initialise an instance of the gui.Gui() class
-        app = wx.App()
+        language = os.environ.get("LANG")
+        app = base_app.App(language)
         gui = Gui("Logic Simulator", path, parser)
         gui.Show(True)
         app.MainLoop()

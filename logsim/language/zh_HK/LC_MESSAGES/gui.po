@@ -1,0 +1,265 @@
+# Language translation file
+
+#:
+msgid ""
+"\n"
+"File {filename} uploaded successfully."
+msgstr ""
+"\n"
+"成功上載檔案 {filename}"
+
+#:
+msgid ""
+"\n"
+"Error in the specification file {filename}."
+msgstr ""
+"\n"
+"檔案 {filename} 有錯誤"
+
+#:
+msgid ""
+"\n"
+"\n"
+"Error: network oscillating!!"
+msgstr ""
+"\n"
+"\n"
+"錯誤：電路網絡振盪！！"
+
+#:
+msgid "Upload"
+msgstr "上傳"
+
+#:
+msgid "Open Specification File"
+msgstr "開啓檔案"
+
+#:
+msgid "Please select a valid .txt file"
+msgstr "請上傳有效的.txt文件"
+
+#:
+msgid "Error"
+msgstr "錯誤"
+
+#:
+msgid "Processing file"
+msgstr "正在處理文件"
+
+#:
+msgid "Specification file is being processed..."
+msgstr "處理文件中"
+
+#:
+msgid ""
+"\n"
+"Error: file '{path}' is not a unicode text file"
+msgstr ""
+"\n"
+"錯誤：檔案 '{path}' 不是統一碼文件"
+
+#:
+msgid "Run"
+msgstr "運行"
+
+#:
+msgid ""
+"\n"
+"\n"
+"Running simulation..."
+msgstr ""
+"\n"
+"\n"
+"正在運行模擬..."
+
+#:
+msgid "Continue"
+msgstr "繼續"
+
+#:
+msgid ""
+"\n"
+"\n"
+"Updated parameters, continuing simulation..."
+msgstr ""
+"\n"
+"\n"
+"已更新參數，繼續運行程式"
+
+#:
+msgid "Add"
+msgstr "加入"
+
+#:
+msgid "Select a device to monitor:"
+msgstr "選擇要監測的設備："
+
+#:
+msgid "Add Monitor"
+msgstr "新增監測點"
+
+#:
+msgid "Select a port from the device to monitor:"
+msgstr "選擇要監測的連接埠："
+
+#:
+msgid "Enter Identifier"
+msgstr "輸入識別碼"
+
+#:
+msgid "Please enter an identifier for the monitor:"
+msgstr "請輸入識別碼"
+
+#:
+msgid "Identifier already used, please think of a new one!"
+msgstr "識別碼已被使用，請使用新的識別碼"
+
+#:
+msgid ""
+"Please enter a valid identifier for the monitor! \n"
+"(Alphanumerics starting with an alphabet)"
+msgstr ""
+"請輸入一個有效的識別碼 \n"
+"（以字母開頭的字母數字）"
+
+#:
+msgid "Remove"
+msgstr "移除"
+
+#:
+msgid "Remove Monitor"
+msgstr "移除監測點"
+
+#:
+msgid "Select a Monitor to Remove:"
+msgstr "選擇要移除的監測點"
+
+#:
+msgid "Origin"
+msgstr "重置"
+
+#:
+msgid "Grid"
+msgstr "網格"
+
+#:
+msgid "2D/3D"
+msgstr "二維/三維"
+
+#:
+msgid "No. of Cycles"
+msgstr "週期數目"
+
+#:
+msgid "Open file"
+msgstr "開啟檔案"
+
+
+#:
+msgid "Toggle theme"
+msgstr "切換主題"
+
+#:
+msgid "About"
+msgstr "關於"
+
+#:
+msgid "Exit"
+msgstr "退出"
+
+#:
+msgid "Quick Guide"
+msgstr "指南"
+
+#:
+msgid "Menu"
+msgstr "選單"
+
+#:
+msgid "Help"
+msgstr "幫助"
+
+#:
+msgid ""
+"Logic Simulator\n"
+"\n"
+"Created by Mojisola Agboola\n"
+"2017\n"
+"\n"
+"Modified by Thomas Yam, Maxwell Li, Chloe Yiu\n"
+"2024"
+msgstr ""
+"Logic Simulator\n"
+"\n"
+"由 Mojisola Agboola 創作\n"
+"2017\n"
+"\n"
+"由 任倬賢，李明馳，姚伊文改進\n"
+"2024"
+
+#:
+msgid "About Logsim"
+msgstr "關於 Logsim"
+
+#:
+msgid ""
+"Controls\n"
+"\n"
+"Upload: Choose the specification file.\n"
+"\n"
+"No. of Cycles: Change the number of simulation cycles.\n"
+"\n"
+"Monitor: The monitor section displays active monitor points.\n"
+"\n"
+"Add: Add monitor points.\n"
+"\n"
+"Remove: Delete monitor points.\n"
+"\n"
+"Switch: Toggle the button to turn the switch on and off.\n"
+"\n"
+"Run: Runs the simulation.\n"
+"\n"
+"Continue: Continues the simulation with updated paramaters."
+msgstr ""
+"控制選項\n"
+"\n"
+"上載：選出規格文件\n"
+"\n"
+"週期數目：更改模擬週期數\n"
+"\n"
+"監測點：顯示監測點\n"
+"\n"
+"加入：加入監測點\n"
+"\n"
+"移除：移除監測點\n"
+"\n"
+"開關：用切換按鈕改變開關狀態\n"
+"\n"
+"運行：開始模擬\n"
+"\n"
+"繼續： 用已更新的參數進行模擬"
+
+#:
+msgid "Controls"
+msgstr "控制"
+
+#:
+msgid "Monitors"
+msgstr "監測點"
+
+#:
+msgid "No active monitors"
+msgstr "沒有監測點"
+
+#:
+msgid "Switches"
+msgstr "開關"
+
+#:
+msgid ""
+"Welcome to Logic Simulator\n"
+"=========================="
+msgstr ""
+"歡迎使用邏輯模擬器 \n"
+"=========================="
+

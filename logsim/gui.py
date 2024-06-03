@@ -5,19 +5,20 @@ or adjust the network properties.
 
 Classes:
 --------
-MyGLCanvas - handles all canvas drawing operations.
 Gui - configures the main window and all the widgets.
 """
 import wx
 
-from gui_canvas import Canvas
 from gui_color import Color
-from gui_terminal import Terminal
-from gui_buttons import UploadButton, RunButton, ContinueButton, MonitorAddButton, MonitorRemoveButton
 from gui_menu import MenuBar
+from gui_canvas import Canvas
+from gui_canvas_buttons import CanvasSettingButtons
+from gui_terminal import Terminal
+from gui_buttons import RunButton, ContinueButton, MonitorAddButton, MonitorRemoveButton
 from gui_cycle_selector import CycleSelector
 from gui_switch import Switch
 from gui_monitor import MonitorsList
+from base_app import _
 
 from parse import Parser
 
@@ -38,31 +39,21 @@ class Gui(wx.Frame):
 
     check_errors(self, filename, parser): Handles the error checking when a file is uploaded.
 
+    update_parser(self, parser): Updates the parser object.
+
     on_upload_button(self, event): Event handler for when user clicks the upload button to upload a specification file (.txt file).
 
-    on_cycles_spin(self, event): Event handler for when the user changes the spin
-                           control value.
+    disable_monitor_buttons(self): Disable buttons controlling monitor
 
-    update_monitors_display(self): Handle the event of updating the laist of monitors upon change.
+    disable_simulation_buttons(self): Disable buttons controlling simulation.
+
+    reset_gui_display(self): Reset gui display when new file is uploaded.
 
     update_add_remove_button_states(self): Updates the enabled/disabled state of the add and remove buttons.
-
-    on_add_monitor_button(self, event): Event handler for when the users click the add monitor button.
-
-    on_remove_monitor_button(self, event): Event handler for when the user clicks the remove monitor button.
-
-    update_switches_display(self): Event handler for updating the displayed list of switches.
-
-    on_toggle_switch(self, event): Event handler for when the user toggles a switch.
 
     run_simulation(self): Runs the simulation and plot the monitored traces.
 
     continue_simulation(self): Continues the simulation and plot the monitored traces.
-
-    on_run_button(self, event): Event handler for when the user clicks the run
-                                button.
-
-    on_continue_button(self, event): Event handler for when the user clicks the continue button.
 
     toggle_theme(self, event): Event handler for when the user changes the color theme.
     """
@@ -81,14 +72,16 @@ class Gui(wx.Frame):
         self.num_cycles = 10
         self.total_cycles = self.num_cycles
 
+        self.mode = "3D"
+
         # A dictionary for the signals and simulated output
         self.signals_dictionary = dict()   # {(device_id, port_id): [signal_list]}
         self.signals_plot_dictionary = dict()  # {device_string: [signal_list]}
 
         self.menu_bar = MenuBar(self)
         self.canvas = Canvas(self)
+        self.canvas_buttons = CanvasSettingButtons(self, self.canvas)
         self.terminal = Terminal(self)
-        self.upload_button = UploadButton(self)
         self.cycle_selector = CycleSelector(self)
         self.monitors_list = MonitorsList(self)
         self.add_monitor_button = MonitorAddButton(self)
@@ -108,17 +101,18 @@ class Gui(wx.Frame):
         self.monitors_list.update_monitors_list()
         self.switch.update_switches_display()
 
-    def set_gui_layout(self):
+    def set_gui_layout(self) -> None:
+        """Set up the gui layout."""
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)  # main sizer with everything
         left_sizer = wx.BoxSizer(wx.VERTICAL)  # left sizer for the canvas and terminal
         right_sizer = wx.BoxSizer(wx.VERTICAL)  # right sizer for the controls
         main_sizer.Add(left_sizer, 5, wx.EXPAND | wx.ALL, 10)
         main_sizer.Add(right_sizer, 1, wx.ALL, 5)
 
-        left_sizer.Add(self.canvas, 7, wx.EXPAND | wx.ALL, 5)
-        left_sizer.Add(self.terminal.border_panel, 3, wx.EXPAND | wx.ALL, 5)
-        right_sizer.Add(self.upload_button, 0, wx.ALL | wx.EXPAND, 8)
-        right_sizer.Add(self.cycle_selector.cycles_sizer, 0, wx.EXPAND | wx.ALL, 0)
+        left_sizer.Add(self.canvas, 20, wx.EXPAND | wx.ALL, 5)
+        left_sizer.Add(self.canvas_buttons.canvas_buttons_panel, 1, wx.EXPAND | wx.ALL, 1)
+        left_sizer.Add(self.terminal.border_panel, 7, wx.EXPAND | wx.ALL, 5)
+        right_sizer.Add(self.cycle_selector.cycles_sizer, 0, wx.EXPAND | wx.TOP | wx.BOTTOM, 8)
         right_sizer.Add(self.monitors_list.monitors_sizer, 1, wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, 0)
 
         monitors_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -140,7 +134,8 @@ class Gui(wx.Frame):
         if parser.parse_network():
 
             # Message on terminal
-            self.terminal.append_text(Color.terminal_success_color, f"\nFile {filename} uploaded successfully.")
+            self.terminal.append_text(Color.terminal_success_color,
+                                      _(u"\nFile {filename} uploaded successfully.").format(filename=filename))
 
             # Enable add and remove button
             self.add_monitor_button.Enable()
@@ -155,7 +150,8 @@ class Gui(wx.Frame):
             return True
         else:
             # Message on terminal
-            self.terminal.append_text(Color.terminal_error_color, f"\nError in the specification file {filename}.")
+            self.terminal.append_text(Color.terminal_error_color,
+                                      _(u"\nError in the specification file {filename}.").format(filename=filename))
 
             # Disable monitor and simulation buttons
             self.disable_monitor_buttons()
@@ -169,26 +165,27 @@ class Gui(wx.Frame):
 
             return False
 
-    def update_parser(self, parser: Parser):
+    def update_parser(self, parser: Parser) -> None:
+        """Updates the parser object."""
         self.names = parser.names
         self.devices = parser.devices
         self.network = parser.network
         self.monitors = parser.monitors
         self.parser = parser
 
-    def disable_monitor_buttons(self):
-        """Disable buttons controlling monitor"""
+    def disable_monitor_buttons(self) -> None:
+        """Disable buttons controlling monitor."""
         self.add_monitor_button.Disable()
         self.remove_monitor_button.Disable()
 
-    def disable_simulation_buttons(self):
-        """Disable buttons controlling simulation"""
+    def disable_simulation_buttons(self) -> None:
+        """Disable buttons controlling simulation."""
         self.run_button.Disable()
         self.run_button.SetBackgroundColour(Color.color_disabled)
         self.continue_button.Disable()
         self.continue_button.SetBackgroundColour(Color.color_disabled)
 
-    def reset_gui_display(self):
+    def reset_gui_display(self) -> None:
         """Reset gui display when new file is uploaded."""
         self.monitors_list.monitors_scrolled_sizer.Clear(True)
         self.switch.switches_scrolled_sizer.Clear(True)
@@ -203,11 +200,13 @@ class Gui(wx.Frame):
 
         # Running the simulation
         self.devices.cold_startup()
-        for _ in range(self.num_cycles):
+        for __ in range(self.num_cycles):
             if self.network.execute_network():
                 self.monitors.record_signals()
             else:
-                self.terminal.append_text(Color.terminal_error_color,f"\n\nError: network oscillating!!")
+                self.terminal.append_text(Color.terminal_error_color,
+                                          _(u"\n\nError: network oscillating!!"))
+
                 self.disable_simulation_buttons()
                 return False
 
@@ -238,6 +237,13 @@ class Gui(wx.Frame):
         if self.theme == "light":
             self.canvas.update_theme(self.theme)
             self.SetBackgroundColour(Color.dark_background_color)
+            self.canvas_buttons.canvas_buttons_panel.SetBackgroundColour(Color.dark_background_color)
+            self.canvas_buttons.origin_button.SetBackgroundColour(Color.dark_button_color)
+            self.canvas_buttons.origin_button.SetForegroundColour(Color.dark_text_color)
+            self.canvas_buttons.grid_button.SetBackgroundColour(Color.dark_button_color)
+            self.canvas_buttons.grid_button.SetForegroundColour(Color.dark_text_color)
+            self.canvas_buttons.toggle_mode_button.SetBackgroundColour(Color.dark_button_color)
+            self.canvas_buttons.toggle_mode_button.SetForegroundColour(Color.dark_text_color)
             self.cycle_selector.cycles_text.SetForegroundColour(Color.dark_text_color)
             self.cycle_selector.cycles_spin.SetBackgroundColour(Color.dark_background_secondary)
             self.cycle_selector.cycles_spin.SetForegroundColour(Color.dark_text_color)
@@ -269,6 +275,13 @@ class Gui(wx.Frame):
         elif self.theme == "dark":
             self.canvas.update_theme(self.theme)
             self.SetBackgroundColour(Color.light_background_color)
+            self.canvas_buttons.canvas_buttons_panel.SetBackgroundColour(Color.light_background_color)
+            self.canvas_buttons.origin_button.SetBackgroundColour(Color.light_button_color)
+            self.canvas_buttons.origin_button.SetForegroundColour(Color.light_text_color)
+            self.canvas_buttons.grid_button.SetBackgroundColour(Color.light_button_color)
+            self.canvas_buttons.grid_button.SetForegroundColour(Color.light_text_color)
+            self.canvas_buttons.toggle_mode_button.SetBackgroundColour(Color.light_button_color)
+            self.canvas_buttons.toggle_mode_button.SetForegroundColour(Color.light_text_color)
             self.cycle_selector.cycles_text.SetForegroundColour(Color.light_text_color)
             self.cycle_selector.cycles_spin.SetBackgroundColour(Color.light_background_secondary)
             self.cycle_selector.cycles_spin.SetForegroundColour(Color.light_text_color)

@@ -1,5 +1,15 @@
-import wx
+"""Implement pop up dialog boxes for the GUI.
+
+Used in the Logic Simulator project to enable pop up dialog boxes for selection.
+
+Classes:
+--------
+CustomDialogBox - custom dialog box for the add and remove buttons.
+IdentifierInputDialog - custom dialog box to input an identifier for the monitor.
+"""
 from typing import Optional
+
+import wx
 
 from gui_color import Color
 
@@ -21,11 +31,12 @@ class CustomDialogBox(wx.Dialog):
     """
 
     def __init__(self, parent, title: str, message: str, choices: list, theme: str):
+        """Initializes the layout and styling of the dialog box."""
         super().__init__(parent, title=title)
         self.selection = None
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        
+
         text = wx.StaticText(self, label=message)
         sizer.Add(text, flag=wx.ALL, border=5)
 
@@ -77,8 +88,9 @@ class IdentifierInputDialog(wx.Dialog):
     """
 
     def __init__(self, parent, title: str, message: str, theme: str):
+        """Initializes the layout and styling of the dialog box."""
         super().__init__(parent, title=title)
-        
+
         self.theme = theme
 
         sizer = wx.BoxSizer(wx.VERTICAL)

@@ -1,14 +1,37 @@
+"""Implement the monitors component for the GUI.
+
+Used in the Logic Simulator project to display the active monitor points.
+
+Classes:
+--------
+MonitorsList - displays the active monitor points.
+"""
 import wx
 
 from gui_color import Color
+from base_app import _
 
 
 class MonitorsList:
+    """Configure the monitors section.
+
+    This class provides a component that displays the active monitor points.
+
+    Parameters
+    ----------
+    parent: parent window.
+
+    Public methods
+    --------------
+    update_monitors_list(self): Handle the event of updating the list of monitors upon change.
+    """
+
     def __init__(self, parent):
+        """Initialize the layout."""
         self.gui = parent
 
         self.monitors_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.monitors_text = wx.StaticText(parent, wx.ID_ANY, "Monitors")
+        self.monitors_text = wx.StaticText(parent, wx.ID_ANY, _(u"Monitors"))
         self.monitors_scrolled = wx.ScrolledWindow(parent, style=wx.VSCROLL)
         self.monitors_scrolled.SetScrollRate(10, 10)
         self.monitors_scrolled_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -30,12 +53,13 @@ class MonitorsList:
 
         if not self.gui.monitors.get_all_identifiers():
             # Empty list, displays a message saying "No active monitors"
-            no_monitor_text = wx.StaticText(self.monitors_scrolled, wx.ID_ANY, "No active monitors")
+            no_monitor_text = wx.StaticText(self.monitors_scrolled, wx.ID_ANY, _(u"No active monitors"))
             no_monitor_text.SetForegroundColour(color)
             self.monitors_scrolled_sizer.Add(no_monitor_text, 0, wx.ALL | wx.CENTER, 5)
         else:
             # Populate the display if there are active monitors
-            for identifier, (device_name, port_name) in self.gui.monitors.fetch_identifier_to_device_port_name().items():
+            for identifier, (
+                    device_name, port_name) in self.gui.monitors.fetch_identifier_to_device_port_name().items():
                 output = identifier + ": " + device_name
                 if port_name:
                     output += "." + port_name

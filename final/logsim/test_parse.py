@@ -11,44 +11,48 @@ from logsim.network import Network
 from logsim.monitors import Monitors
 from logsim.scanner import Scanner
 
-path_correct = "logsim/test_text/test_parse_correct_text.txt"
-path_wrong_order = "logsim/test_text/test_parse_wrong_order_text.txt"
-path_wrong_content = "logsim/test_text/test_parse_wrong_content_text.txt"
+path_correct = "final/logsim/test_text/test_parse_correct_text.txt"
+path_wrong_order = "final/logsim/test_text/test_parse_wrong_order_text.txt"
+path_wrong_content = "final/logsim/test_text/test_parse_wrong_content_text.txt"
 
-path_all_error_1 = "logsim/test_text/test_parse_all_error_1.txt"
-path_all_error_2 = "logsim/test_text/test_parse_all_error_2.txt"
-path_all_error_3 = "logsim/test_text/test_parse_all_error_3.txt"
+path_all_error_1 = "final/logsim/test_text/test_parse_all_error_1.txt"
+path_all_error_2 = "final/logsim/test_text/test_parse_all_error_2.txt"
+path_all_error_3 = "final/logsim/test_text/test_parse_all_error_3.txt"
 
 path_semantic_error_monitor_device_absent = \
-    "logsim/test_text/test_semantic_errors/semantic_error_monitor_device_absent.txt"
-path_semantic_error_input_device_absent = "logsim/test_text/test_semantic_errors/semantic_error_input_device_absent.txt"
+    "final/logsim/test_text/test_semantic_errors/semantic_error_monitor_device_absent.txt"
+path_semantic_error_input_device_absent = "final/logsim/test_text/test_semantic_errors/semantic_error_input_device_absent.txt"
 path_semantic_error_output_device_absent = \
-    "logsim/test_text/test_semantic_errors/semantic_error_output_device_absent.txt"
-path_semantic_error_device_present = "logsim/test_text/test_semantic_errors/semantic_error_device_present.txt"
+    "final/logsim/test_text/test_semantic_errors/semantic_error_output_device_absent.txt"
+path_semantic_error_device_present = "final/logsim/test_text/test_semantic_errors/semantic_error_device_present.txt"
 path_semantic_error_monitor_identifier_present = \
-    "logsim/test_text/test_semantic_errors/semantic_error_monitor_identifier_present.txt"
-path_semantic_error_duplicate_keyword = "logsim/test_text/test_semantic_errors/semantic_error_duplicate_keyword.txt"
-path_semantic_error_input_connected = "logsim/test_text/test_semantic_errors/semantic_error_input_connected.txt"
+    "final/logsim/test_text/test_semantic_errors/semantic_error_monitor_identifier_present.txt"
+path_semantic_error_duplicate_keyword = "final/logsim/test_text/test_semantic_errors/semantic_error_duplicate_keyword.txt"
+path_semantic_error_input_connected = "final/logsim/test_text/test_semantic_errors/semantic_error_input_connected.txt"
 path_semantic_error_missing_clock_or_switch = \
-    "logsim/test_text/test_semantic_errors/semantic_error_missing_clock_or_switch.txt"
+    "final/logsim/test_text/test_semantic_errors/semantic_error_missing_clock_or_switch.txt"
 path_semantic_error_missing_input_to_pin = \
-    "logsim/test_text/test_semantic_errors/semantic_error_missing_input_to_pin.txt"
-path_semantic_error_monitor_present = "logsim/test_text/test_semantic_errors/semantic_error_monitor_present.txt"
-path_semantic_error_input_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_input_port_absent.txt"
-path_semantic_error_output_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_output_port_absent.txt"
-path_semantic_error_monitor_port_absent = "logsim/test_text/test_semantic_errors/semantic_error_monitor_port_absent.txt"
-path_semantic_error_wrong_block_order = "logsim/test_text/test_semantic_errors/semantic_error_wrong_block_order.txt"
+    "final/logsim/test_text/test_semantic_errors/semantic_error_missing_input_to_pin.txt"
+path_semantic_error_monitor_present = "final/logsim/test_text/test_semantic_errors/semantic_error_monitor_present.txt"
+path_semantic_error_input_port_absent = \
+    "final/logsim/test_text/test_semantic_errors/semantic_error_input_port_absent.txt"
+path_semantic_error_output_port_absent = \
+    "final/logsim/test_text/test_semantic_errors/semantic_error_output_port_absent.txt"
+path_semantic_error_monitor_port_absent = \
+    "final/logsim/test_text/test_semantic_errors/semantic_error_monitor_port_absent.txt"
+path_semantic_error_wrong_block_order = \
+    "final/logsim/test_text/test_semantic_errors/semantic_error_wrong_block_order.txt"
 
-path_bible = "logsim/test_text/test_extreme_errors/test_parse_bible.txt"
-path_curly_brackets = "logsim/test_text/test_extreme_errors/test_parse_curly_brackets.txt"
-path_empty = "logsim/test_text/test_extreme_errors/test_parse_empty.txt"
-path_lorem_ipsum = "logsim/test_text/test_extreme_errors/test_parse_lorem_ipsum.txt"
-path_semi_colon = "logsim/test_text/test_extreme_errors/test_parse_semi_colon.txt"
+path_bible = "final/logsim/test_text/test_extreme_errors/test_parse_bible.txt"
+path_curly_brackets = "final/logsim/test_text/test_extreme_errors/test_parse_curly_brackets.txt"
+path_empty = "final/logsim/test_text/test_extreme_errors/test_parse_empty.txt"
+path_lorem_ipsum = "final/logsim/test_text/test_extreme_errors/test_parse_lorem_ipsum.txt"
+path_semi_colon = "final/logsim/test_text/test_extreme_errors/test_parse_semi_colon.txt"
 
-path_correct_2 = "logsim/test_text/test_parse_correct_text_2.txt"
-path_correct_3 = "logsim/test_text/test_parse_correct_text_3.txt"
-path_correct_4 = "logsim/test_text/test_parse_correct_text_4.txt"
-path_test_parse_oscillating = "logsim/test_text/test_parse_oscillating.txt"
+path_correct_2 = "final/logsim/test_text/test_parse_correct_text_2.txt"
+path_correct_3 = "final/logsim/test_text/test_parse_correct_text_3.txt"
+path_correct_4 = "final/logsim/test_text/test_parse_correct_text_4.txt"
+path_test_parse_oscillating = "final/logsim/test_text/test_parse_oscillating.txt"
 
 @pytest.fixture
 def new_parser(path: str) -> Parser:

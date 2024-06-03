@@ -15,13 +15,6 @@ import os
 from gui_color import Color
 from gui_dialogs import CustomDialogBox, IdentifierInputDialog
 
-from names import Names
-from devices import Devices
-from network import Network
-from monitors import Monitors
-from scanner import Scanner
-from parse import Parser
-
 from base_app import _
 
 

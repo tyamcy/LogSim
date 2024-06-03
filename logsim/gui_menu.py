@@ -98,7 +98,7 @@ class MenuBar(wx.MenuBar):
     def __init__(self, parent):
         """Initializes the menu bar."""
         super().__init__()
-        self.Append(FileMenu(), _(u"File"))
+        self.Append(FileMenu(), _(u"Menu"))
         self.Append(HelpMenu(), _(u"Help"))
 
         self.gui = parent

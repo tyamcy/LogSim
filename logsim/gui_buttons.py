@@ -10,7 +10,6 @@ MonitorAddButton - a button that allows users to add a new monitor point.
 MonitorRemoveButton - a button that allows users to remove an existing monitor point.
 """
 import wx
-import os
 
 from gui_color import Color
 from gui_dialogs import CustomDialogBox, IdentifierInputDialog
@@ -33,9 +32,9 @@ class RunButton(wx.Button):
     on_run(self, event): Handle the event when the user clicks the run button.
     """
 
-    def __init__(self, parent, label=_(u"Run")):
+    def __init__(self, parent):
         """Initialize button layout and styling."""
-        super().__init__(parent, label=label)
+        super().__init__(parent, label=_(u"Run"))
         self.SetBackgroundColour(Color.color_primary)
         self.Bind(wx.EVT_BUTTON, self.on_run)
 
@@ -67,9 +66,9 @@ class ContinueButton(wx.Button):
     on_continue(self, event): Handle the event when the user continue button.
     """
 
-    def __init__(self, parent, label=_(u"Continue")):
+    def __init__(self, parent):
         """Initialize button layout and styling."""
-        super().__init__(parent, label=label)
+        super().__init__(parent, label=_(u"Continue"))
         self.SetBackgroundColour(Color.color_disabled)
         self.Bind(wx.EVT_BUTTON, self.on_continue)
         self.Disable()
@@ -97,9 +96,9 @@ class MonitorAddButton(wx.Button):
     on_add_monitor(self, event): Handle the click event of the add monitor button.
     """
 
-    def __init__(self, parent, label=_("Add")):
+    def __init__(self, parent):
         """Initialize button layout and styling."""
-        super().__init__(parent, label=label)
+        super().__init__(parent, label=_("Add"))
         self.SetBackgroundColour(Color.light_button_color)
         self.Bind(wx.EVT_BUTTON, self.on_add_monitor)
 
@@ -166,9 +165,9 @@ class MonitorRemoveButton(wx.Button):
     on_remove_monitor(self, event): Handle the click event of the remove monitor button.
     """
 
-    def __init__(self, parent, label=_(u"Remove")):
+    def __init__(self, parent):
         """Initialize button layout and styling."""
-        super().__init__(parent, label=label)
+        super().__init__(parent, label=_(u"Remove"))
         self.SetBackgroundColour(Color.light_button_color)
         self.Bind(wx.EVT_BUTTON, self.on_remove_monitor)
 

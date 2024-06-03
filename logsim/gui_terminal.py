@@ -9,7 +9,7 @@ Terminal - configures the terminal component.
 import wx
 
 from gui_color import Color
-
+from base_app import _
 
 class Terminal:
     """Configure the terminal.
@@ -27,7 +27,7 @@ class Terminal:
     reset_terminal(self): Resets the terminal when a new file is uploaded.
     """
 
-    welcoming_text = "Welcome to Logic Simulator\n=========================="
+    welcoming_text = _(u"Welcome to Logic Simulator\n==========================")
 
     def __init__(self, parent):
         self.border_panel = wx.Panel(parent)

@@ -297,7 +297,7 @@ class Devices:
                 device.outputs[None] = self.HIGH
                 device.rc_counter = 0
 
-    def make_device(self, device_id: int, device_kind: int, device_property: int = None) -> None:
+    def make_device(self, device_id: int, device_kind: int, device_property: int = None) -> int:
         """Create the specified device.
 
         Return self.NO_ERROR if successful. Return corresponding error if not.

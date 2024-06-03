@@ -23,7 +23,6 @@ from scanner import Symbol
 
 
 class Parser:
-
     """Parse the definition file and build the logic network.
 
     The parser deals with error handling. It analyses the syntactic and
@@ -51,6 +50,7 @@ class Parser:
     FIXED_INPUT_DEVICE = ["XOR", "DTYPE"]
     INITIAL_STATE = ["0", "1"]
     RC = "RC"
+
     def __init__(self, names: Names, devices: Devices, network: Network, monitors: Monitors, scanner: Scanner):
         """Initialise constants."""
         self.names = names
@@ -134,7 +134,7 @@ class Parser:
 
         return False if self.fetch_error_output() else True
 
-    def parse_list(self, keyword: str, sub_rule: bool()) -> None:
+    def parse_list(self, sub_rule: bool()) -> None:
         """A generic function to parse all the list rules, with keyword specifying which list,
 
         and sub_rule specifying which sub-rule to follow."""
@@ -170,23 +170,23 @@ class Parser:
 
     def device_list(self) -> None:
         """Calls parse_list() to parse device list."""
-        self.parse_list(keyword="DEVICE", sub_rule=self.device)
+        self.parse_list(sub_rule=self.device)
 
     def clock_list(self) -> None:
         """Calls parse_list() to parse clock list."""
-        self.parse_list(keyword="CLOCK", sub_rule=self.clock)
+        self.parse_list(sub_rule=self.clock)
 
     def switch_list(self) -> None:
         """Calls parse_list() to parse switch list."""
-        self.parse_list(keyword="SWITCH", sub_rule=self.switch)
+        self.parse_list(sub_rule=self.switch)
 
     def monitor_list(self) -> None:
         """Calls parse_list() to parse monitor list."""
-        self.parse_list(keyword="MONITOR", sub_rule=self.monitor)
+        self.parse_list(sub_rule=self.monitor)
 
     def connect_list(self) -> None:
         """Calls parse_list() to parse connection list."""
-        self.parse_list(keyword="CONNECTION", sub_rule=self.connect)
+        self.parse_list(sub_rule=self.connect)
 
     def device(self) -> bool:
         """Parse each device rule, if total error is zero at the end of the rule, call make_device() to make device."""

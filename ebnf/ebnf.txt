@@ -6,7 +6,7 @@ switchList = "SWITCH", "{", switch, {switch}, "}" ;
 monitorList = "MONITOR", "{", monitor, {monitor}, "}" ;
 connectionList = "CONNECTION", "{", connection, {connection}, "}" ;
 
-device = identifier, ":" ((variableInputDevice, ",", variableInputNumber) |
+device = identifier, ":" (((variableInputDevice | "RC"), ",", (variableInputNumber | triggerCycle)) |
 fixedInputDevice), ";" ;
 clock = identifier, ":", clockCycle, ";" ;
 switch = identifier, ":", initialState, ";" ;
@@ -25,6 +25,7 @@ letter = "a" | "b" | ... | "z" | "A" | ... | "Z";
 digitExcludingZero = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 digit = "0" | digitExcludingZero ;
 clockCycle = digitExcludingZero, { digit } ;
+triggerCycle = digitExcludingZero, { digit } ;
 variableInputNumber = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" |
 "10" | "11" | "12" | "13" | "14" | "15" | "16" ;
 

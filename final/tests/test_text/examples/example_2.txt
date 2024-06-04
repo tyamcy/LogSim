@@ -1,0 +1,36 @@
+/ Example 2 /
+DEVICE {
+D1: DTYPE;
+D2: DTYPE;
+G1: NOR, 3;
+}
+
+SWITCH {
+A: 0;
+B: 0;
+C: 1;
+D: 0;
+}
+
+CLOCK {
+CLK1: 10;
+}
+
+MONITOR {
+S1: D1.QBAR;
+f: G1;
+}
+
+CONNECTION {
+CLK1 > D1.CLK;
+A > D1.SET;
+B > D1.CLEAR;
+C > D1.DATA;
+CLK1 > D2.CLK;
+A > D2.SET;
+B > D2.CLEAR;
+D1.Q > D2.DATA;
+D1.Q > G1.I1;
+D2.Q > G1.I2;
+D > G1.I3;
+}

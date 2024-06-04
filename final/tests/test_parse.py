@@ -1,5 +1,6 @@
 """Test the parse module."""
 import pytest
+import os
 
 from typing import List, Union, Tuple
 
@@ -11,57 +12,65 @@ from logsim.network import Network
 from logsim.monitors import Monitors
 from logsim.scanner import Scanner
 
-path_correct = "final/tests/test_text/test_parse_correct_text.txt"
-path_wrong_order = "final/tests/test_text/test_parse_wrong_order_text.txt"
-path_wrong_content = "final/tests/test_text/test_parse_wrong_content_text.txt"
 
-path_all_error_1 = "final/tests/test_text/test_parse_all_error_1.txt"
-path_all_error_2 = "final/tests/test_text/test_parse_all_error_2.txt"
-path_all_error_3 = "final/tests/test_text/test_parse_all_error_3.txt"
+def path(*args: str) -> str:
+    """Return the path of the test file."""
+    current_file_directory = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(current_file_directory, "test_text", *args)
 
-path_semantic_error_monitor_device_absent = \
-    "final/tests/test_text/test_semantic_errors/semantic_error_monitor_device_absent.txt"
-path_semantic_error_input_device_absent = "final/tests/test_text/test_semantic_errors/semantic_error_input_device_absent.txt"
-path_semantic_error_output_device_absent = \
-    "final/tests/test_text/test_semantic_errors/semantic_error_output_device_absent.txt"
-path_semantic_error_device_present = "final/tests/test_text/test_semantic_errors/semantic_error_device_present.txt"
-path_semantic_error_monitor_identifier_present = \
-    "final/tests/test_text/test_semantic_errors/semantic_error_monitor_identifier_present.txt"
-path_semantic_error_duplicate_keyword = "final/tests/test_text/test_semantic_errors/semantic_error_duplicate_keyword.txt"
-path_semantic_error_input_connected = "final/tests/test_text/test_semantic_errors/semantic_error_input_connected.txt"
-path_semantic_error_missing_clock_or_switch = \
-    "final/tests/test_text/test_semantic_errors/semantic_error_missing_clock_or_switch.txt"
-path_semantic_error_missing_input_to_pin = \
-    "final/tests/test_text/test_semantic_errors/semantic_error_missing_input_to_pin.txt"
-path_semantic_error_monitor_present = "final/tests/test_text/test_semantic_errors/semantic_error_monitor_present.txt"
-path_semantic_error_input_port_absent = \
-    "final/tests/test_text/test_semantic_errors/semantic_error_input_port_absent.txt"
-path_semantic_error_output_port_absent = \
-    "final/tests/test_text/test_semantic_errors/semantic_error_output_port_absent.txt"
-path_semantic_error_monitor_port_absent = \
-    "final/tests/test_text/test_semantic_errors/semantic_error_monitor_port_absent.txt"
-path_semantic_error_wrong_block_order = \
-    "final/tests/test_text/test_semantic_errors/semantic_error_wrong_block_order.txt"
 
-path_bible = "final/tests/test_text/test_extreme_errors/test_parse_bible.txt"
-path_curly_brackets = "final/tests/test_text/test_extreme_errors/test_parse_curly_brackets.txt"
-path_empty = "final/tests/test_text/test_extreme_errors/test_parse_empty.txt"
-path_lorem_ipsum = "final/tests/test_text/test_extreme_errors/test_parse_lorem_ipsum.txt"
-path_semi_colon = "final/tests/test_text/test_extreme_errors/test_parse_semi_colon.txt"
+path_correct = path("test_parse_correct_text.txt")
+path_wrong_order = path("test_parse_wrong_order_text.txt")
+path_wrong_content = path("test_parse_wrong_content_text.txt")
 
-path_correct_2 = "final/tests/test_text/test_parse_correct_text_2.txt"
-path_correct_3 = "final/tests/test_text/test_parse_correct_text_3.txt"
-path_correct_4 = "final/tests/test_text/test_parse_correct_text_4.txt"
-path_test_parse_oscillating = "final/tests/test_text/test_parse_oscillating.txt"
+path_all_error_1 = path("test_parse_all_error_1.txt")
+path_all_error_2 = path("test_parse_all_error_2.txt")
+path_all_error_3 = path("test_parse_all_error_3.txt")
+
+semantic_errors_dir = "test_semantic_errors"
+path_semantic_error_monitor_device_absent = path(semantic_errors_dir,
+                                                 "semantic_error_monitor_device_absent.txt")
+path_semantic_error_input_device_absent = path(semantic_errors_dir,
+                                               "semantic_error_input_device_absent.txt")
+path_semantic_error_output_device_absent = path(semantic_errors_dir,
+                                                "semantic_error_output_device_absent.txt")
+path_semantic_error_device_present = path(semantic_errors_dir, "semantic_error_device_present.txt")
+path_semantic_error_monitor_identifier_present = path(semantic_errors_dir, 
+                                                      "semantic_error_monitor_identifier_present.txt")
+path_semantic_error_duplicate_keyword = path(semantic_errors_dir, "semantic_error_duplicate_keyword.txt")
+path_semantic_error_input_connected = path(semantic_errors_dir, "semantic_error_input_connected.txt")
+path_semantic_error_missing_clock_or_switch = path(semantic_errors_dir,
+                                                   "semantic_error_missing_clock_or_switch.txt")
+path_semantic_error_missing_input_to_pin = path(semantic_errors_dir, 
+                                                "semantic_error_missing_input_to_pin.txt")
+path_semantic_error_monitor_present = path(semantic_errors_dir, "semantic_error_monitor_present.txt")
+path_semantic_error_input_port_absent = path(semantic_errors_dir, "semantic_error_input_port_absent.txt")
+path_semantic_error_output_port_absent = path(semantic_errors_dir, "semantic_error_output_port_absent.txt")
+path_semantic_error_monitor_port_absent = path(semantic_errors_dir, 
+                                               "semantic_error_monitor_port_absent.txt")
+path_semantic_error_wrong_block_order = path(semantic_errors_dir, "semantic_error_wrong_block_order.txt")
+
+extreme_errors_dir = "test_extreme_errors"
+path_bible = path(extreme_errors_dir, "test_parse_bible.txt")
+path_curly_brackets = path(extreme_errors_dir, "test_parse_curly_brackets.txt")
+path_empty = path(extreme_errors_dir, "test_parse_empty.txt")
+path_lorem_ipsum = path(extreme_errors_dir, "test_parse_lorem_ipsum.txt")
+path_semi_colon = path(extreme_errors_dir, "test_parse_semi_colon.txt")
+
+path_correct_2 = path("test_parse_correct_text_2.txt")
+path_correct_3 = path("test_parse_correct_text_3.txt")
+path_correct_4 = path("test_parse_correct_text_4.txt")
+path_test_parse_oscillating = path("test_parse_oscillating.txt")
+
 
 @pytest.fixture
-def new_parser(path: str) -> Parser:
+def new_parser(path_parser: str) -> Parser:
     """Return a new instance of the Parser class."""
     names = Names()
     devices = Devices(names)
     network = Network(names, devices)
     monitors = Monitors(names, devices, network)
-    scanner = Scanner(path, names)
+    scanner = Scanner(path_parser, names)
 
     return Parser(names, devices, network, monitors, scanner)
 

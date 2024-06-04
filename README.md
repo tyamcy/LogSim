@@ -13,11 +13,13 @@ Digital Logic Layout Mapper, a logic circuit description language.
 Make sure the following dependencies are installed
 - [wxPython](https://wiki.wxpython.org/How%20to%20install%20wxPython)
 - [PyOpenGL](https://pyopengl.sourceforge.net/documentation/installation.html)
+- [pytest](https://docs.pytest.org/en/7.1.x/getting-started.html)
 
 Run the following commands
 
 ```
 git clone https://github.com/tyamcy/IIA-Logic-Simulator.git
+pip install -e .
 cd IIA-Logic-Simulator/final
 ```
 

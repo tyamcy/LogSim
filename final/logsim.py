@@ -6,9 +6,9 @@ runs either the command line user interface or the graphical user interface.
 
 Usage
 -----
-Show help: main.py -h
-Command line user interface: main.py -c <file path>
-Graphical user interface: main.py <file path>
+Show help: logsim.py -h
+Command line user interface: logsim.py -c <file path>
+Graphical user interface: logsim.py <file path>
 """
 import getopt
 import os
@@ -47,9 +47,9 @@ def main(arg_list: List[str]) -> None:
     or display the usage message.
     """
     usage_message = ("Usage:\n"
-                     "Show help: main.py -h\n"
-                     "Command line user interface: main.py -c <file path>\n"
-                     "Graphical user interface: main.py <file path>")
+                     "Show help: logsim.py -h\n"
+                     "Command line user interface: logsim.py -c <file path>\n"
+                     "Graphical user interface: logsim.py <file path>")
     parsing_message = "Assembling logic circuit..."
     try:
         options, arguments = getopt.getopt(arg_list, "hc:")

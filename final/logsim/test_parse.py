@@ -89,7 +89,7 @@ def all_error_1_expected_content(parser: Parser) -> List[Tuple[str, int]]:
         ("Line 47:", parser.error_handler.EXPECT_PIN_IN),
         ("Line 49:", parser.error_handler.EXPECT_PIN_IN),
         ("Line 51:", parser.error_handler.EXPECT_FULL_STOP),
-        ("Line 68:", parser.error_handler.EXPECT_CLOSE_CURLY_BRACKET)
+        parser.error_handler.EXPECT_CLOSE_CURLY_BRACKET
     ]
 
 

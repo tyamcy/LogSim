@@ -151,7 +151,7 @@ class Parser:
                 if not sub_rule():
                     self.skip_after_semicolon_or_to_close_bracket()
             if self.symbol.type != Scanner.CLOSE_CURLY_BRACKET:
-                self.error_handler.line_error(self.error_handler.EXPECT_CLOSE_CURLY_BRACKET, self.symbol)
+                self.error_handler.file_error(self.error_handler.EXPECT_CLOSE_CURLY_BRACKET)
 
         else:
             # expect open curly bracket

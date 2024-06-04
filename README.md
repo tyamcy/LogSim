@@ -37,13 +37,13 @@ python main.py <file path>
 For English, run
 
 ```
-LANG=en_US python main.py <file path>
+LANG=en_GB.UTF-8 python main.py <file path>
 ```
 
 For Traditional Chinese, run
 
 ```
-LANG=zh_HK python main.py <file path>
+LANG=zh_HK.UTF-8 python main.py <file path>
 ```
 
 

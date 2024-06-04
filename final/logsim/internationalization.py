@@ -5,6 +5,6 @@ _ = wx.GetTranslation
 
 language_domain = "gui"
 supported_language = {
-    u"en_US": wx.LANGUAGE_ENGLISH,
-    u"zh_HK": wx.LANGUAGE_CHINESE_HONGKONG
+    u"en_gb.utf-8": wx.LANGUAGE_ENGLISH_UK,
+    u"zh_hk.utf-8": wx.LANGUAGE_CHINESE_HONGKONG
 }

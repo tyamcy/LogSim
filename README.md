@@ -22,7 +22,7 @@ cd IIA-Logic-Simulator/final
 For text-based command line user interface, run
 
 ```
-python main.py -c <file path>
+python logsim.py -c <file path>
 ```
 
 Currently, the graphical user interface supports both English and Traditional Chinese. 
@@ -31,19 +31,19 @@ The language is either detected automatically or specified when the program is r
 For the system language, run
 
 ```
-python main.py <file path>
+python logsim.py <file path>
 ```
 
 For English, run
 
 ```
-LANG=en_US python main.py <file path>
+LANG=en_GB.UTF-8 python logsim.py <file path>
 ```
 
 For Traditional Chinese, run
 
 ```
-LANG=zh_HK python main.py <file path>
+LANG=zh_HK.UTF-8 python logsim.py <file path>
 ```
 
 

@@ -46,20 +46,20 @@ class App(wx.App, InspectionMixin):
     def update_language(self, language):
         """Update the language to the requested one."""
         # if the input language is supported, use the language
-        if language in supported_language:
-            selected_language = supported_language[language]
+        if language and language.lower() in supported_language:
+            selected_language = supported_language[language.lower()]
         else:
             # if there is no language input, use system default language if supported, else use English
             if not language:
-                language = locale.getdefaultlocale()[0]
-                if language in supported_language:
-                    selected_language = supported_language[language]
+                language = ".".join(locale.getdefaultlocale())
+                if language.lower() in supported_language:
+                    selected_language = supported_language[language.lower()]
                 else:
-                    print(f"System language '{language}' is not supported, using default language 'en_US'")
+                    print(f"System language '{language}' is not supported, using default language 'en_GB.UTF-8'")
                     selected_language = wx.LANGUAGE_ENGLISH
             # if the input language is not supported, use English
             else:
-                print(f"Language '{language}' is not supported, using default language 'en_US'")
+                print(f"Language '{language}' is not supported, using default language 'en_GB.UTF-8'")
                 selected_language = wx.LANGUAGE_ENGLISH
 
         if self.locale:

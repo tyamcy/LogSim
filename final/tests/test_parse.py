@@ -64,13 +64,13 @@ path_test_parse_oscillating = path("test_parse_oscillating.txt")
 
 
 @pytest.fixture
-def new_parser(path_parser: str) -> Parser:
+def new_parser(path: str) -> Parser:
     """Return a new instance of the Parser class."""
     names = Names()
     devices = Devices(names)
     network = Network(names, devices)
     monitors = Monitors(names, devices, network)
-    scanner = Scanner(path_parser, names)
+    scanner = Scanner(path, names)
 
     return Parser(names, devices, network, monitors, scanner)
 

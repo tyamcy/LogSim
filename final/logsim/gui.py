@@ -61,7 +61,7 @@ class Gui(wx.Frame):
 
     def __init__(self, title: str, path: str, parser: Parser):
         """Initialise widgets and layout."""
-        super().__init__(parent=None, title=title, size=(800, 600))
+        super().__init__(parent=None, title=_(title), size=(800, 600))
 
         # Initialise variables
         self.names = parser.names

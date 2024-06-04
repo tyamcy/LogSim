@@ -1,4 +1,17 @@
 # Language translation file
+#
+msgid ""
+msgstr ""
+
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2024-06-02 00:22+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
 
 #:
 msgid ""
@@ -100,7 +113,7 @@ msgstr "新增監測點"
 
 #:
 msgid "Select a port from the device to monitor:"
-msgstr "選擇要監測的連接埠："
+msgstr "選擇要監測的引腳："
 
 #:
 msgid "Enter Identifier"
@@ -263,3 +276,145 @@ msgstr ""
 "歡迎使用邏輯模擬器 \n"
 "=========================="
 
+#:
+msgid "Found {name}, expected a non-keyword identifier"
+msgstr "找到 {name} ，應找到非關鍵字的識別碼"
+
+#:
+msgid "Found {name}, expected 'AND', 'NAND', 'OR', 'NOR', 'XOR', 'DTYPE' or 'RC'"
+msgstr "找到 {name} ，應找到 'AND', 'NAND', 'OR', 'NOR', 'XOR', 'DTYPE' 或 'RC'"
+
+#:
+msgid "Found {name}, expected integer between 1 and 16"
+msgstr "找到 {name}，應找到 1 至 16 的整數"
+
+#:
+msgid "Found {name}, expected positive integer with no leading zero"
+msgstr "找到 {name}，應找到非從零開首的正整數"
+
+
+#:
+msgid "Found {name}, expected 0 or 1"
+msgstr "找到 {name}，應找到 0 或 1"
+
+#:
+msgid "Found {name}, expected 'I1-16', 'DATA', 'CLK', 'SET' or 'CLEAR'"
+msgstr "找到 {name}，應找到 'I1-16', 'DATA', 'CLK', 'SET' 或 'CLEAR'"
+
+#:
+msgid "Found {name}, expected 'Q' or 'QBAR'"
+msgstr "找到 {name}，應找到 'Q' 或 'QBAR'"
+
+#:
+msgid "Found {name}, expected 'I1-16', 'DATA', 'CLK', 'SET', 'CLEAR', 'Q' or 'QBAR'"
+msgstr "找到 {name}，應找到 'I1-16', 'DATA', 'CLK', 'SET', 'CLEAR', 'Q' 或 'QBAR'"
+
+#:
+msgid "Found {name}, expected a keyword ('DEVICE', 'CLOCK', 'SWITCH', 'MONITOR' or 'CONNECTION')"
+msgstr "找到 {name}，應找到關鍵字 ('DEVICE', 'CLOCK', 'SWITCH', 'MONITOR' 或 'CONNECTION')"
+
+#:
+msgid "Found {name}, expected '{{'"
+msgstr "找到 {name}，應找到 '{{'"
+
+#:
+msgid "Found {name}, expected ','"
+msgstr "找到 {name}，應找到 ','"
+
+#:
+msgid "Found {name}, expected ';'"
+msgstr "找到 {name}，應找到 ';'"
+
+#:
+msgid "Found {name}, expected ':'"
+msgstr "找到 {name}，應找到 ':'"
+
+#:
+msgid "Found {name}, expected '.' (if pin has to be defined) or ';' (if pin does not have to be defined)"
+msgstr "找到 {name}，應找到 '.'（如果引腳需被定義）或 ';' （如果引腳不需被定義）"
+
+#:
+msgid "Found {name}, expected '.'"
+msgstr "找到 {name}，應找到 '.'"
+
+#:
+msgid "Found {name}, expected '>'"
+msgstr "找到 {name}，應找到 '>'"
+
+#:
+msgid "Found {name}, expected '.' (if pin has to be defined) or '>' (if pin does not have to be defined)"
+msgstr "找到 {name}，應找到 '.'（如果引腳需被定義）或 '>' （如果引腳不需被定義）"
+
+#:
+msgid "{name} block should not be redefined"
+msgstr "{name} 分段不應再被定義"
+
+#:
+msgid "{name} block order is wrong"
+msgstr "{name} 分段次序有誤"
+
+#:
+msgid "Found {name}, expected '}}'"
+msgstr "找到 {name}，應找到 '}}'"
+
+#:
+msgid "Pin {name} does not exist"
+msgstr "引腳 {name} 不存在"
+
+#:
+msgid "Connection repeatedly assigned to input pin {name}"
+msgstr "輸入接腳 {name} 有重複連接"
+
+#:
+msgid "Identifier {name} is not defined"
+msgstr "識別碼 {name} 未被定義"
+
+#:
+msgid "Identifier {name} should not be redefined"
+msgstr "識別碼 {name} 不應被從新定義"
+
+#:
+msgid "Missing input to pin {name}"
+msgstr "接腳 {name} 沒有輸入"
+
+#:
+msgid "At least one monitor should be defined"
+msgstr "至少一個監測點需被定義"
+
+#:
+msgid "At least one list between 'CLOCK' and 'SWITCH' is needed. neither is found"
+msgstr "至少需要 'CLOCK' 或 'SWITCH' 其中一個分段，找不到任何一個分段"
+
+#:
+msgid ""
+"\n"
+"Over {error_limit} errors, further errors will not be reported!!"
+msgstr ""
+"\n"
+"錯誤數量超出上限（{error_limit}），不會顯示其他錯誤"
+
+#:
+msgid "Line {line_num}:"
+msgstr "第{line_num}行："
+
+#:
+msgid ""
+"\n"
+"File error: {message}"
+"\n"
+msgstr ""
+"\n"
+"檔案錯誤：{message}"
+"\n"
+
+#:
+msgid "Logic Simulator"
+msgstr "邏輯模擬器"
+
+#:
+msgid "OK"
+msgstr "確定"
+
+#:
+msgid "Cancel"
+msgstr "取消"

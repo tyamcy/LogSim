@@ -9,7 +9,7 @@ Switch - configures the switches component and the corresponding toggle switches
 import wx
 
 from logsim.gui_widgets.color import Color
-from logsim.base_app import _
+from logsim.internationalization import _
 
 
 class Switch:

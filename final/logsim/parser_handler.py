@@ -15,6 +15,7 @@ from logsim.devices import Devices
 from logsim.network import Network
 from logsim.monitors import Monitors
 from logsim.scanner import Scanner, Symbol
+from logsim.internationalization import _
 
 
 class LineTerminalOutput:
@@ -68,7 +69,7 @@ class FileTerminalOutput:
 
     def __str__(self):
         """Return the terminal output representation of the instance."""
-        return f"\nFile error: {self.message}\n"
+        return _(u"\nFile error: {message}\n").format(message=self.message)
 
 
 class ParserErrorHandler:
@@ -144,8 +145,9 @@ class ParserErrorHandler:
 
     def error_limit_exceeded(self) -> None:
         """Add terminal output to indicate the number of error exceeds the display limit"""
-        self.error_output_list.append("\n--------------------------------------------------------"
-                                      f"\nOver {self.error_limit} errors, further errors will not be reported!!"
+        self.error_output_list.append("\n--------------------------------------------------------" +
+                                      _(u"\nOver {error_limit} errors, further errors will not be reported!!")
+                                      .format(error_limit=self.error_limit) +
                                       "\n--------------------------------------------------------")
 
     def line_error(self, error_code: int, symbol: Symbol) -> None:
@@ -182,7 +184,7 @@ class ParserErrorHandler:
         if line_length - character_in_line - 1 > right_char_limit:
             line_str = line_str[:character_in_line+right_char_limit + 1] + "..."
         return LineTerminalOutput(
-            line_location=f"Line {line + 1}:",
+            line_location=_(u"Line {line_num}:").format(line_num=line + 1),
             line_with_issue=line_str,
             arrow=" " * character_in_line + "^",
             message=self.get_error_message(error_code=error_code, name=name),
@@ -197,67 +199,72 @@ class ParserErrorHandler:
 
         # syntax line error
         if error_code == self.EXPECT_IDENTIFIER:
-            return f"Found {name}, expected a non-keyword identifier"
+            return _(u"Found {name}, expected a non-keyword identifier").format(name=name)
         elif error_code == self.EXPECT_INPUT_DEVICE:
-            return f"Found {name}, expected 'AND', 'NAND', 'OR', 'NOR', 'XOR', 'DTYPE' or 'RC'"
+            return _(u"Found {name}, expected 'AND', 'NAND', 'OR', 'NOR', 'XOR', 'DTYPE' or 'RC'").format(name=name)
         elif error_code == self.EXPECT_VARIABLE_INPUT_NUMBER:
-            return f"Found {name}, expected integer between 1 and 16"
-        elif error_code == self.EXPECT_CLOCK_CYCLE:
-            return f"Found {name}, expected positive integer with no leading zero"
+            return _(u"Found {name}, expected integer between 1 and 16").format(name=name)
+        elif error_code == self.EXPECT_CLOCK_CYCLE or error_code == self.EXPECT_RC_TRIGGER_CYCLE:
+            return _(u"Found {name}, expected positive integer with no leading zero").format(name=name)
         elif error_code == self.EXPECT_INITIAL_STATE:
-            return f"Found {name}, expected 0 or 1"
+            return _(u"Found {name}, expected 0 or 1").format(name=name)
         elif error_code == self.EXPECT_PIN_IN:
-            return f"Found {name}, expected 'I1-16', 'DATA', 'CLK', 'SET' or 'CLEAR'"
+            return _(u"Found {name}, expected 'I1-16', 'DATA', 'CLK', 'SET' or 'CLEAR'").format(name=name)
         elif error_code == self.EXPECT_PIN_OUT:
-            return f"Found {name}, expected 'Q' or 'QBAR'"
+            return _(u"Found {name}, expected 'Q' or 'QBAR'").format(name=name)
         elif error_code == self.EXPECT_PIN_IN_OR_OUT:  # for ( pinIn | pinOut ) in monitor
-            return f"Found {name}, expected 'I1-16', 'DATA', 'CLK', 'SET', 'CLEAR', 'Q' or 'QBAR'"
+            return _(u"Found {name}, expected 'I1-16', 'DATA', 'CLK', 'SET', 'CLEAR', 'Q' or 'QBAR'").format(name=name)
         elif error_code == self.EXPECT_KEYWORD:
-            return f"Found {name}, expected a keyword ('DEVICE', 'CLOCK', 'SWITCH', 'MONITOR' or 'CONNECTION')"
+            return (_(u"Found {name}, expected a keyword ('DEVICE', 'CLOCK', 'SWITCH', 'MONITOR' or 'CONNECTION')")
+                    .format(name=name))
         elif error_code == self.EXPECT_OPEN_CURLY_BRACKET:
-            return f"Found {name}, expected '{{'"
+            return _(u"Found {name}, expected '{{'").format(name=name)
         elif error_code == self.EXPECT_COMMA:
-            return f"Found {name}, expected ','"
+            return _(u"Found {name}, expected ','").format(name=name)
         elif error_code == self.EXPECT_SEMICOLON:
-            return f"Found {name}, expected ';'"
+            return _(u"Found {name}, expected ';'").format(name=name)
         elif error_code == self.EXPECT_COLON:
-            return f"Found {name}, expected ':'"
+            return _(u"Found {name}, expected ':'").format(name=name)
         elif error_code == self.EXPECT_FULL_STOP_OR_SEMICOLON:  # for [ ".", ( pinIn | pinOut ) ], ";" in monitor
-            return f"Found {name}, expected '.' (if pin has to be defined) or ';' (if pin does not have to be defined)"
+            return (
+                _(u"Found {name}, expected '.' (if pin has to be defined) or ';' (if pin does not have to be defined)")
+                .format(name=name)
+            )
         elif error_code == self.EXPECT_FULL_STOP:
-            return f"Found {name}, expected '.'"
+            return _(u"Found {name}, expected '.'").format(name=name)
         elif error_code == self.EXPECT_ARROW:
-            return f"Found {name}, expected '>'"
+            return _(u"Found {name}, expected '>'").format(name=name)
         elif error_code == self.EXPECT_FULL_STOP_OR_ARROW:  # for [".", pinOut] , ">" in connection
-            return f"Found {name}, expected '.' (if pin has to be defined) or '>' (if pin does not have to be defined)"
+            return (
+                _(u"Found {name}, expected '.' (if pin has to be defined) or '>' (if pin does not have to be defined)")
+                .format(name=name)
+            )
         elif error_code == self.DUPLICATE_KEYWORD:
-            return f"{name} block should not be redefined"
+            return _(u"{name} block should not be redefined").format(name=name)
         elif error_code == self.WRONG_BLOCK_ORDER:
-            return f"{name} block order is wrong"
+            return _(u"{name} block order is wrong").format(name=name)
         elif error_code == self.EXPECT_CLOSE_CURLY_BRACKET:
-            return f"Found {name}, expected '}}'"
-        elif error_code == self.EXPECT_RC_TRIGGER_CYCLE:
-            return f"Found {name}, expected positive integer with no leading zero"
+            return _(u"Found {name}, expected '}}'").format(name=name)
 
         # semantic line error
         elif (error_code == self.network.INPUT_PORT_ABSENT or error_code == self.network.OUTPUT_PORT_ABSENT or
               error_code == self.monitors.MONITOR_PORT_ABSENT):
-            return f"Pin {name} does not exist"
+            return _(u"Pin {name} does not exist").format(name=name)
         elif error_code == self.network.INPUT_CONNECTED:
-            return f"Connection repeatedly assigned to input pin {name}"
+            return _(u"Connection repeatedly assigned to input pin {name}").format(name=name)
         elif (error_code == self.network.INPUT_DEVICE_ABSENT or error_code == self.network.OUTPUT_DEVICE_ABSENT or
               error_code == self.monitors.MONITOR_DEVICE_ABSENT):
-            return f"Identifier {name} is not defined"
+            return _(u"Identifier {name} is not defined").format(name=name)
         elif error_code == self.devices.DEVICE_PRESENT or error_code == self.monitors.MONITOR_IDENTIFIER_PRESENT:
-            return f"Identifier {name} should not be redefined"
+            return _(u"Identifier {name} should not be redefined").format(name=name)
 
         # file error
         elif error_code == self.MISSING_INPUT_TO_PIN:
-            return f"Missing input to pin {name}"
+            return _(u"Missing input to pin {name}").format(name=name)
         elif error_code == self.MISSING_MONITOR:
-            return "At least one monitor should be defined"
+            return _(u"At least one monitor should be defined")
         elif error_code == self.MISSING_CLOCK_OR_SWITCH:
-            return "At least one list between 'CLOCK' and 'SWITCH' is needed. neither is found"
+            return _(u"At least one list between 'CLOCK' and 'SWITCH' is needed. neither is found")
 
         else:
             raise ValueError(f"Invalid error code '{error_code}'")

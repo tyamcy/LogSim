@@ -10,14 +10,12 @@ LogSim is a logic simulator software, which is capable of simulating a logic cir
 Digital Logic Layout Mapper, a logic circuit description language.
 
 ## Run the program
-Make sure the following dependencies are installed
-- [wxPython](https://wiki.wxpython.org/How%20to%20install%20wxPython)
-- [PyOpenGL](https://pyopengl.sourceforge.net/documentation/installation.html)
-
 Run the following commands
 
 ```
 git clone https://github.com/tyamcy/IIA-Logic-Simulator.git
+pip install -e .
+pip install -r requirements.txt
 cd IIA-Logic-Simulator/final
 ```
 

@@ -19,7 +19,7 @@ from logsim.gui_widgets.cycle_selector import CycleSelector
 from logsim.gui_widgets.switch import Switch
 from logsim.gui_widgets.monitor import MonitorsList
 
-from logsim.base_app import _
+from logsim.internationalization import _
 from logsim.parse import Parser
 
 
@@ -61,7 +61,7 @@ class Gui(wx.Frame):
 
     def __init__(self, title: str, path: str, parser: Parser):
         """Initialise widgets and layout."""
-        super().__init__(parent=None, title=title, size=(800, 600))
+        super().__init__(parent=None, title=_(title), size=(800, 600))
 
         # Initialise variables
         self.names = parser.names
@@ -81,7 +81,7 @@ class Gui(wx.Frame):
 
         self.menu_bar = MenuBar(self)
         self.canvas = Canvas(self)
-        self.canvas_buttons = CanvasSettingButtons(self, self.canvas)
+        self.canvas_buttons = CanvasSettingButtons(self)
         self.terminal = Terminal(self)
         self.cycle_selector = CycleSelector(self)
         self.monitors_list = MonitorsList(self)

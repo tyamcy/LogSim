@@ -20,7 +20,7 @@ from logsim.scanner import Scanner
 from logsim.parse import Parser
 
 from logsim.gui_widgets.color import Color
-from logsim.base_app import _
+from logsim.internationalization import _
 
 
 class FileMenu(wx.Menu):

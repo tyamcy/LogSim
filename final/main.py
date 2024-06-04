@@ -99,7 +99,7 @@ def main(arg_list: List[str]) -> None:
         # Initialise an instance of the gui.Gui() class
         language = os.environ.get("LANG")
         app = App(language)
-        gui = Gui("Logic Simulator", path, parser)
+        gui = Gui(u"Logic Simulator", path, parser)
         gui.Show(True)
         app.MainLoop()
 

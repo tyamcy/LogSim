@@ -1,14 +1,22 @@
 """Test the scanner module with 'test_scanner_text.txt'."""
 import pytest
+import os
 from contextlib import contextmanager
 
 from logsim.scanner import Scanner
 from logsim.names import Names
 
-path = "final/logsim/test_text/test_scanner/test_scanner_text.txt"
-path_non_existent = "final/logsim/test_text/test_scanner/test_parse_non_existent"
-path_chinese = "final/logsim/test_text/test_scanner/test_scanner_chinese.txt"
-path_not_text = "final/logsim/test_text/test_scanner/test_scanner_not_text.whl"
+
+def path(*args: str) -> str:
+    """Return the path of the test file."""
+    current_file_directory = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(current_file_directory, "test_text", "test_scanner", *args)
+
+
+path_scanner = path("test_scanner_text.txt")
+path_non_existent = path("test_parse_non_existent.txt")
+path_chinese = path("test_scanner_chinese.txt")
+path_not_text = path("test_scanner_not_text.whl")
 
 
 class NameTest:
@@ -97,7 +105,7 @@ def raise_unicode_decode_error_or_no_error():
 @pytest.fixture
 def new_scanner():
     """Return a new instance of the Scanner class."""
-    return Scanner(path=path, names=Names())
+    return Scanner(path=path_scanner, names=Names())
 
 
 def test_get_symbol(new_scanner: Scanner) -> None:
@@ -112,7 +120,7 @@ def test_scanner_raise_exception():
     with pytest.raises(TypeError):
         Scanner(path=1, names=Names())
     with pytest.raises(TypeError):
-        Scanner(path=path, names="name")
+        Scanner(path=path_scanner, names="name")
     with pytest.raises(FileNotFoundError):
         Scanner(path=path_non_existent, names=Names())
     with raise_unicode_decode_error_or_no_error():

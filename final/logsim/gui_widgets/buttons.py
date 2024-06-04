@@ -15,7 +15,7 @@ import os
 from logsim.gui_widgets.color import Color
 from logsim.gui_widgets.dialogs import CustomDialogBox, IdentifierInputDialog
 
-from logsim.base_app import _
+from logsim.internationalization import _
 from logsim.names import Names
 from logsim.devices import Devices
 from logsim.network import Network

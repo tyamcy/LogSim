@@ -8,7 +8,7 @@ Terminal - configures the terminal component.
 """
 import wx
 
-from logsim.base_app import _
+from logsim.internationalization import _
 from logsim.gui_widgets.color import Color
 
 

@@ -1,4 +1,4 @@
-"""Record and display output signals.
+"""Record and display signals.
 
 Used in the Logic Simulator project to record and display specified output
 signals.

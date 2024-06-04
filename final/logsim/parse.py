@@ -23,6 +23,7 @@ from logsim.scanner import Symbol
 
 
 class Parser:
+
     """Parse the definition file and build the logic network.
 
     The parser deals with error handling. It analyses the syntactic and

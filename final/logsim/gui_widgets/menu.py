@@ -24,6 +24,7 @@ from logsim.internationalization import _
 
 
 class FileMenu(wx.Menu):
+
     """Configure the file sub-menu.
 
     This class configures the file sub-menu.
@@ -59,6 +60,7 @@ class FileMenu(wx.Menu):
 
 
 class HelpMenu(wx.Menu):
+
     """Configure the help sub-menu.
 
     This class configures the help sub-menu.
@@ -80,6 +82,7 @@ class HelpMenu(wx.Menu):
 
 
 class MenuBar(wx.MenuBar):
+
     """Configure the menu bar.
 
     This class configures the menu bar by adding all sub-menus and binds the functionality of each option.

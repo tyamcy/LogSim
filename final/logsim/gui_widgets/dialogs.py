@@ -15,6 +15,7 @@ from logsim.gui_widgets.color import Color
 
 
 class CustomDialogBox(wx.Dialog):
+
     """Custom dialog box for the add and remove buttons.
 
     Parameters
@@ -73,6 +74,7 @@ class CustomDialogBox(wx.Dialog):
 
 
 class IdentifierInputDialog(wx.Dialog):
+
     """Custom dialog box to input an identifier for the monitor.
 
     Parameters

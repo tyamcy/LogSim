@@ -15,6 +15,7 @@ from OpenGL import GL, GLU, GLUT
 
 
 class Canvas(wxcanvas.GLCanvas):
+
     """Handle all drawing operations.
 
     This class contains functions for drawing onto the canvas. It

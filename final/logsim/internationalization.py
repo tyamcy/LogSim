@@ -1,3 +1,4 @@
+"""Handles translation and provides language metadata."""
 import wx
 
 _ = wx.GetTranslation

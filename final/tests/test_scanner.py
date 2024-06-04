@@ -5,10 +5,10 @@ from contextlib import contextmanager
 from logsim.scanner import Scanner
 from logsim.names import Names
 
-path = "final/logsim/test_text/test_scanner/test_scanner_text.txt"
-path_non_existent = "final/logsim/test_text/test_scanner/test_parse_non_existent"
-path_chinese = "final/logsim/test_text/test_scanner/test_scanner_chinese.txt"
-path_not_text = "final/logsim/test_text/test_scanner/test_scanner_not_text.whl"
+path = "final/tests/test_text/test_scanner/test_scanner_text.txt"
+path_non_existent = "final/tests/test_text/test_scanner/test_parse_non_existent"
+path_chinese = "final/tests/test_text/test_scanner/test_scanner_chinese.txt"
+path_not_text = "final/tests/test_text/test_scanner/test_scanner_not_text.whl"
 
 
 class NameTest:

@@ -7,7 +7,6 @@ Classes:
 CanvasSettingButtons - contains all buttons for adjusting the canvas.
 """
 import wx
-import wx.glcanvas as wxcanvas
 
 from logsim.gui_widgets.color import Color
 from logsim.base_app import _
@@ -24,7 +23,6 @@ class CanvasSettingButtons:
     Parameters
     ----------
     parent: parent window.
-    canvas: the OpenGL canvas that the buttons will control.
 
     Public methods
     --------------
@@ -32,9 +30,9 @@ class CanvasSettingButtons:
     on_toggle_grids(self, event): Toggles the grid visibility on the canvas.
     reset_origin(self, event): Resets the view of the canvas to the origin point.
     """
-    def __init__(self, parent, canvas: wxcanvas.GLCanvas):
+    def __init__(self, parent):
         """Initialize buttons and layout."""
-        self.canvas = canvas
+        self.canvas = parent.canvas
 
         self.canvas_buttons_panel = wx.Panel(parent)
         self.canvas_buttons_panel.SetBackgroundColour(Color.light_background_color)

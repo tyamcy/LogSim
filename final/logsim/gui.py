@@ -81,7 +81,7 @@ class Gui(wx.Frame):
 
         self.menu_bar = MenuBar(self)
         self.canvas = Canvas(self)
-        self.canvas_buttons = CanvasSettingButtons(self, self.canvas)
+        self.canvas_buttons = CanvasSettingButtons(self)
         self.terminal = Terminal(self)
         self.cycle_selector = CycleSelector(self)
         self.monitors_list = MonitorsList(self)

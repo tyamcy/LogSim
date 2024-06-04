@@ -55,11 +55,11 @@ class App(wx.App, InspectionMixin):
                 if language in supported_language:
                     selected_language = supported_language[language]
                 else:
-                    print(f"System language '{language}' is not supported, using default language 'en_US'")
+                    print(f"System language '{language}' is not supported, using default language 'en_GB'")
                     selected_language = wx.LANGUAGE_ENGLISH
             # if the input language is not supported, use English
             else:
-                print(f"Language '{language}' is not supported, using default language 'en_US'")
+                print(f"Language '{language}' is not supported, using default language 'en_GB'")
                 selected_language = wx.LANGUAGE_ENGLISH
 
         if self.locale:

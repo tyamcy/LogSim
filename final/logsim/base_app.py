@@ -13,12 +13,7 @@ import locale
 import wx
 from wx.lib.mixins.inspection import InspectionMixin
 
-language_domain = "gui"
-supported_language = {
-    u"en_US": wx.LANGUAGE_ENGLISH,
-    u"zh_HK": wx.LANGUAGE_CHINESE_HONGKONG
-}
-_ = wx.GetTranslation
+from logsim.internationalization import language_domain, supported_language
 
 
 class App(wx.App, InspectionMixin):

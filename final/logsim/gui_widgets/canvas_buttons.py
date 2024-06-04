@@ -9,7 +9,7 @@ CanvasSettingButtons - contains all buttons for adjusting the canvas.
 import wx
 
 from logsim.gui_widgets.color import Color
-from logsim.base_app import _
+from logsim.internationalization import _
 
 
 class CanvasSettingButtons:

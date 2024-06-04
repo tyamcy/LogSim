@@ -8,7 +8,7 @@ CycleSelector - configures the cycle selector component.
 """
 import wx
 
-from logsim.base_app import _
+from logsim.internationalization import _
 
 
 class CycleSelector:

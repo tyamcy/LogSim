@@ -15,7 +15,7 @@ from logsim.devices import Devices
 from logsim.network import Network
 from logsim.monitors import Monitors
 from logsim.scanner import Scanner, Symbol
-from logsim.base_app import _
+from logsim.internationalization import _
 
 
 class LineTerminalOutput:

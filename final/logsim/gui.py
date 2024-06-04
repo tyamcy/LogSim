@@ -19,7 +19,7 @@ from logsim.gui_widgets.cycle_selector import CycleSelector
 from logsim.gui_widgets.switch import Switch
 from logsim.gui_widgets.monitor import MonitorsList
 
-from logsim.base_app import _
+from logsim.internationalization import _
 from logsim.parse import Parser
 
 

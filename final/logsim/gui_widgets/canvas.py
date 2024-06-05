@@ -56,6 +56,8 @@ class Canvas(wxcanvas.GLCanvas):
     change_mode(self): Switching between 2D and 3D.
 
     toggle_grid(self): Handles the event of turning the grids on and off.
+
+    screenshot(self): Captures the current canvas and returns an image.
     """
 
     def __init__(self, parent):
@@ -668,3 +670,17 @@ class Canvas(wxcanvas.GLCanvas):
         else:
             self.grid_on = True
         self.render("")
+
+    def screenshot(self) -> wx._core.Image:
+        """Captures the current canvas and returns an image."""
+        width, height = self.GetClientSize()
+
+        GL.glReadBuffer(GL.GL_FRONT)
+        pixels = GL.glReadPixels(0, 0, width, height, GL.GL_RGB, GL.GL_UNSIGNED_BYTE)
+        image = wx.Image(width, height, pixels)
+
+        # Mirroring the image to return a correct image
+        image = image.Mirror(horizontally=False)
+
+        return image
+        

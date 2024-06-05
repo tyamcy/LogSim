@@ -14,6 +14,7 @@ from logsim.internationalization import _
 
 
 class MonitorsList:
+
     """Configure the monitors section.
 
     This class provides a component that displays the active monitor points.

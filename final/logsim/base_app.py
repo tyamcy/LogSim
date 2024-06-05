@@ -17,6 +17,7 @@ from logsim.internationalization import language_domain, supported_language
 
 
 class App(wx.App, InspectionMixin):
+
     """Create an app with language setting for the graphical user interface.
 
     This class provides an application to hold the graphical user interface  for the

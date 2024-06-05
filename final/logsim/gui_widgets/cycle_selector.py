@@ -12,6 +12,7 @@ from logsim.internationalization import _
 
 
 class CycleSelector:
+
     """Configure the number of cycles section.
 
     This class provides a component that allows the user to choose the number of simulation cycles.

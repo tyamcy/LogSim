@@ -9,8 +9,8 @@ Color - contains all colors used for decorating the graphical user interface.
 
 
 class Color:
-    """
-    A class containing all the colors for decorating the graphical user interface.
+
+    """A class containing all the colors for decorating the graphical user interface.
 
     Parameters
     ----------

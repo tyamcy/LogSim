@@ -318,4 +318,3 @@ class Gui(wx.Frame):
             self.theme = "light"  # update theme
 
         self.Refresh()
-

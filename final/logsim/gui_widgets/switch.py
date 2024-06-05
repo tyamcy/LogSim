@@ -13,6 +13,7 @@ from logsim.internationalization import _
 
 
 class Switch:
+
     """Configure the switches section.
 
     This class provides a component that displays the available switches and toggle buttons

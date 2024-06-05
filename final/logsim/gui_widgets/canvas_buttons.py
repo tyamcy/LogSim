@@ -13,8 +13,8 @@ from logsim.internationalization import _
 
 
 class CanvasSettingButtons:
-    """
-    A class responsible for managing the interactive buttons that control settings
+
+    """A class responsible for managing the interactive buttons that control settings
     on a GLCanvas.
 
     This class creates a panel with buttons that allow the user to reset the canvas

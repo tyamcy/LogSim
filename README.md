@@ -15,7 +15,6 @@ Run the following commands
 ```
 git clone https://github.com/tyamcy/IIA-Logic-Simulator.git
 cd IIA-Logic-Simulator
-pip install -e .
 pip install -r requirements.txt
 cd final
 ```

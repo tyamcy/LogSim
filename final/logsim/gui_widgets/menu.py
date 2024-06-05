@@ -106,7 +106,7 @@ class MenuBar(wx.MenuBar):
         self.gui.SetMenuBar(self)
         self.gui.Bind(wx.EVT_MENU, self.on_menu)
 
-    def on_menu(self, event):
+    def on_menu(self, event) -> None:
         """Handle the event when the user selects a menu item."""
         Id = event.GetId()
         if Id == wx.ID_EXIT:

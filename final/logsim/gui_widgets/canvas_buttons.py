@@ -83,9 +83,9 @@ class CanvasSettingButtons:
         wildcard = "PNG files (*.png)|*.png"
         with wx.FileDialog(self.gui, _(u"Save PNG image"), wildcard=wildcard,
                         style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
-        # Set the default file path to user's Documents directory
+            # Set the default file path to user's Documents directory
             fileDialog.SetDirectory(wx.StandardPaths.Get().GetDocumentsDir())
-            fileDialog.SetFilename("capture.png") # default file name
+            fileDialog.SetFilename("capture.png")  # default file name
 
             # Cancel 
             if fileDialog.ShowModal() == wx.ID_CANCEL:
@@ -97,8 +97,8 @@ class CanvasSettingButtons:
                 text = _(u"\n\nScreen capture saved")
                 self.gui.terminal.append_text(Color.terminal_text_color, text)
                 if not image.SaveFile(pathname, wx.BITMAP_TYPE_PNG):
-                    wx.LogError(_(u"Cannot save current data in file '%s'.") % pathname)
+                    wx.LogError(_(u"Cannot save current data in file '{pathname}'.").format(pathname=pathname))
             except Exception as e:
-                wx.LogError("Failed to save file: {}".format(e))
+                wx.LogError(_(u"Failed to save file: {}").format(e))
                 return
 

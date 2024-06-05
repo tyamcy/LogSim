@@ -148,6 +148,10 @@ msgid "Select a Monitor to Remove:"
 msgstr "選擇要移除的監測點"
 
 #:
+msgid "Capture"
+msgstr "截圖"
+
+#:
 msgid "Origin"
 msgstr "重置"
 
@@ -418,3 +422,25 @@ msgstr "確定"
 #:
 msgid "Cancel"
 msgstr "取消"
+
+#:
+msgid "Save PNG image"
+msgstr "儲存 PNG 照片"
+
+#:
+msgid ""
+"\n"
+"\n"
+"Screen capture saved"
+msgstr ""
+"\n"
+"\n"
+"螢幕截圖已被儲存"
+
+#:
+msgid "Cannot save current data in file '{pathname}'."
+msgstr "未能把資訊儲存在檔案 '{pathname}'"
+
+#:
+msgid "Failed to save file: {}"
+msgstr "未能儲存檔案： {}"

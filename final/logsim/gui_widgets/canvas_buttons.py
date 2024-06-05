@@ -94,6 +94,8 @@ class CanvasSettingButtons:
             # Save the image
             pathname = fileDialog.GetPath()
             try:
+                text = _(u"\n\nScreen capture saved")
+                self.gui.terminal.append_text(Color.terminal_text_color, text)
                 if not image.SaveFile(pathname, wx.BITMAP_TYPE_PNG):
                     wx.LogError(_(u"Cannot save current data in file '%s'.") % pathname)
             except Exception as e:
